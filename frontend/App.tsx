@@ -1,20 +1,20 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import MainNav from './MainNav';
+import { NavigationContainer } from '@react-navigation/native';
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+import { Provider } from 'react-redux';
+import store from './src/redux/store'
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Provider store={store}>
+      <ActionSheetProvider>
+        <NavigationContainer>
+          <MainNav />
+          <StatusBar style="auto" />
+        </NavigationContainer>
+      </ActionSheetProvider>
+    </Provider>
+
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
