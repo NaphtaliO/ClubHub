@@ -1,15 +1,15 @@
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, ActivityIndicator, Alert, KeyboardAvoidingView, ImageBackground, Platform } from 'react-native';
-import React, { useEffect, useState } from 'react';
-// import * as Haptics from 'expo-haptics';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, ActivityIndicator, Alert, KeyboardAvoidingView, ImageBackground, Platform, Image as RNImage } from 'react-native';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import Button from '../../components/Button';
 import { CreatePostScreenProps } from '../../types/types';
-import ImageViewer from '../../components/ImageViewer';
+import { useSelector } from 'react-redux';
+import TouchableIcon from '../../components/TouchableIcon';
+import { Button } from 'react-native-paper';
+
 // import { v4 as uuidv4 } from 'uuid';
 // import 'react-native-get-random-values';
 // import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
-// import { useDispatch, useSelector } from 'react-redux';
 // import { createPosts } from '../../state_management/postsSlice';
 // import { addToFeed } from '../../state_management/feedSlice';
 // import { useLogout } from '../../hooks/useLogout';
@@ -17,10 +17,11 @@ import ImageViewer from '../../components/ImageViewer';
 // import { THEME_COLOUR } from '../../Constants';
 
 export default function Post({ navigation }: CreatePostScreenProps) {
+    const user = useSelector((state) => state.user.value)
     const [loading, setLoading] = useState(false);
     const [selected, setSelected] = useState(false);
     const [caption, setCaption] = useState("");
-    const [image, setImage] = useState<string | null>(null);
+    const [image, setImage] = useState<string | undefined>(undefined);
     const hasUnsavedChanges = Boolean(caption || image);
     // const dispatch = useDispatch();
     // const user = useSelector((state) => state.user.value);
@@ -53,11 +54,24 @@ export default function Post({ navigation }: CreatePostScreenProps) {
     //     })
     // }, [navigation, hasUnsavedChanges]);
 
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <Button mode="contained"
+                    onPress={handleCreate}
+                    loading={false}
+                >
+                    Post
+                </Button>
+            ),
+        });
+    }, [navigation]);
+
     //Handles picking images from Gallery
     let openImagePickerAsync = async () => {
-        // Haptics.selectionAsync()
+        Haptics.selectionAsync()
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
             // allowsMultipleSelection: true,
             // allowsEditing: true,
             presentationStyle: ImagePicker.UIImagePickerPresentationStyle.FULL_SCREEN,
@@ -71,7 +85,7 @@ export default function Post({ navigation }: CreatePostScreenProps) {
         }
 
         if (result.canceled) {
-            setImage(null);
+            setImage(undefined);
             setSelected(false);
         }
     };
@@ -81,7 +95,7 @@ export default function Post({ navigation }: CreatePostScreenProps) {
         if (permission?.status !== "granted") {
             requestPermission();
         } else {
-            // Haptics.selectionAsync()
+            Haptics.selectionAsync()
             let result = await ImagePicker.launchCameraAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 aspect: [4, 3],
@@ -95,148 +109,135 @@ export default function Post({ navigation }: CreatePostScreenProps) {
             }
 
             if (result.canceled) {
-                setImage(null);
+                setImage(undefined);
                 setSelected(false);
             }
         }
     };
 
     const handleCreate = async () => {
-    //     if (loading) {
-    //         return;
-    //     }
-    //     setLoading(true)
-    //     try {
-    //         if (user == null) {
-    //             console.log("You need to be logged in");
-    //             return;
-    //         }
-    //         let uri = null;
-    //         if (selected) {
-    //             uri = await handleImagePicked(image);
-    //         }
-    //         const post = { uri, caption }
-    //         const response = await fetch(`${URL}/api/posts/create`, {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'Authorization': `Bearer ${user.token}`
-    //             },
-    //             body: JSON.stringify(post)
-    //         })
+            if (loading) return;
+            setLoading(true)
+            try {
+                let uri = null;
+                if (selected) {
+                    uri = await handleImagePicked(image);
+                }
+                const post = { uri, caption }
+                const response = await fetch(`${URL}/api/posts/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${user.token}`
+                    },
+                    body: JSON.stringify(post)
+                })
 
-    //         const json = await response.json()
+                const json = await response.json()
 
-    //         if (!response.ok) {
-    //             if (json.error === "Request is not authorized") {
-    //                 logout()
-    //             }
-    //         }
-    //         if (response.ok) {
-    //             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-    //             dispatch(createPosts(json));
-    //             dispatch(addToFeed({ name: user.name, username: user.username, avatar: user.avatar, ...json }))
-    //         }
-    //         navigation.navigate('Home');
-    //     } catch (error) {
-    //         console.log(error.message);
-    //     }
-    //     setLoading(false)
+                // if (!response.ok) {
+                //     if (json.error === "Request is not authorized") {
+                //         logout()
+                //     }
+                // }
+                // if (response.ok) {
+                //     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+                //     dispatch(createPosts(json));
+                //     dispatch(addToFeed({ name: user.name, username: user.username, avatar: user.avatar, ...json }))
+                // }
+                // navigation.navigate('Home');
+            } catch (error) {
+                console.log((error as Error).message);
+            }
+            setLoading(false)
     }
 
     const handleImagePicked = async (pickerResult: any) => {
-    //     let avatar;
-    //     try {
-    //         if (pickerResult.cancelled) {
-    //             alert("Upload cancelled");
-    //             return;
-    //         } else {
-    //             const uploadUrl = await uploadImage(pickerResult);
-    //             avatar = uploadUrl;
-    //         }
-    //     } catch (e) {
-    //         console.log(e.message);
-    //         alert("Upload failed");
-    //     }
-    //     return avatar;
+        //     let avatar;
+        //     try {
+        //         if (pickerResult.cancelled) {
+        //             alert("Upload cancelled");
+        //             return;
+        //         } else {
+        //             const uploadUrl = await uploadImage(pickerResult);
+        //             avatar = uploadUrl;
+        //         }
+        //     } catch (e) {
+        //         console.log(e.message);
+        //         alert("Upload failed");
+        //     }
+        //     return avatar;
     };
 
     const uploadImage = async (uri: string) => {
-    //     try {
-    //         const blob = await new Promise((resolve, reject) => {
-    //             const xhr = new XMLHttpRequest();
-    //             xhr.onload = function () {
-    //                 resolve(xhr.response);
-    //             };
-    //             xhr.onerror = function (e) {
-    //                 console.log(e);
-    //                 reject(new TypeError("Network request failed"));
-    //             };
-    //             xhr.responseType = "blob";
-    //             xhr.open("GET", uri, true);
-    //             xhr.send(null);
-    //         });
+        //     try {
+        //         const blob = await new Promise((resolve, reject) => {
+        //             const xhr = new XMLHttpRequest();
+        //             xhr.onload = function () {
+        //                 resolve(xhr.response);
+        //             };
+        //             xhr.onerror = function (e) {
+        //                 console.log(e);
+        //                 reject(new TypeError("Network request failed"));
+        //             };
+        //             xhr.responseType = "blob";
+        //             xhr.open("GET", uri, true);
+        //             xhr.send(null);
+        //         });
 
-    //         const fileRef = ref(getStorage(), `${user._id}/${uuidv4()}`);
-    //         const result = await uploadBytes(fileRef, blob);
+        //         const fileRef = ref(getStorage(), `${user._id}/${uuidv4()}`);
+        //         const result = await uploadBytes(fileRef, blob);
 
-    //         // We're done with the blob, close and release it
-    //         blob.close();
+        //         // We're done with the blob, close and release it
+        //         blob.close();
 
-    //         return await getDownloadURL(fileRef);
-    //     } catch (error) {
-    //         console.log(error.message);
-    //     }
+        //         return await getDownloadURL(fileRef);
+        //     } catch (error) {
+        //         console.log(error.message);
+        //     }
     }
 
     const removeImage = () => {
-        setImage(null);
+        setImage(undefined);
         setSelected(false);
     }
 
     return (
-        <KeyboardAvoidingView style={{ flex: 1 }}
+        <KeyboardAvoidingView style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={84}>
-            <ScrollView style={styles.container} scrollEnabled={true}>
-                    <TextInput
-                        style={styles.textInput}
-                        placeholder="Write a caption..."
-                        onChangeText={text => setCaption(text)}
-                        multiline={true}
-                        value={caption}
-                        maxLength={500}
-                    />
-                    {image === null ? null : 
-                    <ImageViewer image={image} removeImage={removeImage}/>
-                    }
-                    
-                    <View style={styles.footerContainer}>
-                        <Button theme="primary" label="photo/video" onPress={openImagePickerAsync} />
-                        {/* <Button label="Use this photo" /> */}
-                    </View>
-                     {/* <View style={styles.icon} >
-                        <TouchableOpacity onPress={openImagePickerAsync} style={{}}>
-                            <FontAwesome name="image" size={40} color="black" />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={openCameraAsync} style={{ marginLeft: 30 }}>
-                            <FontAwesome name="camera" size={40} color="black" />
-                        </TouchableOpacity>
-                    </View> */}
-                {/* <View style={{
-                    paddingBottom: 30
-                }}>
-                    {image !== null || caption !== "" ?
-                        <TouchableOpacity onPress={handleCreate}>
-                            <View style={styles.buttonContainer}>
-                                {loading ? <ActivityIndicator style={{ padding: 10 }} size="small" color="white" />
-                                    :
-                                    <Text style={styles.button}>Share Post</Text>}
-                            </View>
-                        </TouchableOpacity>
-                        : null}  */}
-                {/* </View> */}
-            </ScrollView>
+            <View style={{ marginHorizontal: 17, marginTop: 17 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <RNImage style={styles.avatar}
+                        source={require('../../assets/soccer.jpeg')} />
+                    <Text style={{ fontSize: 16, fontWeight: '600' }}>{user.name}</Text>
+                </View>
+                <TextInput
+                    style={styles.caption}
+                    placeholder="Write a caption..."
+                    onChangeText={text => setCaption(text)}
+                    multiline
+                    value={caption}
+                    numberOfLines={4}
+                    maxLength={500}
+                    editable />
+                {image ?
+                    // <Image
+                    //     customOverlayContent={
+                    //         <View style={{marginLeft: 'auto', padding: 5}}>
+                    //             <TouchableIcon name='delete' onPress={() => {}} />
+                    //         </View>
+                    //     }
+                    //     source={{ uri: image }}
+                    // style={styles.image} />
+                    <RNImage style={styles.image} source={{ uri: image }} resizeMode='contain' />                    
+                    : null}
+            </View>
+
+            <View style={{ marginTop: 'auto', marginHorizontal: 35, marginBottom: 20, flexDirection: 'row' }}>
+                <TouchableIcon name="photo" onPress={openImagePickerAsync} style={styles.bottomIcon}/>
+                <TouchableIcon name="camera" onPress={openCameraAsync} style={styles.bottomIcon} />
+            </View>
         </KeyboardAvoidingView>
 
     );
@@ -247,32 +248,26 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'white'
     },
-    footerContainer: {
-        paddingTop: 'auto',
-        alignSelf: 'center',
+    avatar: {
+        width: 40,
+        height: 40,
+        borderRadius: 50,
+        marginRight: 15
     },
-    textInput: {
+    caption: {
+        marginVertical: 15,
         fontSize: 20,
-        letterSpacing: 1,
-        paddingVertical: 12,
-        marginHorizontal: 5,
+        letterSpacing: .7,
     },
-    icon: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: 20,
-    },
-    buttonContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 30,
-        backgroundColor: '#3AB0FF',
+    image: {
+        width: '100%',
+        // aspectRatio: 9/16,
+        height: 400,
         borderRadius: 10,
+        // borderColor: '#fff',
+        // borderWidth: .2
     },
-    button: {
-        padding: 10,
-        color: 'white',
-        fontWeight: "600",
+    bottomIcon: {
+        marginRight: 35
     }
 });

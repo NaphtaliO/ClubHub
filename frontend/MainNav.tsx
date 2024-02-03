@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 // import { useAppSelector, useAppDispatch } from './src/hooks/hooks';
 import { logIn } from './src/redux/userSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CameraScreen from './src/screens/Create/CameraScreen';
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -62,7 +63,7 @@ const TabNav = ({ }) => {
             />
             <Tab.Screen
                 name="Create"
-                component={Feed}
+                component={CameraScreen}
                 options={{}}
                 listeners={({ navigation }) => ({
                     tabPress: (e) => {
@@ -160,7 +161,8 @@ const MainNav = () => {
                             options={{
                                 headerShown: false,
                             }}/>
-                        <Stack.Screen name="CreatePost" component={CreatePost} />
+                        <Stack.Screen name="CreatePost" component={CreatePost}
+                            options={{ headerTitle: "New Post" }} />
                     </>
                 ) : user && user.type === "student" ? (
                         <>
