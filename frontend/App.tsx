@@ -51,6 +51,5 @@ export default function App() {
         </NavigationContainer>
       </ActionSheetProvider>
     </Provider>
-
   );
 }

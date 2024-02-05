@@ -3,7 +3,7 @@ import { CompositeScreenProps, NavigatorScreenParams } from "@react-navigation/n
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 export type RootStackParamList = {
-  TabNav: undefined,
+  TabNav: NavigatorScreenParams<RootTabParamList>,
   CreatePost: undefined,
   LogIn: undefined,
   CreateAccount: undefined,
@@ -11,16 +11,16 @@ export type RootStackParamList = {
 };
 
 export type RootTabParamList = {
-  Home: NavigatorScreenParams<RootStackParamList>,
+  Home: undefined,
   Create: undefined,
   Calendar: undefined,
   Profile: undefined
 };
 
-export type CreateScreenProps = CompositeScreenProps<
-  BottomTabScreenProps<RootTabParamList, 'Create'>,
-  NativeStackScreenProps<RootStackParamList>
->;
+// export type CreateScreenProps = CompositeScreenProps<
+//   BottomTabScreenProps<RootTabParamList, 'Create'>,
+//   NativeStackScreenProps<RootStackParamList>
+// >;
 
 export type CreatePostScreenProps = NativeStackScreenProps<RootStackParamList, 'CreatePost'>;
 export type LogInScreenProps = NativeStackScreenProps<RootStackParamList, 'LogIn'>;

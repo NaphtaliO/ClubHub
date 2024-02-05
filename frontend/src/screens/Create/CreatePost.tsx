@@ -6,26 +6,24 @@ import { CreatePostScreenProps } from '../../types/types';
 import { useSelector } from 'react-redux';
 import TouchableIcon from '../../components/TouchableIcon';
 import { Button } from 'react-native-paper';
-
-// import { v4 as uuidv4 } from 'uuid';
-// import 'react-native-get-random-values';
-// import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+import { v4 as uuidv4 } from 'uuid';
+import 'react-native-get-random-values';
+import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 // import { createPosts } from '../../state_management/postsSlice';
 // import { addToFeed } from '../../state_management/feedSlice';
-// import { useLogout } from '../../hooks/useLogout';
-// import { URL } from '@env';
-// import { THEME_COLOUR } from '../../Constants';
+import { URL, VERSION } from '@env';
+import { useLogout } from '../../hooks/useLogout';
 
 export default function Post({ navigation }: CreatePostScreenProps) {
     const user = useSelector((state) => state.user.value)
+
     const [loading, setLoading] = useState(false);
     const [selected, setSelected] = useState(false);
     const [caption, setCaption] = useState("");
     const [image, setImage] = useState<string | undefined>(undefined);
-    const hasUnsavedChanges = Boolean(caption || image);
+    const hasUnsavedChanges = Boolean(!caption || !image);
     // const dispatch = useDispatch();
-    // const user = useSelector((state) => state.user.value);
-    // const { logout } = useLogout()
+    const { logout } = useLogout();
     const [permission, requestPermission] = ImagePicker.useCameraPermissions();
 
     // useEffect(() => {
@@ -53,19 +51,6 @@ export default function Post({ navigation }: CreatePostScreenProps) {
     //         );
     //     })
     // }, [navigation, hasUnsavedChanges]);
-
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerRight: () => (
-                <Button mode="contained"
-                    onPress={handleCreate}
-                    loading={false}
-                >
-                    Post
-                </Button>
-            ),
-        });
-    }, [navigation]);
 
     //Handles picking images from Gallery
     let openImagePickerAsync = async () => {
@@ -116,85 +101,102 @@ export default function Post({ navigation }: CreatePostScreenProps) {
     };
 
     const handleCreate = async () => {
-            if (loading) return;
-            setLoading(true)
-            try {
-                let uri = null;
-                if (selected) {
-                    uri = await handleImagePicked(image);
-                }
-                const post = { uri, caption }
-                const response = await fetch(`${URL}/api/posts/create`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${user.token}`
-                    },
-                    body: JSON.stringify(post)
-                })
-
-                const json = await response.json()
-
-                // if (!response.ok) {
-                //     if (json.error === "Request is not authorized") {
-                //         logout()
-                //     }
-                // }
-                // if (response.ok) {
-                //     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-                //     dispatch(createPosts(json));
-                //     dispatch(addToFeed({ name: user.name, username: user.username, avatar: user.avatar, ...json }))
-                // }
-                // navigation.navigate('Home');
-            } catch (error) {
-                console.log((error as Error).message);
+        if (loading) return;
+        setLoading(true)
+        try {
+            let uri = null;
+            if (selected) {
+                console.log(selected);
+                
+                uri = await handleImagePicked(image);
             }
-            setLoading(false)
+            const post = { uri, caption, type: "image" }
+
+            const response = await fetch(`${URL}/api/${VERSION}/post/create`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                },
+                body: JSON.stringify(post)
+            })
+
+            const json = await response.json()
+
+            if (!response.ok) {
+                if (json.error === "Request is not authorized") {
+                    logout()
+                }
+            }
+            // if (response.ok) {
+            //     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+            //     dispatch(createPosts(json));
+            //     dispatch(addToFeed({ name: user.name, username: user.username, avatar: user.avatar, ...json }))
+            // }
+            // navigation.navigate('Home');
+            // navigation.navigate('TabNav', { screen: 'Home' });
+        } catch (error) {
+            console.log((error as Error).message);
+        }
+        setLoading(false)
     }
 
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <Button mode="contained"
+                    onPress={handleCreate}
+                    loading={loading}
+                >
+                    Post
+                </Button>
+            ),
+        });
+    }, [navigation, loading, handleCreate]);
+
     const handleImagePicked = async (pickerResult: any) => {
-        //     let avatar;
-        //     try {
-        //         if (pickerResult.cancelled) {
-        //             alert("Upload cancelled");
-        //             return;
-        //         } else {
-        //             const uploadUrl = await uploadImage(pickerResult);
-        //             avatar = uploadUrl;
-        //         }
-        //     } catch (e) {
-        //         console.log(e.message);
-        //         alert("Upload failed");
-        //     }
-        //     return avatar;
+        let avatar;
+        try {
+            if (pickerResult.cancelled) {
+                alert("Upload cancelled");
+                return;
+            } else {
+                const uploadUrl = await uploadImage(pickerResult);
+                avatar = uploadUrl;
+            }
+        } catch (e) {
+            console.log((e as Error).message);
+            alert("Upload failed");
+        }
+        return avatar;
     };
 
     const uploadImage = async (uri: string) => {
-        //     try {
-        //         const blob = await new Promise((resolve, reject) => {
-        //             const xhr = new XMLHttpRequest();
-        //             xhr.onload = function () {
-        //                 resolve(xhr.response);
-        //             };
-        //             xhr.onerror = function (e) {
-        //                 console.log(e);
-        //                 reject(new TypeError("Network request failed"));
-        //             };
-        //             xhr.responseType = "blob";
-        //             xhr.open("GET", uri, true);
-        //             xhr.send(null);
-        //         });
+        try {
+            const blob = await new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.onload = function () {
+                    resolve(xhr.response);
+                };
+                xhr.onerror = function (e) {
+                    console.log(e);
+                    reject(new TypeError("Network request failed"));
+                };
+                xhr.responseType = "blob";
+                xhr.open("GET", uri, true);
+                xhr.send(null);
+            });
 
-        //         const fileRef = ref(getStorage(), `${user._id}/${uuidv4()}`);
-        //         const result = await uploadBytes(fileRef, blob);
+            const fileRef = ref(getStorage(), `${user._id}/${uuidv4()}`);
+            const result = await uploadBytes(fileRef, blob);
 
-        //         // We're done with the blob, close and release it
-        //         blob.close();
+            // We're done with the blob, close and release it
+            blob.close();
 
-        //         return await getDownloadURL(fileRef);
-        //     } catch (error) {
-        //         console.log(error.message);
-        //     }
+            return await getDownloadURL(fileRef);
+        } catch (error) {
+            console.log((error as Error).message);
+        }
     }
 
     const removeImage = () => {
@@ -230,12 +232,12 @@ export default function Post({ navigation }: CreatePostScreenProps) {
                     //     }
                     //     source={{ uri: image }}
                     // style={styles.image} />
-                    <RNImage style={styles.image} source={{ uri: image }} resizeMode='contain' />                    
+                    <RNImage style={styles.image} source={{ uri: image }} resizeMode='contain' />
                     : null}
             </View>
 
             <View style={{ marginTop: 'auto', marginHorizontal: 35, marginBottom: 20, flexDirection: 'row' }}>
-                <TouchableIcon name="photo" onPress={openImagePickerAsync} style={styles.bottomIcon}/>
+                <TouchableIcon name="photo" onPress={openImagePickerAsync} style={styles.bottomIcon} />
                 <TouchableIcon name="camera" onPress={openCameraAsync} style={styles.bottomIcon} />
             </View>
         </KeyboardAvoidingView>
