@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
-const User = require('../models/user.model')
+const Student = require('../models/student.model')
+const Club = require('../models/club.model')
 
 const requireAuth = async (req, res, next) => {
     //Verify Authentication
@@ -14,7 +15,14 @@ const requireAuth = async (req, res, next) => {
     try {
         const { _id } = jwt.verify(token, process.env.SECRET)
 
-        req.user = await User.findOne({ _id }).select('_id')
+        const club = await Club.findOne({ _id }).select('_id')
+        const student = await Student.findOne({ _id }).select('_id')
+
+        if (!student) {
+            req.user = club
+        } else if (!club){
+            req.user = student
+        }
 
         if (!req.user) {
             throw new Error("User does not exist")

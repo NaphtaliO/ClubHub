@@ -34,4 +34,5 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
 
 // V1 routes
 app.use('/api/v1/auth', require('./src/api/v1/routes/auth.route'));
+app.use('/api/v1/post', require('./src/api/v1/routes/post.route'));
 // app.use('/api/v1/user', require('./src/api/v1/routes/user.route'));
