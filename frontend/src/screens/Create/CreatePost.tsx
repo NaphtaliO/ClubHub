@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, ActivityIndicator, Alert, KeyboardAvoidingView, ImageBackground, Platform, Image as RNImage } from 'react-native';
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { CreatePostScreenProps } from '../../types/types';
@@ -141,7 +141,7 @@ export default function Post({ navigation }: CreatePostScreenProps) {
         setLoading(false)
     }
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         navigation.setOptions({
             headerRight: () => (
                 <Button mode="contained"
