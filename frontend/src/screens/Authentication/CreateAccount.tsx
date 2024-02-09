@@ -7,29 +7,47 @@ import Header from '../../components/Header';
 import Button from '../../components/Button';
 import TextInput from '../../components/TextInput';
 import BackButton from '../../components/BackButton';
-import { emailValidator, passwordValidator, nameValidator } from '../../Functions';
 import { CreateAccountScreenProps } from '../../types/types';
 import { theme } from '../../Constants';
+import { URL, VERSION } from '@env';
+import { useDispatch } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logIn } from '../../redux/userSlice';
 
 export default function CreateAccount({ navigation }: CreateAccountScreenProps) {
-  const [name, setName] = useState({ value: '', error: '' })
-  const [email, setEmail] = useState({ value: '', error: '' })
-  const [password, setPassword] = useState({ value: '', error: '' })
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const dispatch = useDispatch();
 
-  const onSignUpPressed = () => {
-    const nameError = nameValidator(name.value)
-    const emailError = emailValidator(email.value)
-    const passwordError = passwordValidator(password.value)
-    if (emailError || passwordError || nameError) {
-      setName({ ...name, error: nameError })
-      setEmail({ ...email, error: emailError })
-      setPassword({ ...password, error: passwordError })
-      return
+  const onSignUpPressed = async () => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const response = await fetch(`${URL}/api/${VERSION}/auth/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password })
+      })
+
+      const json = await response.json()
+
+      if (!response.ok) {
+        setError(json.error)
+      }
+      if (response.ok) {
+        //save user to react native local storage
+        await AsyncStorage.setItem('user', JSON.stringify(json))
+        //update redux state
+        dispatch(logIn(json));
+      }
+    } catch (e) {
+      console.log((e as Error).message);
+      // setError(e.message)
     }
-    // navigation.reset({
-    //   index: 0,
-    //   routes: [{ name: 'Dashboard' }],
-    // })
+    setLoading(false);
   }
 
   return (
@@ -40,18 +58,18 @@ export default function CreateAccount({ navigation }: CreateAccountScreenProps) 
       <TextInput
         label="Name"
         returnKeyType="next"
-        value={name.value}
-        onChangeText={(text) => setName({ value: text, error: '' })}
-        error={!!name.error}
-        errorText={name.error}
+        value={name}
+        onChangeText={(text) => setName(text)}
+        error={!!error}
+        // errorText={error}
       />
       <TextInput
         label="Email"
         returnKeyType="next"
-        value={email.value}
-        onChangeText={(text) => setEmail({ value: text, error: '' })}
-        error={!!email.error}
-        errorText={email.error}
+        value={email}
+        onChangeText={(text: string) => setEmail(text)}
+        error={!!error}
+        // errorText={error}
         autoCapitalize="none"
         autoCompleteType="email"
         textContentType="emailAddress"
@@ -60,12 +78,13 @@ export default function CreateAccount({ navigation }: CreateAccountScreenProps) 
       <TextInput
         label="Password"
         returnKeyType="done"
-        value={password.value}
-        onChangeText={(text) => setPassword({ value: text, error: '' })}
-        error={!!password.error}
-        errorText={password.error}
+        value={password}
+        onChangeText={(text: string) => setPassword(text)}
+        error={!!error}
+        // errorText={error}
         secureTextEntry
       />
+      {error ? <Text style={styles.error}>{error}</Text> : null}
       <Button
         type='auth'
         mode="contained"
@@ -92,5 +111,11 @@ const styles = StyleSheet.create({
   link: {
     fontWeight: 'bold',
     color: theme.colors.primary,
+  },
+  error: {
+    fontSize: 13,
+    color: theme.colors.error,
+    paddingTop: 8,
+    alignSelf: 'flex-start'
   },
 })

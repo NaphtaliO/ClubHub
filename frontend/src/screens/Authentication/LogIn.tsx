@@ -61,7 +61,7 @@ export default function LogIn({ navigation }: LogInScreenProps) {
         value={email}
         onChangeText={(text: string) => setEmail(text)}
         error={!!error}
-        // errorText={email.error}
+        // errorText={error}
         autoCapitalize="none"
         autoCompleteType="email"
         textContentType="emailAddress"
@@ -73,9 +73,10 @@ export default function LogIn({ navigation }: LogInScreenProps) {
         value={password}
         onChangeText={(text: string) => setPassword(text)}
         error={!!error}
-        // errorText={password.error}
+        // errorText={error}
         secureTextEntry
       />
+      {error ? <Text style={styles.error}>{error}</Text> : null} 
       <View style={styles.forgotPassword}>
         {/* <TouchableOpacity
           onPress={() => navigation.navigate('ResetPasswordScreen')}
@@ -113,5 +114,11 @@ const styles = StyleSheet.create({
   link: {
     fontWeight: 'bold',
     color: theme.colors.primary,
+  },
+  error: {
+    fontSize: 13,
+    color: theme.colors.error,
+    paddingTop: 8,
+    alignSelf: 'flex-start'
   },
 })
