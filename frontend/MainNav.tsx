@@ -21,6 +21,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logIn } from './src/redux/userSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CameraScreen from './src/screens/Create/CameraScreen';
+import CreateEvent from './src/screens/Create/CreateEvent';
+import { useLogout } from './src/hooks/useLogout';
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -28,6 +30,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const TabNav = ({ }) => {
     const { showActionSheetWithOptions } = useActionSheet();
+    const {logout} = useLogout()
 
     return (
         <Tab.Navigator
@@ -69,7 +72,7 @@ const TabNav = ({ }) => {
                     tabPress: (e) => {
                         e.preventDefault();
                         showActionSheetWithOptions({
-                            options: ['Create a post', 'Create a event', 'Send Notification', 'Cancel'],
+                            options: ['Create a post', 'Create an event', 'Send Notification', 'Cancel'],
                             cancelButtonIndex: 3,
                             // destructiveButtonIndex: 0
                         }, (selectedIndex) => {
@@ -78,7 +81,7 @@ const TabNav = ({ }) => {
                                     navigation.navigate('CreatePost')
                                     break;
                                 case 1:
-                                    // Delete
+                                    navigation.navigate('CreateEvent')
                                     break;
                                 case 2:
                                 // Canceled
@@ -97,18 +100,18 @@ const TabNav = ({ }) => {
             <Tab.Screen
                 name="Profile"
                 component={Profile}
-            // options={{
-            //     headerRight: () => (
-            //         <TouchableOpacity onPress={() => navigation.navigate("")}>
-            //             <Ionicons
-            //                 name="ios-settings-outline"
-            //                 size={24}
-            //                 color="black"
-            //                 style={{ marginRight: 15 }}
-            //             />
-            //         </TouchableOpacity>
-            //     )
-            // }}
+                options={{
+                    headerRight: () => (
+                        <TouchableOpacity onPress={logout}>
+                            <Ionicons
+                                name="ios-settings-outline"
+                                size={24}
+                                color="black"
+                                style={{ marginRight: 15 }}
+                            />
+                        </TouchableOpacity>
+                    )
+                }}
             />
         </Tab.Navigator>
     );
@@ -117,12 +120,12 @@ const TabNav = ({ }) => {
 const MainNav = () => {
     const [loading, setLoading] = useState(false);
     const user = useSelector((state) => state.user.value);
-    
+
     const dispatch = useDispatch();
 
     useEffect(() => {
         const getData = async () => {
-            
+
             if (loading) return;
             setLoading(true);
             try {
@@ -160,14 +163,16 @@ const MainNav = () => {
                         <Stack.Screen name="TabNav" component={TabNav}
                             options={{
                                 headerShown: false,
-                            }}/>
+                            }} />
                         <Stack.Screen name="CreatePost" component={CreatePost}
                             options={{ headerTitle: "New Post" }} />
+                        <Stack.Screen name="CreateEvent" component={CreateEvent}
+                            options={{ headerTitle: "New Event" }} />
                     </>
                 ) : user && user.type === "student" ? (
-                        <>
-                        </>
-                ): (
+                    <>
+                    </>
+                ) : (
                     <>
                         <Stack.Screen
                             name="StartScreen"

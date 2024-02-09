@@ -1,5 +1,5 @@
-// import isEmpty from 'lodash/isEmpty';
-// import {MarkedDates} from '../../../src/types';
+import isEmpty from 'lodash/isEmpty';
+import { MarkedDates } from '../types/types';
 
 const today = new Date().toISOString().split('T')[0];
 const fastDate = getPastDate(3);
@@ -28,7 +28,7 @@ function getPastDate(numberOfDays: number) {
 export const agendaItems = [
   {
     title: dates[0],
-    data: [{hour: '12am', duration: '1h', title: 'First Yoga'}]
+    data: [{hour: '12.30am', duration: '3h', title: 'First Yoga'}]
   },
   {
     title: dates[1],
@@ -117,16 +117,20 @@ export const agendaItems = [
   }
 ];
 
-// export function getMarkedDates() {
-//   const marked: MarkedDates = {};
+console.log(agendaItems[0]);
 
-//   agendaItems.forEach(item => {
-//     // NOTE: only mark dates with data
-//     if (item.data && item.data.length > 0 && !isEmpty(item.data[0])) {
-//       marked[item.title] = {marked: true};
-//     } else {
-//       marked[item.title] = {disabled: true};
-//     }
-//   });
-//   return marked;
-// }
+
+// This marks the dates
+export function getMarkedDates() {
+  const marked: MarkedDates = {};
+
+  agendaItems.forEach(item => {
+    // NOTE: only mark dates with data
+    if (item.data && item.data.length > 0 && !isEmpty(item.data[0])) {
+      marked[item.title] = {marked: true};
+    } else {
+      marked[item.title] = {disabled: true};
+    }
+  });
+  return marked;
+}
