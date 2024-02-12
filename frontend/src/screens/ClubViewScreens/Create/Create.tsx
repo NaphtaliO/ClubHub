@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { THEME_COLOUR } from '../../Constants';
-import { CreateScreenProps } from '../../types/types';
+import { THEME_COLOUR } from '../../../Constants';
+import { CreateScreenProps } from '../../../types/types';
 
 const Create = ({ navigation }: CreateScreenProps) => {
     const list = [

@@ -1,11 +1,11 @@
 import { StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { DateTimePicker, TextField, View, Text, Colors, Stepper } from 'react-native-ui-lib'
-import { CreateEventScreenProps } from '../../types/types';
+import { CreateEventScreenProps } from '../../../types/types';
 import { Button } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 import { URL, VERSION } from '@env';
-import { useLogout } from '../../hooks/useLogout';
+import { useLogout } from '../../../hooks/useLogout';
 import { useSelector } from 'react-redux';
 import * as Haptics from 'expo-haptics';
 // import EventMapLocation from '../../components/EventMapLocation';

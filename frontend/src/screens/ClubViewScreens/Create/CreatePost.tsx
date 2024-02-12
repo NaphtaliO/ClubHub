@@ -2,9 +2,9 @@ import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, Activi
 import React, { useEffect, useState } from 'react';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
-import { CreatePostScreenProps } from '../../types/types';
+import { CreatePostScreenProps } from '../../../types/types';
 import { useSelector } from 'react-redux';
-import TouchableIcon from '../../components/TouchableIcon';
+import TouchableIcon from '../../../components/TouchableIcon';
 import { Button } from 'react-native-paper';
 import { v4 as uuidv4 } from 'uuid';
 import 'react-native-get-random-values';
@@ -12,7 +12,7 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 // import { createPosts } from '../../state_management/postsSlice';
 // import { addToFeed } from '../../state_management/feedSlice';
 import { URL, VERSION } from '@env';
-import { useLogout } from '../../hooks/useLogout';
+import { useLogout } from '../../../hooks/useLogout';
 
 export default function Post({ navigation }: CreatePostScreenProps) {
     const user = useSelector((state) => state.user.value)
@@ -211,7 +211,7 @@ export default function Post({ navigation }: CreatePostScreenProps) {
             <View style={{ marginHorizontal: 17, marginTop: 17 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <RNImage style={styles.avatar}
-                        source={require('../../assets/soccer.jpeg')} />
+                        source={require('../../../assets/soccer.jpeg')} />
                     <Text style={{ fontSize: 16, fontWeight: '600' }}>{user.name}</Text>
                 </View>
                 <TextInput

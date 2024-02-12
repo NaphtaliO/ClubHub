@@ -1,13 +1,13 @@
 import { StyleSheet } from 'react-native';
 import React, { useCallback, useRef } from 'react';
 import { ExpandableCalendar, AgendaList, CalendarProvider, WeekCalendar } from 'react-native-calendars';
-import testIDs from '../testIDs';
-import { agendaItems, getMarkedDates } from '../../mocks/agendaItems';
-import AgendaItem from '../../mocks/AgendaItem';
-import { getTheme, themeColor, lightThemeColor } from '../../mocks/theme';
+import testIDs from '../../testIDs';
+import { agendaItems, getMarkedDates } from '../../../mocks/agendaItems';
+import AgendaItem from '../../../mocks/AgendaItem';
+import { getTheme, themeColor, lightThemeColor } from '../../../mocks/theme';
 
-const leftArrowIcon = require('../../assets/previous.png');
-const rightArrowIcon = require('../../assets/next.png');
+const leftArrowIcon = require('../../../assets/previous.png');
+const rightArrowIcon = require('../../../assets/next.png');
 const ITEMS: any[] = agendaItems;
 
 interface Props {

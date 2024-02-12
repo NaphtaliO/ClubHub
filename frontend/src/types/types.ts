@@ -5,7 +5,8 @@ import { useRef } from "react";
 import { ViewStyle, TextStyle, View } from 'react-native';
 
 export type RootStackParamList = {
-  TabNav: NavigatorScreenParams<RootTabParamList>,
+  ClubViewTabNav: NavigatorScreenParams<ClubViewTabParamList>,
+  StudentViewTabNav: NavigatorScreenParams<StudentViewTabParamList>,
   CreatePost: undefined,
   CreateEvent: undefined,
   LogIn: undefined,
@@ -13,7 +14,14 @@ export type RootStackParamList = {
   StartScreen: undefined
 };
 
-export type RootTabParamList = {
+export type StudentViewTabParamList = {
+  Home: undefined,
+  Search: undefined,
+  Calendar: undefined,
+  Profile: undefined
+};
+
+export type ClubViewTabParamList = {
   Home: undefined,
   Create: undefined,
   Calendar: undefined,
