@@ -61,10 +61,18 @@ const LogIn = async (req, res) => {
     const { email, password } = req.body;
     try {
         if (!email || !password) throw Error('All fields must be fields');
-        const user = await Club.findOne({ email })
-        if (!user) throw Error('Incorrect email');
-        const authUser = await Club.findById(user._id).select('+password')
-        const match = await bcrypt.compare(password, authUser.password);
+        let user;
+        const club = await Club.findOne({ email })
+        const student = await Student.findOne({ email })
+        // if (!club && !student) throw Error('Incorrect email');
+        if (club) {
+            user = await Club.findById(club._id).select('+password')
+        } else if (student) {
+            user = await Student.findById(student._id).select('+password')
+        } else {
+            throw Error('Incorrect email');
+        }
+        const match = await bcrypt.compare(password, user.password);
         if (!match) throw Error('Incorrect password');
         // create token
         const token = createToken(user._id);
