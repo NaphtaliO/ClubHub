@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider } from 'react-redux';
-import store from './src/redux/store'
+import { store } from './src/redux/store'
 
 // Import the functions you need from the SDKs you need
 import { getApps, initializeApp } from "firebase/app";
@@ -18,6 +18,7 @@ import {
   APPID,
   MEASUREMENTID,
 } from "@env";
+import { ToastContextProvider } from './src/components/CustomToast';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -47,10 +48,12 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider store={store}>
         <ActionSheetProvider>
+          <ToastContextProvider>
           <NavigationContainer>
             <MainNav />
             <StatusBar style="auto" />
-          </NavigationContainer>
+            </NavigationContainer>
+          </ToastContextProvider>
         </ActionSheetProvider>
       </Provider>
     </GestureHandlerRootView>
