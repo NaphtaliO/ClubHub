@@ -54,7 +54,7 @@ export default function CreateAccount({ navigation }: CreateAccountScreenProps) 
     <Background>
       <BackButton goBack={navigation.goBack} />
       <Logo />
-      <Header>Create Account</Header>
+      {/* <Header>Create Account</Header> */}
       <TextInput
         label="Name"
         returnKeyType="next"

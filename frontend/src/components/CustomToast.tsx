@@ -62,9 +62,9 @@ export const ToastContextProvider = ({ children }: { children: ReactNode }) => {
     const [preset, setPreset] = useState<"general" | "success" | "failure" | "offline">("general");
 
     const displayToast = (message: string, preset: "general" | "success" | "failure" | "offline") => {
-        setShowToast(true)
         setMessage(message)
         setPreset(preset)
+        setShowToast(true)
     }
 
     return (

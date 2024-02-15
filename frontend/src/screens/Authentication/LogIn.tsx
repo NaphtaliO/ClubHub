@@ -54,7 +54,7 @@ export default function LogIn({ navigation }: LogInScreenProps) {
     <Background>
       <BackButton goBack={navigation.goBack} />
       <Logo />
-      <Header>Welcome back.</Header>
+      {/* <Header>Welcome back.</Header> */}
       <TextInput
         label="Email"
         returnKeyType="next"
@@ -76,7 +76,7 @@ export default function LogIn({ navigation }: LogInScreenProps) {
         // errorText={error}
         secureTextEntry
       />
-      {error ? <Text style={styles.error}>{error}</Text> : null} 
+      {error ? <Text style={styles.error}>{error}</Text> : null}
       <View style={styles.forgotPassword}>
         {/* <TouchableOpacity
           onPress={() => navigation.navigate('ResetPasswordScreen')}

@@ -67,12 +67,10 @@ const StudentViewTabNav = ({ }) => {
                 options={{
                     headerRight: () => (
                         <TouchableOpacity onPress={logout}>
-                            <Ionicons
-                                name="ios-settings-outline"
+                            <Feather name="settings"
                                 size={24}
                                 color="black"
-                                style={{ marginRight: 15 }}
-                            />
+                                style={{ marginRight: 15 }} />
                         </TouchableOpacity>
                     )
                 }}

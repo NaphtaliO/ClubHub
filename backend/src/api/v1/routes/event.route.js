@@ -1,5 +1,5 @@
 const express = require("express");
-const { createEvent } = require('../controllers/event.controller');
+const { createEvent, getAllEventsByClub } = require('../controllers/event.controller');
 const requireAuth = require("../middleware/requireAuth");
 
 const router = express.Router();
@@ -9,5 +9,6 @@ router.use(requireAuth)
 
 // signup route
 router.post('/create', createEvent)
+router.get('/getAllByClub', getAllEventsByClub)
 
 module.exports = router;

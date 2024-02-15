@@ -1,14 +1,15 @@
 import { StyleSheet, View, Text, FlatList, ActivityIndicator } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux';
-// import SearchItems from '../../Components/SearchItems';
+import React, { useEffect, useState } from 'react';
 import { SearchBar } from '@rneui/themed';
 import { useLogout } from '../../../hooks/useLogout';
-import { URL } from '@env';
+import { URL, VERSION } from '@env';
+import { useAppSelector } from '../../../hooks/hooks';
+import { SearchScreenProps } from '../../../types/types';
+import SearchItem from '../../../components/SearchItem';
 
-const Search = ({ navigation }) => {
+const Search = ({ navigation }: SearchScreenProps) => {
   const { logout } = useLogout()
-  const user = useSelector((state) => state.user.value);
+  const user = useAppSelector((state) => state.user.value);
   const [users, setUsers] = useState([]);
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,11 +18,11 @@ const Search = ({ navigation }) => {
     if (text !== "" && !(text.trim().length === 0)) {
       setLoading(true);
       try {
-        const response = await fetch(`${URL}/api/user/search/${text.trim()}`, {
+        const response = await fetch(`${URL}/api/${VERSION}/user/search/${text.trim()}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${user.token}`
+            'Authorization': `Bearer ${user?.token}`
           },
         })
         const json = await response.json();
@@ -32,6 +33,7 @@ const Search = ({ navigation }) => {
         }
         if (response.ok) {
           setUsers(json)
+          console.log(json);
         }
 
       } catch (error) {
@@ -58,7 +60,7 @@ const Search = ({ navigation }) => {
         onClear={() => { setText(''); setUsers([]) }}
         onCancel={() => { setText(''); setUsers([]) }}
       />
-      {/* {loading ? <ActivityIndicator color={'black'} /> :
+      {loading ? <ActivityIndicator color={'black'} /> :
         user.length !== 0 && text !== '' ?
           <FlatList
             ListEmptyComponent={
@@ -69,14 +71,17 @@ const Search = ({ navigation }) => {
             contentInsetAdjustmentBehavior="automatic"
             data={users}
             renderItem={({ item }) =>
-              <SearchItems navigation={navigation} item={item} />
+              <>
+                <SearchItem navigation={navigation} item={item} />
+            </>
+              
             }
             keyExtractor={item => item._id} />
           :
           <Text style={{ marginLeft: 'auto', marginRight: 'auto', fontWeight: '500', fontSize: 20, marginTop: 20 }}>
-            Search for users on TimeLine
+            Search UCC Clubs and Societies
           </Text>
-      } */}
+      }
     </View>
 
   )

@@ -1,30 +1,28 @@
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, ActivityIndicator, Alert, KeyboardAvoidingView, ImageBackground, Platform, Image as RNImage } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { CreatePostScreenProps } from '../../../types/types';
-import { useSelector } from 'react-redux';
 import TouchableIcon from '../../../components/TouchableIcon';
 import { Button } from 'react-native-paper';
 import { v4 as uuidv4 } from 'uuid';
 import 'react-native-get-random-values';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
-// import { createPosts } from '../../state_management/postsSlice';
-// import { addToFeed } from '../../state_management/feedSlice';
 import { URL, VERSION } from '@env';
 import { useLogout } from '../../../hooks/useLogout';
+import { useAppSelector } from '../../../hooks/hooks';
+import CustomToast, { ToastContext } from '../../../components/CustomToast';
 
 export default function Post({ navigation }: CreatePostScreenProps) {
-    const user = useSelector((state) => state.user.value)
-
+    const user = useAppSelector((state) => state.user.value);
     const [loading, setLoading] = useState(false);
     const [selected, setSelected] = useState(false);
     const [caption, setCaption] = useState("");
     const [image, setImage] = useState<string | undefined>(undefined);
-    const hasUnsavedChanges = Boolean(!caption || !image);
-    // const dispatch = useDispatch();
+    // const hasUnsavedChanges = Boolean(!caption && !image);
     const { logout } = useLogout();
     const [permission, requestPermission] = ImagePicker.useCameraPermissions();
+    const displayToast  = useContext(ToastContext);
 
     // useEffect(() => {
     //     navigation.addListener('beforeRemove', (e) => {
@@ -65,6 +63,8 @@ export default function Post({ navigation }: CreatePostScreenProps) {
         });
 
         if (!result.canceled) {
+            console.log(result);
+            
             setImage(result.assets[0].uri);
             setSelected(true);
         }
@@ -102,13 +102,13 @@ export default function Post({ navigation }: CreatePostScreenProps) {
 
     const handleCreate = async () => {
         if (loading) return;
-        setLoading(true)
+        // setLoading(true)
         try {
             let uri = null;
-            if (selected) {
-                console.log(selected);
-                
-                uri = await handleImagePicked(image);
+            if (selected) uri = await handleImagePicked(image);
+            if (!uri || !caption) {
+                displayToast?.displayToast("Select both an image and caption", "failure")
+                return;
             }
             const post = { uri, caption, type: "image" }
 
@@ -116,7 +116,7 @@ export default function Post({ navigation }: CreatePostScreenProps) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${user.token}`
+                    'Authorization': `Bearer ${user?.token}`
                 },
                 body: JSON.stringify(post)
             })
@@ -128,17 +128,15 @@ export default function Post({ navigation }: CreatePostScreenProps) {
                     logout()
                 }
             }
-            // if (response.ok) {
-            //     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-            //     dispatch(createPosts(json));
-            //     dispatch(addToFeed({ name: user.name, username: user.username, avatar: user.avatar, ...json }))
-            // }
-            // navigation.navigate('Home');
-            // navigation.navigate('TabNav', { screen: 'Home' });
+            if (response.ok) {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                displayToast?.displayToast("Post successfully created", "success")
+            }
+            navigation.navigate('ClubViewTabNav', { screen: 'Home' });
         } catch (error) {
             console.log((error as Error).message);
         }
-        setLoading(false)
+        // setLoading(false)
     }
 
     useEffect(() => {
@@ -187,7 +185,7 @@ export default function Post({ navigation }: CreatePostScreenProps) {
                 xhr.send(null);
             });
 
-            const fileRef = ref(getStorage(), `${user._id}/${uuidv4()}`);
+            const fileRef = ref(getStorage(), `${user?._id}/${uuidv4()}`);
             const result = await uploadBytes(fileRef, blob);
 
             // We're done with the blob, close and release it
@@ -212,7 +210,7 @@ export default function Post({ navigation }: CreatePostScreenProps) {
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <RNImage style={styles.avatar}
                         source={require('../../../assets/soccer.jpeg')} />
-                    <Text style={{ fontSize: 16, fontWeight: '600' }}>{user.name}</Text>
+                    <Text style={{ fontSize: 16, fontWeight: '600' }}>{user?.name}</Text>
                 </View>
                 <TextInput
                     style={styles.caption}
@@ -232,7 +230,7 @@ export default function Post({ navigation }: CreatePostScreenProps) {
                     //     }
                     //     source={{ uri: image }}
                     // style={styles.image} />
-                    <RNImage style={styles.image} source={{ uri: image }} resizeMode='contain' />
+                    <RNImage style={styles.image} source={{ uri: image }} resizeMode='cover' />
                     : null}
             </View>
 
@@ -240,6 +238,8 @@ export default function Post({ navigation }: CreatePostScreenProps) {
                 <TouchableIcon name="photo" onPress={openImagePickerAsync} style={styles.bottomIcon} />
                 <TouchableIcon name="camera" onPress={openCameraAsync} style={styles.bottomIcon} />
             </View>
+            {/* TODO: Work on Custom Toast Provider
+            {showToast && <CustomToast setShowToast={setShowToast} showToast={showToast} />} */}
         </KeyboardAvoidingView>
 
     );
@@ -263,11 +263,9 @@ const styles = StyleSheet.create({
     },
     image: {
         width: '100%',
-        // aspectRatio: 9/16,
-        height: 400,
+        // height: 400,
         borderRadius: 10,
-        // borderColor: '#fff',
-        // borderWidth: .2
+        aspectRatio: 4/3
     },
     bottomIcon: {
         marginRight: 35

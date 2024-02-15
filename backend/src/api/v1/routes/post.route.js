@@ -1,5 +1,5 @@
 const express = require("express");
-const { createPost } = require('../controllers/post.controller');
+const { createPost, getAllPostsByClub, deletePost } = require('../controllers/post.controller');
 const requireAuth = require("../middleware/requireAuth");
 
 const router = express.Router();
@@ -9,5 +9,7 @@ router.use(requireAuth)
 
 // signup route
 router.post('/create', createPost)
+router.get('/getPostsByClub', getAllPostsByClub)
+router.delete('/deletePost/:id', deletePost)
 
 module.exports = router;

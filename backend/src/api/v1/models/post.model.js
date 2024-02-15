@@ -11,5 +11,10 @@ const postSchema = new Schema({
     comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
 }, { timestamps: true });
 
+postSchema.pre('find', function (next) {
+    this.populate('club', 'name avatar');
+    next();
+});
+
 const Post = mongoose.model('Post', postSchema);
 module.exports = Post;

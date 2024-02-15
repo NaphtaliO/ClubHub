@@ -13,7 +13,7 @@ const Tab = createBottomTabNavigator<ClubViewTabParamList>();
 
 const ClubViewTabNav = ({ }) => {
     const { showActionSheetWithOptions } = useActionSheet();
-    const { logout } = useLogout()
+    const { logout } = useLogout();
 
     return (
         <Tab.Navigator
@@ -86,12 +86,10 @@ const ClubViewTabNav = ({ }) => {
                 options={{
                     headerRight: () => (
                         <TouchableOpacity onPress={logout}>
-                            <Ionicons
-                                name="ios-settings-outline"
+                            <Feather name="settings"
                                 size={24}
                                 color="black"
-                                style={{ marginRight: 15 }}
-                            />
+                                style={{ marginRight: 15 }} />
                         </TouchableOpacity>
                     )
                 }}

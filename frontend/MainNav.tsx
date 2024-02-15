@@ -8,12 +8,10 @@ import CreatePost from './src/screens/ClubViewScreens/Create/CreatePost';
 import CreateAccount from './src/screens/Authentication/CreateAccount';
 import LogIn from './src/screens/Authentication/LogIn';
 import StartScreen from './src/screens/Authentication/StartScreen';
-import { useDispatch, useSelector } from 'react-redux';
-// import { useAppSelector, useAppDispatch } from './src/hooks/hooks';
+import { useAppSelector, useAppDispatch } from './src/hooks/hooks';
 import { logIn } from './src/redux/userSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CreateEvent from './src/screens/ClubViewScreens/Create/CreateEvent';
-import { useLogout } from './src/hooks/useLogout';
 import ClubViewTabNav from './src/navigation/ClubViewTabNav';
 import StudentViewTabNav from './src/navigation/StudentViewTabNav';
 
@@ -21,9 +19,8 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const MainNav = () => {
     const [loading, setLoading] = useState(false);
-    const user = useSelector((state) => state.user.value);
-
-    const dispatch = useDispatch();
+    const user = useAppSelector((state) => state.user.value);
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         const getData = async () => {
@@ -31,7 +28,7 @@ const MainNav = () => {
             if (loading) return;
             setLoading(true);
             try {
-                const user = JSON.parse(await AsyncStorage.getItem("user"));
+                const user = JSON.parse(await AsyncStorage.getItem("user") as string);
                 if (user) {
                     dispatch(logIn(user));
                 }

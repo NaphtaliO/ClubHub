@@ -83,8 +83,27 @@ const LogIn = async (req, res) => {
     }
 }
 
+const searchClub = async (req, res) => {
+    const user_id = req.user._id;
+    const { text } = req.params;
+    try {
+        // const authUser = await User.findOne({ _id: user_id }).select("blockedUsers")
+        // const users = await User.find({
+        //     $or: [{ name: new RegExp(text, 'i') }, { username: new RegExp(text, 'i') }],
+        //     // Excludes users that are blocked and users that blocked you respevtively
+        //     $and: [{ _id: { $nin: authUser.blockedUsers } }, { blockedUsers: { $ne: user_id } }]
+        // }).select("name username avatar");
+        const clubs = await Club.find({ name: new RegExp(text, 'i') }).select("name avatar");
+        res.status(200).json(clubs);
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+        console.log(error.message);
+    }
+}
+
 module.exports = {
     createClubAdmin,
     createStudent,
-    LogIn
+    LogIn,
+    searchClub
 }

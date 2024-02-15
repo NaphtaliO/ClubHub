@@ -11,8 +11,8 @@ export default function StartScreen({ navigation }: StartScreenProps) {
     return (
         <Background>
             <Logo />
-            <Header>Login Template</Header>
-            <Text style={styles.text}>The easiest way to start with your amazing application.</Text>
+            {/* <Header>ClubHub</Header>
+            <Text style={styles.text}>Get Started with ClubHub</Text> */}
             <Button
                 type="auth"
                 mode="contained"
