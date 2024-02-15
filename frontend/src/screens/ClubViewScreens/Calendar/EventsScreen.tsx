@@ -1,97 +1,187 @@
-import { StyleSheet } from 'react-native';
-import React, { useCallback, useRef } from 'react';
-import { ExpandableCalendar, AgendaList, CalendarProvider, WeekCalendar } from 'react-native-calendars';
-import testIDs from '../../testIDs';
-import { agendaItems, getMarkedDates } from '../../../mocks/agendaItems';
-import AgendaItem from '../../../mocks/AgendaItem';
-import { getTheme, themeColor, lightThemeColor } from '../../../mocks/theme';
+import groupBy from 'lodash/groupBy';
+import filter from 'lodash/filter';
+import find from 'lodash/find';
+import React, { useEffect, useState } from 'react';
+import { Alert } from 'react-native';
+import {
+    ExpandableCalendar,
+    TimelineEventProps,
+    TimelineList,
+    CalendarProvider,
+    TimelineProps,
+    CalendarUtils
+} from 'react-native-calendars';
 
-const leftArrowIcon = require('../../../assets/previous.png');
-const rightArrowIcon = require('../../../assets/next.png');
-const ITEMS: any[] = agendaItems;
+import { timelineEvents, getDate } from '../../../mocks/timelineEvents';
+import { URL, VERSION } from '@env';
+import { useAppSelector } from '../../../hooks/hooks';
+import { useLogout } from '../../../hooks/useLogout';
+import { EventsScreenProps } from '../../../types/types';
 
-interface Props {
-    weekView?: boolean;
-}
+const INITIAL_TIME = { hour: 9, minutes: 0 };
+const EVENTS: TimelineEventProps[] = timelineEvents;
 
+const Calendar = ({navigation}: EventsScreenProps) => {
+    const user = useAppSelector((state) => state.user.value)
+    const { logout } = useLogout();
+    const [currentDate, setCurrentDate] = useState(getDate());
+    const [events, setEvents] = useState<TimelineEventProps[]>([]);
+    const [eventsByDate, setEventsByDate] = useState(
+        groupBy(events, e => CalendarUtils.getCalendarDateString(e.start)) as {
+            [key: string]: TimelineEventProps[];
+        }
+    );
+    // console.log(eventsByDate);
+    
+    useEffect(() => {
+        // Group the events by date and update 'eventsByDate'
+        setEventsByDate(groupBy(events, e => CalendarUtils.getCalendarDateString(e.start)));
+    }, [events]);
 
-const EventsScreen = (props: Props) => {
-    const { weekView } = props;
-    const marked = useRef(getMarkedDates());
-    const theme = useRef(getTheme());
-    const todayBtnTheme = useRef({
-        todayButtonTextColor: themeColor
-    });
+    const marked = {
+        // [`${getDate(-1)}`]: { marked: true },
+        // [`${getDate()}`]: { marked: true },
+        // [`${getDate(1)}`]: { marked: true },
+        // [`${getDate(2)}`]: { marked: true },
+        // [`${getDate(4)}`]: { marked: true }
+    };
 
-    // const onDateChanged = useCallback((date, updateSource) => {
-    //   console.log('ExpandableCalendarScreen onDateChanged: ', date, updateSource);
-    // }, []);
+    
 
-    // const onMonthChange = useCallback(({dateString}) => {
-    //   console.log('ExpandableCalendarScreen onMonthChange: ', dateString);
-    // }, []);
+    const onDateChanged = (date: string, source: string) => {
+        console.log('TimelineCalendarScreen onDateChanged: ', date, source);
+        setCurrentDate(date);
+    };
 
-    const renderItem = useCallback(({ item }: any) => {
-        return <AgendaItem item={item} />;
-    }, []);
+    const onMonthChange = (month: any, updateSource: any) => {
+        console.log('TimelineCalendarScreen onMonthChange: ', month, updateSource);
+    };
+
+    const createNewEvent: TimelineProps['onBackgroundLongPress'] = (timeString, timeObject) => {
+        const hourString = `${(timeObject.hour + 1).toString().padStart(2, '0')}`;
+        const minutesString = `${timeObject.minutes.toString().padStart(2, '0')}`;
+
+        const newEvent = {
+            id: 'draft',
+            start: `${timeString}`,
+            end: `${timeObject.date} ${hourString}:${minutesString}:00`,
+            title: 'New Event',
+            color: 'white'
+        };
+
+        if (timeObject.date) {
+            if (eventsByDate[timeObject.date]) {
+                eventsByDate[timeObject.date] = [...eventsByDate[timeObject.date], newEvent];
+                setEventsByDate(eventsByDate)
+            } else {
+                eventsByDate[timeObject.date] = [newEvent];
+                setEventsByDate({ ...eventsByDate })
+            }
+        }
+    };
+
+    const approveNewEvent: TimelineProps['onBackgroundLongPressOut'] = (_timeString, timeObject) => {
+        Alert.prompt('New Event', 'Enter event title', [
+            {
+                text: 'Cancel',
+                onPress: () => {
+                    if (timeObject.date) {
+                        eventsByDate[timeObject.date] = filter(eventsByDate[timeObject.date], e => e.id !== 'draft');
+                        setEventsByDate(eventsByDate)
+
+                    }
+                }
+            },
+            {
+                text: 'Create',
+                onPress: eventTitle => {
+                    if (timeObject.date) {
+                        const draftEvent = find(eventsByDate[timeObject.date], { id: 'draft' });
+                        if (draftEvent) {
+                            draftEvent.id = undefined;
+                            draftEvent.title = eventTitle ?? 'New Event';
+                            draftEvent.color = 'lightgreen';
+                            eventsByDate[timeObject.date] = [...eventsByDate[timeObject.date]];
+                            setEventsByDate(eventsByDate)
+                        }
+                    }
+                }
+            }
+        ]);
+    };
+
+    const timelineProps: Partial<TimelineProps> = {
+        format24h: true,
+        onBackgroundLongPress: createNewEvent,
+        onBackgroundLongPressOut: approveNewEvent,
+        // scrollToFirst: true,
+        // start: 0,
+        // end: 24,
+        unavailableHours: [{ start: 0, end: 6 }, { start: 22, end: 24 }],
+        overlapEventsSpacing: 8,
+        rightEdgeSpacing: 24,
+    };
+
+    const getAllEvents = async () => {
+        try {
+            const response = await fetch(`${URL}/api/${VERSION}/event/getAllByClub`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user?.token}`
+                }
+            })
+
+            const json = await response.json()
+
+            if (!response.ok) {
+                if (json.error === "Request is not authorized") {
+                    logout()
+                }
+            }
+            if (response.ok) {
+                setEvents(json)
+            }
+
+        } catch (error) {
+            console.log((error as Error).message);
+        }
+    }
+    
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            // refresh data here
+            getAllEvents()
+        });
+        return () => unsubscribe();
+
+    }, [navigation])
 
     return (
         <CalendarProvider
-            date={ITEMS[1]?.title}
-            // onDateChanged={onDateChanged}
-            // onMonthChange={onMonthChange}
+            date={currentDate}
+            onDateChanged={onDateChanged}
+            onMonthChange={onMonthChange}
             showTodayButton
-            // disabledOpacity={0.6}
-            theme={todayBtnTheme.current}
-        // todayBottomMargin={16}
+            disabledOpacity={0.6}
+        // numberOfDays={3}
         >
-            {weekView ? (
-                <WeekCalendar testID={testIDs.weekCalendar.CONTAINER} firstDay={1} markedDates={marked.current} />
-            ) : (
-                <ExpandableCalendar
-                    testID={testIDs.expandableCalendar.CONTAINER}
-                    // horizontal={false}
-                    // hideArrows
-                    // disablePan
-                    // hideKnob
-                    // initialPosition={ExpandableCalendar.positions.OPEN}
-                    // calendarStyle={styles.calendar}
-                    // headerStyle={styles.header} // for horizontal only
-                    // disableWeekScroll
-                    theme={theme.current}
-                    // disableAllTouchEventsForDisabledDays
-                    firstDay={1}
-                    markedDates={marked.current}
-                    leftArrowImageSource={leftArrowIcon}
-                    rightArrowImageSource={rightArrowIcon}
-                // animateScroll
-                // closeOnDayPress={false}
-                />
-            )}
-            <AgendaList
-                sections={ITEMS}
-                renderItem={renderItem}
-                // scrollToNextEvent
-                sectionStyle={styles.section}
-            // dayFormat={'yyyy-MM-d'}
+            <ExpandableCalendar
+                firstDay={1}
+                leftArrowImageSource={require('../../../assets/previous.png')}
+                rightArrowImageSource={require('../../../assets/next.png')}
+                markedDates={marked}
+            />
+            <TimelineList
+                events={eventsByDate}
+                timelineProps={timelineProps}
+                showNowIndicator
+                // scrollToNow
+                scrollToFirst
+                initialTime={INITIAL_TIME}
             />
         </CalendarProvider>
     )
 }
 
-export default EventsScreen
-
-const styles = StyleSheet.create({
-    calendar: {
-        paddingLeft: 20,
-        paddingRight: 20
-    },
-    header: {
-        backgroundColor: 'lightgrey'
-    },
-    section: {
-        backgroundColor: lightThemeColor,
-        color: 'grey',
-        textTransform: 'capitalize'
-    }
-});
+export default Calendar;

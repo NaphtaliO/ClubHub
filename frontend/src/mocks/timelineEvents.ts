@@ -118,5 +118,3 @@ export const timelineEvents: TimelineEventProps[] = [
         summary: 'Merge Timeline Calendar to React Native Calendars'
     }
 ];
-
-console.log(timelineEvents[0]);

@@ -2,16 +2,28 @@ const Event = require("../models/event.model");
 
 const createEvent = async (req, res) => {
     const user_id = req.user._id;
-    const { date, title, location, hour, duration } = req.body;
+    const { end, start, summary, title } = req.body;
     try {
-        const event = await Event.create({ date, title, location, hour, duration, club: user_id })
+        const event = await Event.create({ end, start, summary, title, club: user_id })
         res.status(200).json(event)
     } catch (error) {
-        res.status(400).json({ error: e.message })
+        res.status(400).json({ error: error.message })
+        console.log(error.message);
+    }
+}
+
+const getAllEventsByClub = async (req, res) => {
+    const user_id = req.user._id;
+    try {
+        const event = await Event.find({ club: user_id })
+        res.status(200).json(event)
+    } catch (error) {
+        res.status(400).json({ error: error.message })
         console.log(error.message);
     }
 }
 
 module.exports = {
-    createEvent
+    createEvent,
+    getAllEventsByClub
 }

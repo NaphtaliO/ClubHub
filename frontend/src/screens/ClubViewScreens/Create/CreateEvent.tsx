@@ -1,87 +1,60 @@
 import { StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { DateTimePicker, TextField, View, Text, Colors, Stepper } from 'react-native-ui-lib'
+import { TextField, View, Text, Colors} from 'react-native-ui-lib'
 import { CreateEventScreenProps } from '../../../types/types';
 import { Button } from 'react-native-paper';
-import { MaterialIcons } from '@expo/vector-icons';
 import { URL, VERSION } from '@env';
 import { useLogout } from '../../../hooks/useLogout';
-import { useSelector } from 'react-redux';
 import * as Haptics from 'expo-haptics';
+import { useAppSelector } from '../../../hooks/hooks';
+import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 // import EventMapLocation from '../../components/EventMapLocation';
 
-const dropDownIcon = <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
-const stepperProps = {
-    minValue: 1,
-    maxValue: 10,
-    value: 1
-}
-
-const formatDate = (dateString: Date) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    let month: string | number = date.getMonth() + 1;
-    let day: string | number = date.getDate();
-    // Pad month and day with leading zeros if necessary
-    if (month < 10) {
-        month = '0' + month;
-    }
-    if (day < 10) {
-        day = '0' + day;
-    }
-    return `${year}-${month}-${day}`;
-}
-
-const formatTime = (dateString: Date) => {
-    const date = new Date(dateString);
-
-    // Get hours and minutes
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-
-    // Convert hours to 12-hour format
-    let formattedHours = hours % 12;
-    formattedHours = formattedHours === 0 ? 12 : formattedHours;
-
-    // Add leading zero to minutes if needed
-    const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
-
-    // Determine AM or PM
-    const amOrPm = hours < 12 ? 'am' : 'pm';
-
-    // Return formatted time string
-    return `${formattedHours}:${formattedMinutes}${amOrPm}`;
-}
-
 const CreateEvent = ({ navigation }: CreateEventScreenProps) => {
-    const user = useSelector((state) => state.user.value);
+    const user = useAppSelector((state) => state.user.value);
     const [title, setTitle] = useState("");
-    const [date, setDate] = useState<Date>(new Date());
-    const [time, setTime] = useState<Date>(new Date());
+    const [summary, setSummary] = useState("");
+    const [start, setStart] = useState<Date>(new Date());
+    const [end, setEnd] = useState<Date>(new Date());
     const [loading, setLoading] = useState(false);
     const [location, setLocation] = useState('');
-    const [duration, setDuration] = useState<number>(1);
     const { logout } = useLogout();
+
+    const formatDate = (dateString) => {
+        let originalDate = new Date(dateString);
+
+        // Format the date to the desired format
+        let formattedDate = originalDate.getFullYear() + '-' +
+            ('0' + (originalDate.getMonth() + 1)).slice(-2) + '-' +
+            ('0' + originalDate.getDate()).slice(-2) + ' ' +
+            ('0' + originalDate.getHours()).slice(-2) + ':' +
+            ('0' + originalDate.getMinutes()).slice(-2) + ':' +
+            ('0' + originalDate.getSeconds()).slice(-2);
+
+        return formattedDate
+    }
 
     const handleCreate = async () => {
         if (loading) return;
-        if (!title || !location) alert("Fields can't be empty");
-        setLoading(true)
+        if (!title || !location|| !summary) {
+            alert("Fields can't be empty");
+            return;
+        }
+        // setLoading(true)
         try {
             const event = {
-                duration: `${duration}h`,
-                hour: formatTime(time),
-                title: title,
-                location,
-                date: formatDate(date),
+                title,
+                start: formatDate(start),
+                end: formatDate(end),
+                summary,
+                location
             }
-            console.log(event);
 
             const response = await fetch(`${URL}/api/${VERSION}/event/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${user.token}`
+                    'Authorization': `Bearer ${user?.token}`
                 },
                 body: JSON.stringify(event)
             })
@@ -95,12 +68,13 @@ const CreateEvent = ({ navigation }: CreateEventScreenProps) => {
             }
             if (response.ok) {
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+                navigation.navigate('ClubViewTabNav', { screen: 'Calendar' });
             }
-            // navigation.navigate('Home');
+            
         } catch (error) {
             console.log((error as Error).message);
         }
-        setLoading(false)
+        // setLoading(false)
     }
 
     useEffect(() => {
@@ -120,7 +94,7 @@ const CreateEvent = ({ navigation }: CreateEventScreenProps) => {
         <View style={styles.container} padding-20 flex>
             <Text style={{ fontSize: 22, fontWeight: '500', paddingBottom: 15 }}>Event Info</Text>
             <TextField
-                placeholder={'Event Name'}
+                placeholder={'Event Title'}
                 floatingPlaceholder
                 floatingPlaceholderStyle={styles.inputs}
                 onChangeText={setTitle}
@@ -132,40 +106,26 @@ const CreateEvent = ({ navigation }: CreateEventScreenProps) => {
                 fieldStyle={styles.withUnderline}
             />
             {/* TODO: Add field for description */}
-            <View style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-            }}>
-                <DateTimePicker placeholder={'Event Day'} mode={'date'}
-                    floatingPlaceholder
-                    floatingPlaceholderStyle={styles.inputs}
-                    style={[styles.inputs, { width: 150 }]}
-                    trailingAccessory={dropDownIcon}
-                    value={date}
-                    onChange={(t) => setDate(t)}
-                    fieldStyle={styles.withUnderline}
-                />
-                <DateTimePicker placeholder={'Event Time'} mode={'time'}
-                    floatingPlaceholder
-                    floatingPlaceholderStyle={styles.inputs}
-                    style={[styles.inputs, { width: 150 }]}
-                    trailingAccessory={dropDownIcon}
-                    value={time}
-                    onChange={(t) => setTime(t)}
-                    fieldStyle={styles.withUnderline}
-
-                />
-            </View>
             <View row spread centerV style={{ marginTop: 20, marginBottom: 10 }}>
                 <Text text70 $textDefault>
-                    Duration
+                    Start Time
                 </Text>
-                <Stepper
-                    onValueChange={setDuration}
-                    maxValue={stepperProps.maxValue}
-                    minValue={stepperProps.minValue}
-                    value={duration}
-                    testID={'durationStepper'}
+                <RNDateTimePicker
+                    style={{ marginLeft: 'auto' }}
+                    mode='datetime'
+                    onChange={(e: DateTimePickerEvent, date?: Date) => setStart(date)}
+                    value={start}
+                />
+            </View>
+            <View row spread centerV style={{ marginTop: 20, }}>
+                <Text text70 $textDefault>
+                    End Time
+                </Text>
+                <RNDateTimePicker
+                    style={{ marginLeft: 'auto' }}
+                    mode='datetime'
+                    onChange={(e: DateTimePickerEvent, date?: Date) => setEnd(date)}
+                    value={end}
                 />
             </View>
             <TextField
@@ -179,6 +139,19 @@ const CreateEvent = ({ navigation }: CreateEventScreenProps) => {
                 validate={'required'}
                 validationMessage={'Cant be empty'}
 
+            />
+            <TextField
+                placeholder={'Event Summary'}
+                floatingPlaceholder
+                floatingPlaceholderStyle={styles.inputs}
+                onChangeText={setSummary}
+                value={summary}
+                // enableErrors
+                showCharCounter
+                maxLength={200}
+                multiline
+                style={styles.inputs}
+                fieldStyle={styles.withUnderline}
             />
             {/* <EventMapLocation location={location} /> */}
         </View>
