@@ -1,14 +1,24 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React from 'react';
+import { ScrollView, StyleSheet } from 'react-native';
+import ContentView from './layout';
+import { ClubViewProfileScreenProps, User } from '../../../types/types';
+import { useAppSelector } from '../../../hooks/hooks';
 
-const Profile = () => {
+const Profile = ({ navigation }: ClubViewProfileScreenProps): React.ReactElement => {
+  const user = useAppSelector((state) => state.user.value);
+
+  
+
   return (
-    <View>
-      <Text>Profile</Text>
-    </View>
-  )
+      <ContentView navigation={navigation} user={user} />
+  );
 }
 
-export default Profile
+export default Profile;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    // backgroundColor: 'white'
+  },
+});

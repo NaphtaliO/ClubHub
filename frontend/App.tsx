@@ -4,7 +4,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider } from 'react-redux';
-import { store } from './src/redux/store'
+import { store } from './src/redux/store';
+import * as eva from '@eva-design/eva';
+import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
 
 // Import the functions you need from the SDKs you need
 import { getApps, initializeApp } from "firebase/app";
@@ -49,10 +52,13 @@ export default function App() {
       <Provider store={store}>
         <ActionSheetProvider>
           <ToastContextProvider>
-          <NavigationContainer>
-            <MainNav />
-            <StatusBar style="auto" />
-            </NavigationContainer>
+            <IconRegistry icons={EvaIconsPack} />
+            <ApplicationProvider {...eva} theme={eva.light}>
+              <NavigationContainer>
+                <MainNav />
+                <StatusBar style="auto" />
+              </NavigationContainer>
+            </ApplicationProvider>
           </ToastContextProvider>
         </ActionSheetProvider>
       </Provider>

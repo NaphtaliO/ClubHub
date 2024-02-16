@@ -15,7 +15,7 @@ import { useLogout } from '../hooks/useLogout';
 
 type Prop = {
     item: PostProp,
-    setPosts: () => void,
+    setPosts: (arg: PostProp[]) => void,
     posts: PostProp[]
 }
 
@@ -61,7 +61,7 @@ const ClubViewPost = ({ item, setPosts, posts }: Prop) => {
                             }
                         }
                         if (response.ok) {
-                            const updatedData = posts.filter(item => item._id !== json._id);
+                            const updatedData= posts.filter(item => item._id !== json._id);
                             setPosts(updatedData);
                         }
                     } catch (error) {

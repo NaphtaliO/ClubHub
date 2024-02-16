@@ -179,6 +179,7 @@ const Calendar = ({navigation}: EventsScreenProps) => {
                 // scrollToNow
                 scrollToFirst
                 initialTime={INITIAL_TIME}
+                
             />
         </CalendarProvider>
     )

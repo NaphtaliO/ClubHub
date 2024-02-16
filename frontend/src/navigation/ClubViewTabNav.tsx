@@ -7,11 +7,13 @@ import Feed from "../screens/ClubViewScreens/Home/Feed";
 import CameraScreen from "../screens/ClubViewScreens/Create/CameraScreen";
 import EventsScreen from "../screens/ClubViewScreens/Calendar/EventsScreen";
 import Profile from "../screens/ClubViewScreens/Profile/Profile";
-import { TouchableOpacity } from "react-native";
+import { Text, TouchableOpacity } from "react-native";
+import { useAppSelector } from "../hooks/hooks";
 
 const Tab = createBottomTabNavigator<ClubViewTabParamList>();
 
 const ClubViewTabNav = ({ }) => {
+    const user = useAppSelector((state) => state.user.value)
     const { showActionSheetWithOptions } = useActionSheet();
     const { logout } = useLogout();
 
@@ -91,7 +93,11 @@ const ClubViewTabNav = ({ }) => {
                                 color="black"
                                 style={{ marginRight: 15 }} />
                         </TouchableOpacity>
-                    )
+                    ),
+                    // headerLeft: () => (
+                    //     <Text>{ user?.name }</Text>
+                    // ),
+                    // headerTitle: ''
                 }}
             />
         </Tab.Navigator>

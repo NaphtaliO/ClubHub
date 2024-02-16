@@ -20,7 +20,7 @@ const CreateEvent = ({ navigation }: CreateEventScreenProps) => {
     const [location, setLocation] = useState('');
     const { logout } = useLogout();
 
-    const formatDate = (dateString) => {
+    const formatDate = (dateString: Date) => {
         let originalDate = new Date(dateString);
 
         // Format the date to the desired format
@@ -158,7 +158,7 @@ const CreateEvent = ({ navigation }: CreateEventScreenProps) => {
     )
 }
 
-export default CreateEvent
+export default CreateEvent;
 
 const styles = StyleSheet.create({
     container: {

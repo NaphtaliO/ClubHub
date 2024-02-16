@@ -39,13 +39,20 @@ export type EventsScreenProps = CompositeScreenProps<
   NativeStackScreenProps<RootStackParamList>
   >;
 
+export type ClubViewProfileScreenProps = CompositeScreenProps<
+  BottomTabScreenProps<ClubViewTabParamList, 'Profile'>,
+  NativeStackScreenProps<RootStackParamList>
+>;
+
 // StudentView Screens
 export type SearchScreenProps = CompositeScreenProps<
   BottomTabScreenProps<StudentViewTabParamList, 'Search'>,
   NativeStackScreenProps<RootStackParamList>
->;
+  >;
 
-interface UserValue {
+
+
+export interface UserValue {
   _id: string;
   name: string;
   email: string;
@@ -57,6 +64,8 @@ interface UserValue {
   pushToken: object;
   acceptedTerms: boolean;
   token: string;
+  location: string;
+  members: []
 }
 
 interface Club {
@@ -66,6 +75,8 @@ interface Club {
 interface Student {
   value: UserValue | null;
 }
+
+export interface User extends Club, Student { }
 
 export type PostProp = {
   _id: string,
@@ -82,5 +93,3 @@ export type PostProp = {
   createdAt: string,
   updatedAt: string
 }
-
-export interface User extends Club, Student { }

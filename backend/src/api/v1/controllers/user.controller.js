@@ -49,7 +49,6 @@ const createStudent = async (req, res) => {
         const user = await Student.create({ name, email, password: hash })
         //create token
         const token = createToken(user._id);
-        console.log({ ...user._doc, token });
         res.status(200).json({ ...user._doc, token })
     } catch (error) {
         res.status(400).json({ error: error.message })
@@ -76,7 +75,9 @@ const LogIn = async (req, res) => {
         if (!match) throw Error('Incorrect password');
         // create token
         const token = createToken(user._id);
-        res.status(200).json({ ...user._doc, token })
+        let userWithoutPassword = { ...user._doc, token }
+        delete userWithoutPassword.password;
+        res.status(200).json(userWithoutPassword)
     } catch (error) {
         res.status(400).json({ error: error.message })
         console.log(error.message);

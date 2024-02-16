@@ -1,17 +1,31 @@
-export function emailValidator(email: string) {
-    const re = /\S+@\S+\.\S+/
-    if (!email) return "Email can't be empty."
-    if (!re.test(email)) return 'Ooops! We need a valid email address.'
-    return ''
-}
+import { URL, VERSION } from "@env";
+import { useLogout } from "./hooks/useLogout"
+import { useAppSelector } from "./hooks/hooks";
+const { logout } = useLogout();
+const user = useAppSelector((state) => state.user.value)
 
-export function passwordValidator(password: string) {
-    if (!password) return "Password can't be empty."
-    if (password.length < 5) return 'Password must be at least 5 characters long.'
-    return ''
-}
+export const refreshUser = async () => {
+    try {
+        const response = await fetch(`${URL}/api/${VERSION}/event/create`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user?.token}`
+            }
+        })
 
-export function nameValidator(name: string) {
-    if (!name) return "Name can't be empty."
-    return ''
+        const json = await response.json()
+
+        if (!response.ok) {
+            if (json.error === "Request is not authorized") {
+                useLogout()
+            }
+        }
+        if (response.ok) {
+            return json
+        }
+
+    } catch (error) {
+        console.log((error as Error).message);
+    }
 }
