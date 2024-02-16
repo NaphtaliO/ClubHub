@@ -3,7 +3,6 @@ import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import ContentView from './layout';
 import { ClubViewProfileScreenProps, User } from '../../../types/types';
 import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
-import { refreshUser } from '../../../Functions';
 import { URL, VERSION } from '@env';
 import { useLogout } from '../../../hooks/useLogout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -39,7 +38,7 @@ const Profile = ({ navigation }: ClubViewProfileScreenProps): React.ReactElement
       console.log((error as Error).message);
     }
   }
-  
+
   const onRefresh = () => {
     setRefreshing(true);
     refreshUser();
