@@ -84,6 +84,21 @@ const LogIn = async (req, res) => {
     }
 }
 
+const refreshUser = async (req, res) => {
+    let user = req.user;
+    try {
+        if (user.type === 'club') {
+            user = await Club.findOne({ _id: user._id })
+        } else if (user.type === 'student') {
+            user = await Student.findOne({ _id: user._id })
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+        console.log(error.message);
+    }
+}
+
 const searchClub = async (req, res) => {
     const user_id = req.user._id;
     const { text } = req.params;
@@ -106,5 +121,6 @@ module.exports = {
     createClubAdmin,
     createStudent,
     LogIn,
-    searchClub
+    searchClub,
+    refreshUser
 }

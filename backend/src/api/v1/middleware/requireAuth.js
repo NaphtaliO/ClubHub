@@ -15,8 +15,8 @@ const requireAuth = async (req, res, next) => {
     try {
         const { _id } = jwt.verify(token, process.env.SECRET)
 
-        const club = await Club.findOne({ _id }).select('_id')
-        const student = await Student.findOne({ _id }).select('_id')
+        const club = await Club.findOne({ _id }).select('_id type')
+        const student = await Student.findOne({ _id }).select('_id type')
 
         if (!student) {
             req.user = club
