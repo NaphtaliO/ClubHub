@@ -10,7 +10,7 @@ import { logIn } from '../../../redux/userSlice';
 
 const Profile = ({ navigation }: ClubViewProfileScreenProps): React.ReactElement => {
   const user = useAppSelector((state) => state.user.value);
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const { logout } = useLogout();
 
@@ -47,6 +47,7 @@ const Profile = ({ navigation }: ClubViewProfileScreenProps): React.ReactElement
 
   return (
     <ScrollView
+      style={styles.container}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -63,6 +64,6 @@ export default Profile;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: 'white'
+    backgroundColor: 'white'
   },
 });
