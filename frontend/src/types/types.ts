@@ -5,6 +5,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 export type RootStackParamList = {
   ClubViewTabNav: NavigatorScreenParams<ClubViewTabParamList>,
   StudentViewTabNav: NavigatorScreenParams<StudentViewTabParamList>,
+  ClubProfile: { id: string, name: string },
   CreatePost: undefined,
   CreateEvent: undefined,
   LogIn: undefined,
@@ -37,7 +38,7 @@ export type CreateEventScreenProps = NativeStackScreenProps<RootStackParamList, 
 export type EventsScreenProps = CompositeScreenProps<
   BottomTabScreenProps<ClubViewTabParamList, 'Calendar'>,
   NativeStackScreenProps<RootStackParamList>
-  >;
+>;
 
 export type ClubViewProfileScreenProps = CompositeScreenProps<
   BottomTabScreenProps<ClubViewTabParamList, 'Profile'>,
@@ -49,10 +50,14 @@ export type SearchScreenProps = CompositeScreenProps<
   BottomTabScreenProps<StudentViewTabParamList, 'Search'>,
   NativeStackScreenProps<RootStackParamList>
   >;
+export type CalendarScreenProps = CompositeScreenProps<
+  BottomTabScreenProps<StudentViewTabParamList, 'Calendar'>,
+  NativeStackScreenProps<RootStackParamList>
+>;
+export type ClubProfileScreen = NativeStackScreenProps<RootStackParamList, 'ClubProfile'>;
 
 
-
-export interface UserValue {
+export interface Club {
   _id: string;
   name: string;
   email: string;
@@ -65,18 +70,44 @@ export interface UserValue {
   acceptedTerms: boolean;
   token: string;
   location: string;
-  members: []
+  members: string[]
 }
 
-interface Club {
-  value: UserValue | null;
+export interface Student {
+  _id: string;
+  name: string;
+  email: string;
+  password: string;
+  bio: string;
+  avatar: string;
+  type: string;
+  website: string;
+  pushToken: object;
+  acceptedTerms: boolean;
+  token: string;
+  members: string[];
+  blockedUsers: string[];
 }
 
-interface Student {
-  value: UserValue | null;
+export interface State {
+  value: {
+    _id: string;
+    name: string;
+    email: string;
+    password: string;
+    bio: string;
+    avatar: string;
+    type: string;
+    website: string;
+    pushToken: object;
+    acceptedTerms: boolean;
+    token: string;
+    location?: string;
+    members?: string[];
+    memberships?: string[];
+    blockedUsers?: string[];
+  } | null
 }
-
-export interface User extends Club, Student { }
 
 export type PostProp = {
   _id: string,
