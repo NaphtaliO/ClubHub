@@ -1,7 +1,7 @@
 import groupBy from 'lodash/groupBy';
 import filter from 'lodash/filter';
 import find from 'lodash/find';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import {
     ExpandableCalendar,
@@ -13,25 +13,37 @@ import {
 } from 'react-native-calendars';
 
 import { timelineEvents, getDate } from '../../../mocks/timelineEvents';
+import { URL, VERSION } from '@env';
+import { useAppSelector } from '../../../hooks/hooks';
+import { useLogout } from '../../../hooks/useLogout';
+import { CalendarScreenProps } from '../../../types/types';
 
 const INITIAL_TIME = { hour: 9, minutes: 0 };
 const EVENTS: TimelineEventProps[] = timelineEvents;
 
-const Calendar = () => {
+const Calendar = ({ navigation }: CalendarScreenProps) => {
+    const user = useAppSelector((state) => state.user.value);
+    const { logout } = useLogout();
     const [currentDate, setCurrentDate] = useState(getDate());
-    const [events, setEvents] = useState(EVENTS);
+    const [events, setEvents] = useState<TimelineEventProps[]>([]);
     const [eventsByDate, setEventsByDate] = useState(
-        groupBy(EVENTS, e => CalendarUtils.getCalendarDateString(e.start)) as {
+        groupBy(events, e => CalendarUtils.getCalendarDateString(e.start)) as {
             [key: string]: TimelineEventProps[];
         }
     );
 
+    useEffect(() => {
+        // Group the events by date and update 'eventsByDate'
+        setEventsByDate(groupBy(events, e => CalendarUtils.getCalendarDateString(e.start)));
+    }, [events]);
+
     const marked = {
-        [`${getDate(-1)}`]: { marked: true },
-        [`${getDate()}`]: { marked: true },
-        [`${getDate(1)}`]: { marked: true },
-        [`${getDate(2)}`]: { marked: true },
-        [`${getDate(4)}`]: { marked: true }
+        // [`${getDate(-1)}`]: { marked: true },
+        // [`${getDate()}`]: { marked: true },
+        // [`${getDate(1)}`]: { marked: true },
+        // [`${getDate(2)}`]: { marked: true },
+        // [`${getDate(4)}`]: { marked: true }
+        // TODO: Fix marked dates both in student and clubs
     };
 
     const onDateChanged = (date: string, source: string) => {
@@ -107,6 +119,37 @@ const Calendar = () => {
         overlapEventsSpacing: 8,
         rightEdgeSpacing: 24,
     };
+
+    const getAllEvents = async () => {
+        try {
+            const response = await fetch(`${URL}/api/${VERSION}/event/getAllStudentsEvents`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user?.token}`
+                }
+            })
+            const json = await response.json()
+            if (!response.ok) {
+                if (json.error === "Request is not authorized") {
+                    logout()
+                }
+            }
+            if (response.ok) {
+                setEvents(json)
+            }
+        } catch (error) {
+            console.log((error as Error).message);
+        }
+    }
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            // refresh data here
+            getAllEvents()
+        });
+        return () => unsubscribe();
+    }, [navigation])
 
     return (
         <CalendarProvider

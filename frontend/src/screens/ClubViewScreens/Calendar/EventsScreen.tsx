@@ -131,9 +131,7 @@ const Calendar = ({navigation}: EventsScreenProps) => {
                     'Authorization': `Bearer ${user?.token}`
                 }
             })
-
             const json = await response.json()
-
             if (!response.ok) {
                 if (json.error === "Request is not authorized") {
                     logout()
@@ -142,7 +140,6 @@ const Calendar = ({navigation}: EventsScreenProps) => {
             if (response.ok) {
                 setEvents(json)
             }
-
         } catch (error) {
             console.log((error as Error).message);
         }
@@ -154,7 +151,6 @@ const Calendar = ({navigation}: EventsScreenProps) => {
             getAllEvents()
         });
         return () => unsubscribe();
-
     }, [navigation])
 
     return (
