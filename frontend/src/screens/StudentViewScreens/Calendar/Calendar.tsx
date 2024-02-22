@@ -86,7 +86,7 @@ const Calendar = ({ navigation }: CalendarScreenProps) => {
                     if (timeObject.date) {
                         eventsByDate[timeObject.date] = filter(eventsByDate[timeObject.date], e => e.id !== 'draft');
                         setEventsByDate(eventsByDate)
-                            
+
                     }
                 }
             },
@@ -170,7 +170,7 @@ const Calendar = ({ navigation }: CalendarScreenProps) => {
                 events={eventsByDate}
                 timelineProps={timelineProps}
                 showNowIndicator
-                // scrollToNow
+                scrollToNow
                 scrollToFirst
                 initialTime={INITIAL_TIME}
             />

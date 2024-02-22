@@ -21,7 +21,7 @@ import { EventsScreenProps } from '../../../types/types';
 const INITIAL_TIME = { hour: 9, minutes: 0 };
 const EVENTS: TimelineEventProps[] = timelineEvents;
 
-const Calendar = ({navigation}: EventsScreenProps) => {
+const Calendar = ({ navigation }: EventsScreenProps) => {
     const user = useAppSelector((state) => state.user.value)
     const { logout } = useLogout();
     const [currentDate, setCurrentDate] = useState(getDate());
@@ -32,7 +32,7 @@ const Calendar = ({navigation}: EventsScreenProps) => {
         }
     );
     // console.log(eventsByDate);
-    
+
     useEffect(() => {
         // Group the events by date and update 'eventsByDate'
         setEventsByDate(groupBy(events, e => CalendarUtils.getCalendarDateString(e.start)));
@@ -45,8 +45,6 @@ const Calendar = ({navigation}: EventsScreenProps) => {
         // [`${getDate(2)}`]: { marked: true },
         // [`${getDate(4)}`]: { marked: true }
     };
-
-    
 
     const onDateChanged = (date: string, source: string) => {
         console.log('TimelineCalendarScreen onDateChanged: ', date, source);
@@ -144,7 +142,7 @@ const Calendar = ({navigation}: EventsScreenProps) => {
             console.log((error as Error).message);
         }
     }
-    
+
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             // refresh data here
@@ -172,10 +170,9 @@ const Calendar = ({navigation}: EventsScreenProps) => {
                 events={eventsByDate}
                 timelineProps={timelineProps}
                 showNowIndicator
-                // scrollToNow
+                scrollToNow
                 scrollToFirst
                 initialTime={INITIAL_TIME}
-                
             />
         </CalendarProvider>
     )
