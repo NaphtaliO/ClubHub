@@ -142,6 +142,9 @@ export default function Post({ navigation }: CreatePostScreenProps) {
     useEffect(() => {
         navigation.setOptions({
             headerRight: () => (
+                // TODO: Fix this. 
+                // Implement a way to show loading when post button is clicked
+                // Do the same for Creating new event
                 <Button mode="contained"
                     onPress={handleCreate}
                     loading={loading}

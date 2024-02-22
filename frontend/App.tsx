@@ -22,6 +22,7 @@ import {
   MEASUREMENTID,
 } from "@env";
 import { ToastContextProvider } from './src/components/CustomToast';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -46,6 +47,8 @@ if (!getApps().length) {
 
 const storage = getStorage(app);
 
+const queryClient = new QueryClient()
+
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -54,10 +57,12 @@ export default function App() {
           <ToastContextProvider>
             <IconRegistry icons={EvaIconsPack} />
             <ApplicationProvider {...eva} theme={eva.light}>
-              <NavigationContainer>
-                <MainNav />
-                <StatusBar style="auto" />
-              </NavigationContainer>
+              <QueryClientProvider client={queryClient}>
+                <NavigationContainer>
+                  <MainNav />
+                  <StatusBar style="auto" />
+                </NavigationContainer>
+              </QueryClientProvider>
             </ApplicationProvider>
           </ToastContextProvider>
         </ActionSheetProvider>

@@ -1,15 +1,15 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Avatar, Button, Divider, Layout, Text } from '@ui-kitten/components';
-import { RateBar } from './extra/rate-bar.component';
-import { ProfileSocial } from './extra/profile-social.component';
-import { ProfileParameterCard } from './extra/profile-parameter-card.component';
-import { ArrowHeadDownIcon, ArrowHeadUpIcon } from './extra/icons';
+import { RateBar } from '../../../../components/rate-bar.component';;
+import { ProfileSocial } from '../../../../components/profile-social.component';;
+import { ProfileParameterCard } from '../../../../components/profile-parameter-card.component';;
+import { ArrowHeadDownIcon, ArrowHeadUpIcon } from '../../../../components/icons';
 // import { Profile } from './extra/data';
-import { UserValue } from '../../../../types/types';
+import { Club } from '../../../../types/types';
 
 type Prop = {
-  user: UserValue
+  user: Club
  }
 
 export default ({ user }: Prop): React.ReactElement => {
@@ -53,7 +53,7 @@ export default ({ user }: Prop): React.ReactElement => {
           <ProfileSocial
             style={styles.profileSocialContainer}
             hint='Members'
-            value={`${user.members.length}`}
+            value={`${user?.members?.length}`}
           />
           {/* <ProfileSocial
             style={styles.profileSocialContainer}

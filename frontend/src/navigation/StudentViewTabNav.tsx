@@ -1,8 +1,7 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StudentViewTabParamList } from "../types/types";
 import { useLogout } from "../hooks/useLogout";
-import { useActionSheet } from "@expo/react-native-action-sheet";
-import { Feather, FontAwesome, Foundation, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Feather, FontAwesome, Foundation, Ionicons } from "@expo/vector-icons";
 import Search from "../screens/StudentViewScreens/Search/Search";
 import { TouchableOpacity } from "react-native";
 import Profile from "../screens/StudentViewScreens/Profile/Profile";
@@ -12,7 +11,6 @@ import Home from "../screens/StudentViewScreens/Home/Home";
 const Tab = createBottomTabNavigator<StudentViewTabParamList>();
 
 const StudentViewTabNav = ({ }) => {
-    const { showActionSheetWithOptions } = useActionSheet();
     const { logout } = useLogout()
 
     return (
@@ -57,9 +55,6 @@ const StudentViewTabNav = ({ }) => {
             <Tab.Screen
                 name="Calendar"
                 component={Calendar}
-            // options={{
-            //     headerShown: false,
-            // }}
             />
             <Tab.Screen
                 name="Profile"

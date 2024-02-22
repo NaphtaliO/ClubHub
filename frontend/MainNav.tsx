@@ -14,6 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CreateEvent from './src/screens/ClubViewScreens/Create/CreateEvent';
 import ClubViewTabNav from './src/navigation/ClubViewTabNav';
 import StudentViewTabNav from './src/navigation/StudentViewTabNav';
+import ClubProfile from './src/screens/StudentViewScreens/Profile/ClubProfile';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -74,6 +75,9 @@ const MainNav = () => {
                                 options={{
                                     headerShown: false,
                                 }} />
+                            <Stack.Screen name="ClubProfile" component={ClubProfile} options={({ navigation, route }) => ({
+                                title: route.params.name
+                                })} />
                     </>
                 ) : (
                     <>

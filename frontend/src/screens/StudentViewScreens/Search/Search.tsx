@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, FlatList, ActivityIndicator } from 'react-native'
+import { StyleSheet, View, Text, FlatList, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { SearchBar } from '@rneui/themed';
 import { useLogout } from '../../../hooks/useLogout';
@@ -7,12 +7,19 @@ import { useAppSelector } from '../../../hooks/hooks';
 import { SearchScreenProps } from '../../../types/types';
 import SearchItem from '../../../components/SearchItem';
 
+type ClubProp = {
+  _id: string,
+  avatar: string,
+  members: string[],
+  name: string
+}
+
 const Search = ({ navigation }: SearchScreenProps) => {
-  const { logout } = useLogout()
+  const { logout } = useLogout();
   const user = useAppSelector((state) => state.user.value);
-  const [users, setUsers] = useState([]);
-  const [text, setText] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [users, setUsers] = useState<ClubProp[]>([]);
+  const [text, setText] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
 
   const searchUsers = async () => {
     if (text !== "" && !(text.trim().length === 0)) {
@@ -32,8 +39,7 @@ const Search = ({ navigation }: SearchScreenProps) => {
           }
         }
         if (response.ok) {
-          setUsers(json)
-          console.log(json);
+          setUsers(json);
         }
 
       } catch (error) {
@@ -61,7 +67,7 @@ const Search = ({ navigation }: SearchScreenProps) => {
         onCancel={() => { setText(''); setUsers([]) }}
       />
       {loading ? <ActivityIndicator color={'black'} /> :
-        user.length !== 0 && text !== '' ?
+        users.length !== 0 && text !== '' ?
           <FlatList
             ListEmptyComponent={
               <View>
@@ -76,14 +82,13 @@ const Search = ({ navigation }: SearchScreenProps) => {
             </>
               
             }
-            keyExtractor={item => item._id} />
+            keyExtractor={item => item?._id} />
           :
           <Text style={{ marginLeft: 'auto', marginRight: 'auto', fontWeight: '500', fontSize: 20, marginTop: 20 }}>
             Search UCC Clubs and Societies
           </Text>
       }
     </View>
-
   )
 }
 

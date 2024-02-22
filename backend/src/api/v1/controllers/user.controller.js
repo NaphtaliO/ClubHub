@@ -109,10 +109,37 @@ const searchClub = async (req, res) => {
         //     // Excludes users that are blocked and users that blocked you respevtively
         //     $and: [{ _id: { $nin: authUser.blockedUsers } }, { blockedUsers: { $ne: user_id } }]
         // }).select("name username avatar");
-        const clubs = await Club.find({ name: new RegExp(text, 'i') }).select("name avatar");
+        const clubs = await Club.find({ name: new RegExp(text, 'i') }).select("name avatar members");
         res.status(200).json(clubs);
     } catch (error) {
         res.status(400).json({ error: error.message })
+        console.log(error.message);
+    }
+}
+
+const fetchClubProfileById = async (req, res) => {
+    let club_id = req.params.id;
+    try {
+        const club = await Club.findOne({ _id: club_id });
+        res.status(200).json({ profile: club });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+        console.log(error.message);
+    }
+}
+
+const joinClub = async (req, res) => {
+    let user = req.user;
+    const { club_id } = req.params;
+
+    try {
+        if (user.type !== "student") return;
+        const student = await Student.findById({ _id: user._id });
+        const club = await Club.findById(club_id);
+        console.log(club);
+        // res.status(200).json({ profile: club });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
         console.log(error.message);
     }
 }
@@ -122,5 +149,7 @@ module.exports = {
     createStudent,
     LogIn,
     searchClub,
-    refreshUser
+    refreshUser,
+    fetchClubProfileById,
+    joinClub
 }
