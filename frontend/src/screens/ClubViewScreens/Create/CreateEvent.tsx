@@ -34,6 +34,7 @@ const CreateEvent = ({ navigation }: CreateEventScreenProps) => {
         return formattedDate
     }
 
+    
     const handleCreate = async () => {
         if (loading) return;
         if (!title || !location|| !summary) {

@@ -6,6 +6,7 @@ export type RootStackParamList = {
   ClubViewTabNav: NavigatorScreenParams<ClubViewTabParamList>,
   StudentViewTabNav: NavigatorScreenParams<StudentViewTabParamList>,
   ClubProfile: { id: string, name: string },
+  EditClubProfile: undefined,
   CreatePost: undefined,
   CreateEvent: undefined,
   LogIn: undefined,

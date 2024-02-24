@@ -25,53 +25,6 @@ const StudentViewPost = ({ item }: Prop) => {
     const { showActionSheetWithOptions } = useActionSheet();
     const { logout } = useLogout();
 
-    // const deleteFromFirebase = async (url: string) => {
-    //     if (url === null || url === "") {
-    //         null
-    //     } else {
-    //         try {
-    //             let pictureRef = ref(getStorage(), url);
-    //             await deleteObject(pictureRef).then(() => {
-    //                 console.log("Deletion Successful");
-    //             })
-    //         } catch (error) {
-    //             console.log((error as Error).message);
-    //         }
-    //     }
-    // }
-
-    // const deletePostUI = async (id: string, uri: string) => {
-    //     Alert.alert('Delete this post?', '', [
-    //         { text: 'Cancel', onPress: () => { }, style: 'cancel' },
-    //         {
-    //             text: 'Delete', style: 'default', onPress: async () => {
-    //                 await deleteFromFirebase(uri)
-    //                 try {
-    //                     const response = await fetch(`${URL}/api/${VERSION}/post/deletePost/${id}`, {
-    //                         method: 'DELETE',
-    //                         headers: {
-    //                             'Authorization': `Bearer ${user?.token}`
-    //                         },
-    //                     });
-    //                     const json = await response.json()
-
-    //                     if (!response.ok) {
-    //                         if (json.error === "Request is not authorized") {
-    //                             logout()
-    //                         }
-    //                     }
-    //                     if (response.ok) {
-    //                         const updatedData = posts.filter(item => item._id !== json._id);
-    //                         setPosts(updatedData);
-    //                     }
-    //                 } catch (error) {
-    //                     console.log((error as Error).message);
-    //                 }
-    //             }
-    //         }
-    //     ])
-    // };
-
     const bottomSheet = () => {
         showActionSheetWithOptions({
             options: ["Cancel", "Delete"],
@@ -104,9 +57,9 @@ const StudentViewPost = ({ item }: Prop) => {
                         </View>
                     </View>
                     {/* Three Dots on the Right */}
-                    <TouchableOpacity style={{ marginLeft: 'auto' }} onPress={bottomSheet}>
+                    {/* <TouchableOpacity style={{ marginLeft: 'auto' }} onPress={bottomSheet}>
                         <MaterialCommunityIcons name="dots-horizontal" size={24} color="black" />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
                 {/* caption */}
                 <CustomText style={styles.caption} caption={item.caption} />

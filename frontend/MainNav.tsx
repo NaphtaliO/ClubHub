@@ -15,6 +15,7 @@ import CreateEvent from './src/screens/ClubViewScreens/Create/CreateEvent';
 import ClubViewTabNav from './src/navigation/ClubViewTabNav';
 import StudentViewTabNav from './src/navigation/StudentViewTabNav';
 import ClubProfile from './src/screens/StudentViewScreens/Profile/ClubProfile';
+import EditClubProfile from './src/screens/ClubViewScreens/Profile/EditClubProfile';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -67,6 +68,8 @@ const MainNav = () => {
                         <Stack.Screen name="CreatePost" component={CreatePost}
                             options={{ headerTitle: "New Post" }} />
                         <Stack.Screen name="CreateEvent" component={CreateEvent}
+                            options={{ headerTitle: "New Event" }} />
+                        <Stack.Screen name="EditClubProfile" component={EditClubProfile}
                             options={{ headerTitle: "New Event" }} />
                     </>
                 ) : user && user.type === "student" ? (

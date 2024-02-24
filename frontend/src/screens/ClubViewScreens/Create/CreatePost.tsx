@@ -63,8 +63,6 @@ export default function Post({ navigation }: CreatePostScreenProps) {
         });
 
         if (!result.canceled) {
-            console.log(result);
-            
             setImage(result.assets[0].uri);
             setSelected(true);
         }
@@ -101,8 +99,6 @@ export default function Post({ navigation }: CreatePostScreenProps) {
     };
 
     const handleCreate = async () => {
-        if (loading) return;
-        // setLoading(true)
         try {
             let uri = null;
             if (selected) uri = await handleImagePicked(image);
@@ -120,7 +116,7 @@ export default function Post({ navigation }: CreatePostScreenProps) {
                 },
                 body: JSON.stringify(post)
             })
-
+            // return;
             const json = await response.json()
 
             if (!response.ok) {
@@ -136,7 +132,13 @@ export default function Post({ navigation }: CreatePostScreenProps) {
         } catch (error) {
             console.log((error as Error).message);
         }
-        // setLoading(false)
+    }
+
+    const create = () => {
+        // if (loading) return;
+        setLoading(true);
+        handleCreate();
+        setLoading(false);
     }
 
     useEffect(() => {
@@ -201,6 +203,7 @@ export default function Post({ navigation }: CreatePostScreenProps) {
     }
 
     const removeImage = () => {
+        // TODO: remove image
         setImage(undefined);
         setSelected(false);
     }
