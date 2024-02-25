@@ -125,6 +125,7 @@ const ClubProfile = ({ route }: ClubProfileScreen) => {
             <Layout style={styles.container} level='2' >
                 <Layout style={styles.header} level='1'>
                     <View style={styles.profileContainer}>
+                        {/* TODO cache this image */}
                         <Avatar
                             style={styles.profileAvatar}
                             size='giant'

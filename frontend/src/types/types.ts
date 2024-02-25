@@ -47,6 +47,10 @@ export type ClubViewProfileScreenProps = CompositeScreenProps<
 >;
 
 // StudentView Screens
+export type StudentHomeScreenProps = CompositeScreenProps<
+  BottomTabScreenProps<StudentViewTabParamList, 'Home'>,
+  NativeStackScreenProps<RootStackParamList>
+>;
 export type SearchScreenProps = CompositeScreenProps<
   BottomTabScreenProps<StudentViewTabParamList, 'Search'>,
   NativeStackScreenProps<RootStackParamList>

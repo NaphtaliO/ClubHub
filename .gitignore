@@ -35,3 +35,6 @@ yarn-error.*
 *.tsbuildinfo
 
 .env
+
+google-services.json
+AuthKey_4FFK68U64B.p8

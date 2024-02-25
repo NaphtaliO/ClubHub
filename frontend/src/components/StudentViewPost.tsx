@@ -76,19 +76,22 @@ const StudentViewPost = ({ item }: Prop) => {
                 flexDirection: 'row',
                 alignItems: 'center'
             }}>
-                <TouchableOpacity onPress={() => setLiked(!liked)}>
-                    <Icon
-                        style={{ marginRight: 7 }}
-                        size={25}
-                        name={liked ? 'heart' : 'heart-outlined'}
-                        type={'entypo'}
-                        color={liked ? 'red' : ''}
-                    />
-                </TouchableOpacity>
-                {/* TODO: Introduce like animations
+                <View>
+                    <TouchableOpacity onPress={() => setLiked(!liked)}>
+                        <Icon
+                            style={{ marginRight: 7 }}
+                            size={25}
+                            name={liked ? 'heart' : 'heart-outlined'}
+                            type={'entypo'}
+                            color={liked ? 'red' : ''}
+                        />
+                    </TouchableOpacity>
+                    {/* TODO: Introduce like animations
                 https://dev.to/vcapretz/instagram-like-button-in-react-native-and-reanimated-v2-3h3k
                 */}
-                <Text style={{ fontSize: 16, fontWeight: '600' }}>{item.likes.length}</Text>
+                    <Text style={{ fontSize: 16, fontWeight: '600' }}>{item.likes.length}</Text>
+                </View>
+                
             </View>
 
         </Card>

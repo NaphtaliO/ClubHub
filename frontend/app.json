@@ -31,7 +31,9 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.naphtali2003.ClubHub"
+      "package": "com.naphtali2003.ClubHub",
+      "googleServicesFile": "./credentials/google-services.json",
+      "versionCode": 0
     },
     "web": {
       "favicon": "./src/assets/favicon.png"

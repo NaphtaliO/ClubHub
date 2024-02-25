@@ -3,6 +3,7 @@ const Student = require('../models/student.model');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const validator = require('validator');
+const { sendNotification } = require('../../../../pushNotification');
 
 const createToken = (_id) => {
     // Keep user signed in for 30 days
@@ -109,6 +110,7 @@ const searchClub = async (req, res) => {
         //     // Excludes users that are blocked and users that blocked you respevtively
         //     $and: [{ _id: { $nin: authUser.blockedUsers } }, { blockedUsers: { $ne: user_id } }]
         // }).select("name username avatar");
+        send();
         const clubs = await Club.find({ name: new RegExp(text, 'i') }).select("name avatar members");
         res.status(200).json(clubs);
     } catch (error) {
@@ -136,13 +138,54 @@ const joinClub = async (req, res) => {
         if (user.type !== "student") return;
         const student = await Student.findById({ _id: user._id });
         const club = await Club.findById(club_id);
-        console.log(club);
-        // res.status(200).json({ profile: club });
+        if (student.memberships.includes(club._id) || club.members.includes(student._id)) {
+            let studentIndex = student.memberships.indexOf(club._id);
+            let clubIndex = club.members.indexOf(student._id);
+            if (studentIndex > -1 || clubIndex > -1) {
+                student.memberships.splice(studentIndex, 1);
+                club.members.splice(clubIndex, 1);
+            }
+        } else {
+            club.members.push(student._id)
+            student.memberships.push(club._id)
+        }
+        const updatedClub = await Club.findByIdAndUpdate(club._id, { members: club.members }, { new: true })
+        const updatedStudent = await Student.findByIdAndUpdate(student._id, { memberships: student.memberships }, { new: true })
+        res.status(200).json({ club: updatedClub, student: updatedStudent });
     } catch (error) {
         res.status(400).json({ error: error.message });
         console.log(error.message);
     }
 }
+
+const setPushToken = async (req, res) => {
+    const user = req.user;
+    const { token } = req.body;
+    let student;
+    try {
+        if (user.type === "student") {
+            student = await Student.findOneAndUpdate({ _id: user._id }, { pushToken: token })
+        }
+        res.status(200).json({ message: "Success" })
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+        console.log(error.message);
+    }
+}
+
+
+
+const createAndSendNotification = async () => {
+    const notificationInfo = {
+        token: { data: "ddea9f2b8a778b0a1e84ca3bae27478426e648a7e5e94f052f23cb353ee62fe8", type: "ios"},
+        title: `Hello`,
+        body: `@started following you`,
+        data: { type: 'following' }
+    };
+    await sendNotification(notificationInfo);
+}
+
+
 
 module.exports = {
     createClubAdmin,
@@ -151,5 +194,6 @@ module.exports = {
     searchClub,
     refreshUser,
     fetchClubProfileById,
-    joinClub
+    joinClub,
+    setPushToken
 }

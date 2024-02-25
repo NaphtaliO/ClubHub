@@ -1,4 +1,5 @@
 const Post = require("../models/post.model");
+const Student = require("../models/student.model");
 
 const createPost = async (req, res) => {
     const user_id = req.user._id;
@@ -13,9 +14,37 @@ const createPost = async (req, res) => {
 }
 
 const getAllPostsByClub = async (req, res) => {
-    const user_id = req.user._id;
+    const user = req.user;
+    if (user.type !== "club") return;
     try {
-        const posts = await Post.find({ club: user_id })
+        const { page, limit } = req.query;
+        const skip = (page) * limit;
+        const posts = await Post.find({ club: user._id })
+            .skip(skip)
+            .limit(parseInt(limit))
+            .sort({ createdAt: -1 });
+        res.status(200).json(posts)
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+        console.log(error.message);
+    }
+}
+
+const getStudentsFeed = async (req, res) => {
+    const user = req.user;
+    if (user.type !== "student") return;
+    try {
+        const student = await Student.findById(user._id);
+        if (!student) {
+            res.status(400).json({ message: "Student not found" });
+            return;
+        }
+        const clubIds = student.memberships;
+        const { page, limit } = req.query;
+        const skip = (page) * limit
+        const posts = await Post.find({ club: { $in: clubIds } })
+            .skip(skip)
+            .limit(parseInt(limit))
             .sort({ createdAt: -1 });
         res.status(200).json(posts)
     } catch (error) {
@@ -59,5 +88,6 @@ const deletePost = async (req, res) => {
 module.exports = {
     createPost,
     getAllPostsByClub,
-    deletePost
+    deletePost,
+    getStudentsFeed
 }

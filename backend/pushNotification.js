@@ -3,6 +3,7 @@ const fs = require('fs');
 const http2 = require('http2');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
+
 const authorizationToken = jwt.sign(
     {
         iss: process.env.APPLE_TEAM_ID,
@@ -17,18 +18,18 @@ const authorizationToken = jwt.sign(
     }
 );
 
-const sendNotification = async (token, body, title, data) => {
+const sendNotification = async (notification) => {
     const IS_PRODUCTION = true;
     try {
-        if (token.type === 'ios') {
+        if (notification.token.type === 'ios') {
             const client = http2.connect(
                 IS_PRODUCTION ? 'https://api.push.apple.com' : 'https://api.sandbox.push.apple.com'
             );
             const request = client.request({
                 ':method': 'POST',
                 ':scheme': 'https',
-                'apns-topic': 'com.naphtali2003.TimeLine',
-                ':path': '/3/device/' + token.data, // This is the native device token you grabbed client-side
+                'apns-topic': 'com.naphtali2003.ClubHub',
+                ':path': '/3/device/' + notification.token.data, // This is the native device token you grabbed client-side
                 authorization: `bearer ${authorizationToken}`, // This is the JSON web token generated in the "Authorization" step
             });
             request.setEncoding('utf8');
@@ -37,19 +38,19 @@ const sendNotification = async (token, body, title, data) => {
                 JSON.stringify({
                     aps: {
                         alert: {
-                            title: title,
-                            body: body,
+                            title: notification.title,
+                            body: notification.body,
                         },
                     },
                     sound: "default",
-                    body: data,
-                    experienceId: '@naphtali2003/TimeLine', // Required when testing in the Expo Go app
-                    scopeKey: '@naphtali2003/TimeLine', // Required when testing in the Expo Go app
+                    body: notification.data,
+                    experienceId: '@naphtali2003/ClubHub', // Required when testing in the Expo Go app
+                    scopeKey: '@naphtali2003/ClubHub', // Required when testing in the Expo Go app
                 })
             );
             request.on('response', (headers, flags) => {
                 for (const name in headers) {
-                    // console.log(`${name}: ${headers[name]}`);
+                    console.log(`${name}: ${headers[name]}`);
                 }
             });
 
@@ -59,7 +60,7 @@ const sendNotification = async (token, body, title, data) => {
             });
 
             request.on('end', () => {
-                // console.log(`\n${dataString}`);
+                console.log(`\n${dataString}`);
                 client.close();
             });
 
@@ -72,14 +73,14 @@ const sendNotification = async (token, body, title, data) => {
                     Authorization: `key=${process.env.FCM_SERVER_KEY}`,
                 },
                 body: JSON.stringify({
-                    to: `${token.data}`,
+                    to: `${notification.token.data}`,
                     priority: 'normal',
                     data: {
-                        experienceId: '@naphtali2003/TimeLine',
-                        scopeKey: '@naphtali2003/TimeLine',
-                        title: title,
-                        message: body,
-                        body: data
+                        experienceId: '@naphtali2003/ClubHub',
+                        scopeKey: '@naphtali2003/ClubHub',
+                        title: notification.title,
+                        message: notification.body,
+                        body: notification.data
                     },
                 }),
             });
