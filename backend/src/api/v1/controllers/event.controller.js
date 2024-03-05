@@ -3,9 +3,9 @@ const Student = require("../models/student.model");
 
 const createEvent = async (req, res) => {
     const user_id = req.user._id;
-    const { end, start, summary, title } = req.body;
+    const { end, start, summary, title, location } = req.body;
     try {
-        const event = await Event.create({ end, start, summary, title, club: user_id })
+        const event = await Event.create({ end, start, summary, title, location, club: user_id })
         res.status(200).json(event)
     } catch (error) {
         res.status(400).json({ error: error.message })
@@ -42,8 +42,22 @@ const getAllStudentsEvents = async (req, res) => {
     }
 }
 
+const deleteEvent = async (req, res) => {
+    const user = req.user;
+    const { id } = req.params;
+    if (user.type !== "club") return;
+    try {
+        const event = await Event.findOneAndDelete({ _id: id });
+        res.status(200).json(event)
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+        console.log(error.message);
+    }
+}
+
 module.exports = {
     createEvent,
     getAllEventsByClub,
-    getAllStudentsEvents
+    getAllStudentsEvents,
+    deleteEvent
 }

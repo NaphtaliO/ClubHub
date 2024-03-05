@@ -1,5 +1,5 @@
 const express = require("express");
-const { createEvent, getAllEventsByClub, getAllStudentsEvents } = require('../controllers/event.controller');
+const { createEvent, getAllEventsByClub, getAllStudentsEvents, deleteEvent } = require('../controllers/event.controller');
 const requireAuth = require("../middleware/requireAuth");
 
 const router = express.Router();
@@ -9,6 +9,7 @@ router.use(requireAuth)
 
 // signup route
 router.post('/create', createEvent);
+router.delete('/delete/:id', deleteEvent);
 router.get('/getAllByClub', getAllEventsByClub);
 router.get('/getAllStudentsEvents', getAllStudentsEvents);
 

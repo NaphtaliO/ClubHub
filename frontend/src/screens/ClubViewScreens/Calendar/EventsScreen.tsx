@@ -2,7 +2,7 @@ import groupBy from 'lodash/groupBy';
 import filter from 'lodash/filter';
 import find from 'lodash/find';
 import React, { useEffect, useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, Text } from 'react-native';
 import {
     ExpandableCalendar,
     TimelineEventProps,
@@ -17,21 +17,24 @@ import { URL, VERSION } from '@env';
 import { useAppSelector } from '../../../hooks/hooks';
 import { useLogout } from '../../../hooks/useLogout';
 import { EventsScreenProps } from '../../../types/types';
+import { Incubator, ModalProps } from 'react-native-ui-lib';
 
 const INITIAL_TIME = { hour: 9, minutes: 0 };
 const EVENTS: TimelineEventProps[] = timelineEvents;
 
 const Calendar = ({ navigation }: EventsScreenProps) => {
-    const user = useAppSelector((state) => state.user.value)
+    const user = useAppSelector((state) => state.user.value);
     const { logout } = useLogout();
     const [currentDate, setCurrentDate] = useState(getDate());
     const [events, setEvents] = useState<TimelineEventProps[]>([]);
+    const [visible, setVisible] = useState<boolean>(false);
+    const modalProps: ModalProps = { supportedOrientations: ['portrait', 'landscape'] };
+    const headerProps: Incubator.DialogHeaderProps = { title: 'Event' };
     const [eventsByDate, setEventsByDate] = useState(
         groupBy(events, e => CalendarUtils.getCalendarDateString(e.start)) as {
             [key: string]: TimelineEventProps[];
         }
     );
-    // console.log(eventsByDate);
 
     useEffect(() => {
         // Group the events by date and update 'eventsByDate'
@@ -118,6 +121,12 @@ const Calendar = ({ navigation }: EventsScreenProps) => {
         unavailableHours: [{ start: 0, end: 6 }, { start: 22, end: 24 }],
         overlapEventsSpacing: 8,
         rightEdgeSpacing: 24,
+        // onEventPress: () => navigation.navigate('LiveStream'),
+        onEventPress: (e) => {
+            navigation.navigate('EventDetails', { event: e });
+            console.log(e);
+        }
+        // renderEvent: () => ()
     };
 
     const getAllEvents = async () => {
@@ -151,6 +160,18 @@ const Calendar = ({ navigation }: EventsScreenProps) => {
         return () => unsubscribe();
     }, [navigation])
 
+    const openDialog = () => {
+        setVisible(true);
+    };
+
+    const closeDialog = () => {
+        setVisible(false);
+    };
+
+    const onDismiss = () => {
+        setVisible(false);
+    };
+
     return (
         <CalendarProvider
             date={currentDate}
@@ -174,6 +195,16 @@ const Calendar = ({ navigation }: EventsScreenProps) => {
                 scrollToFirst
                 initialTime={INITIAL_TIME}
             />
+            <Incubator.Dialog
+                useSafeArea
+                visible={visible}
+                onDismiss={onDismiss}
+                center
+                centerH
+                modalProps={modalProps}
+                headerProps={headerProps}
+            >
+            </Incubator.Dialog>
         </CalendarProvider>
     )
 }

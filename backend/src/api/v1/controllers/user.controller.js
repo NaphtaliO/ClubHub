@@ -110,7 +110,6 @@ const searchClub = async (req, res) => {
         //     // Excludes users that are blocked and users that blocked you respevtively
         //     $and: [{ _id: { $nin: authUser.blockedUsers } }, { blockedUsers: { $ne: user_id } }]
         // }).select("name username avatar");
-        send();
         const clubs = await Club.find({ name: new RegExp(text, 'i') }).select("name avatar members");
         res.status(200).json(clubs);
     } catch (error) {
@@ -177,7 +176,7 @@ const setPushToken = async (req, res) => {
 
 const createAndSendNotification = async () => {
     const notificationInfo = {
-        token: { data: "ddea9f2b8a778b0a1e84ca3bae27478426e648a7e5e94f052f23cb353ee62fe8", type: "ios"},
+        token: { data: "ddea9f2b8a778b0a1e84ca3bae27478426e648a7e5e94f052f23cb353ee62fe8", type: "ios" },
         title: `Hello`,
         body: `@started following you`,
         data: { type: 'following' }
@@ -185,7 +184,21 @@ const createAndSendNotification = async () => {
     await sendNotification(notificationInfo);
 }
 
-
+const acceptTerms = async (req, res) => {
+    const user = req.user
+    try {
+        let updatedUser;
+        if (user.type === "club") {
+            updatedUser = await Club.findByIdAndUpdate({ _id: user._id }, { $set: { acceptedTerms: true } }, { new: true });
+        } else if (user.type === "student") {
+            updatedUser = await Student.findByIdAndUpdate({ _id: user._id }, { $set: { acceptedTerms: true } }, { new: true });
+        }
+        res.status(200).json(updatedUser);
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+        console.log(error.message);
+    }
+}
 
 module.exports = {
     createClubAdmin,
@@ -195,5 +208,6 @@ module.exports = {
     refreshUser,
     fetchClubProfileById,
     joinClub,
-    setPushToken
+    setPushToken,
+    acceptTerms
 }

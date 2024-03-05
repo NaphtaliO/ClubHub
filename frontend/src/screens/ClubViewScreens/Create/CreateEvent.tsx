@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { TextField, View, Text, Colors} from 'react-native-ui-lib'
+import { TextField, View, Text, Colors, LoaderScreen } from 'react-native-ui-lib'
 import { CreateEventScreenProps } from '../../../types/types';
 import { Button } from 'react-native-paper';
 import { URL, VERSION } from '@env';
@@ -8,7 +8,7 @@ import { useLogout } from '../../../hooks/useLogout';
 import * as Haptics from 'expo-haptics';
 import { useAppSelector } from '../../../hooks/hooks';
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-// import EventMapLocation from '../../components/EventMapLocation';
+// import EventMapLocation from '../../../components/EventMapLocation';
 
 const CreateEvent = ({ navigation }: CreateEventScreenProps) => {
     const user = useAppSelector((state) => state.user.value);
@@ -34,14 +34,13 @@ const CreateEvent = ({ navigation }: CreateEventScreenProps) => {
         return formattedDate
     }
 
-    
     const handleCreate = async () => {
         if (loading) return;
-        if (!title || !location|| !summary) {
+        if (!title || !location || !summary) {
             alert("Fields can't be empty");
             return;
         }
-        // setLoading(true)
+        setLoading(true)
         try {
             const event = {
                 title,
@@ -71,11 +70,10 @@ const CreateEvent = ({ navigation }: CreateEventScreenProps) => {
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
                 navigation.navigate('ClubViewTabNav', { screen: 'Calendar' });
             }
-            
         } catch (error) {
             console.log((error as Error).message);
         }
-        // setLoading(false)
+        setLoading(false)
     }
 
     useEffect(() => {
@@ -83,13 +81,12 @@ const CreateEvent = ({ navigation }: CreateEventScreenProps) => {
             headerRight: () => (
                 <Button mode="contained"
                     onPress={handleCreate}
-                    loading={loading}
                 >
                     Post
                 </Button>
             ),
         });
-    }, [navigation, loading, handleCreate]);
+    }, [navigation, handleCreate]);
 
     return (
         <View style={styles.container} padding-20 flex>
@@ -155,6 +152,7 @@ const CreateEvent = ({ navigation }: CreateEventScreenProps) => {
                 fieldStyle={styles.withUnderline}
             />
             {/* <EventMapLocation location={location} /> */}
+            {loading && <LoaderScreen color={Colors.blue30} message="" overlay />}
         </View>
     )
 }

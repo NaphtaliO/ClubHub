@@ -1,42 +1,18 @@
-import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import ClubViewPost from '../../../components/ClubViewPost'
-import { useAppSelector } from '../../../hooks/hooks'
-import { URL, VERSION } from '@env'
-import { PostProp } from '../../../types/types'
-import { useLogout } from '../../../hooks/useLogout'
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import ClubViewPost from '../../../components/ClubViewPost';
+import { useAppSelector } from '../../../hooks/hooks';
+import { URL, VERSION } from '@env';
+import { ClubHomeScreenProps, PostProp } from '../../../types/types';
+import { useLogout } from '../../../hooks/useLogout';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import InViewPort from '../../../components/InViewPort';;
 
-const Feed = () => {
+const Feed = ({ navigation }: ClubHomeScreenProps) => {
   const [posts, setPosts] = useState<PostProp[]>([]);
   const user = useAppSelector((state) => state.user.value);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const { logout } = useLogout();
-
-  // const getPosts = async () => {
-  //   try {
-  //     const response = await fetch(`${URL}/api/${VERSION}/post/getPostsByClub`, {
-  //       method: 'GET',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'Authorization': `Bearer ${user?.token}`
-  //       },
-  //     })
-
-  //     const json = await response.json()
-
-  //     if (!response.ok) {
-  //       if (json.error === "Request is not authorized") {
-  //         logout()
-  //       }
-  //     }
-  //     if (response.ok) {
-  //       setPosts(json)
-  //     }
-  //   } catch (error) {
-  //     console.log((error as Error).message);
-  //   }
-  // }
 
   const fetchProjects = async ({ pageParam }: { pageParam: number }) => {
     const res = await fetch(`${URL}/api/${VERSION}/post/getPostsByClub?page=${pageParam}&limit=5`, {
@@ -107,7 +83,7 @@ const Feed = () => {
             onRefresh={onRefresh} />
         }
         data={data?.pages.flatMap(page => page)}
-        renderItem={({ item }) => <ClubViewPost item={item} setPosts={setPosts} posts={posts} />}
+        renderItem={({ item }) => <ClubViewPost item={item} refetch={refetch} navigation={navigation} />}
         keyExtractor={(item, index) => index.toString()}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.5}

@@ -1,29 +1,52 @@
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
 import { Card } from 'react-native-ui-lib';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import CustomImage from './CustomImage';
 import { formatDistanceToNowStrict } from 'date-fns';
 import CustomText from './CustomText';
 import { Icon } from '@rneui/themed';
 import { PostProp } from '../types/types';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import { deleteObject, getStorage, ref } from 'firebase/storage';
 import { URL, VERSION } from '@env';
+import * as Haptics from 'expo-haptics';
 import { useAppSelector } from '../hooks/hooks';
 import { useLogout } from '../hooks/useLogout';
 
 type Prop = {
     item: PostProp,
-    // setPosts: (arg: PostProp[]) => void,
-    // posts: PostProp[]
+    refetch: () => void
 }
 
-const StudentViewPost = ({ item }: Prop) => {
+const StudentViewPost = ({ item, refetch }: Prop) => {
     const user = useAppSelector((state) => state.user.value);
-    const [liked, setLiked] = useState<boolean>(false);
     const { showActionSheetWithOptions } = useActionSheet();
     const { logout } = useLogout();
+
+    const vibrateOnSuccess = () => {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+
+    const like = async () => {
+        try {
+            const response = await fetch(`${URL}/api/${VERSION}/post/like/${item._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${user?.token}`
+                },
+            });
+            const json = await response.json()
+            if (!response.ok) {
+                if (json.error === "Request is not authorized") {
+                    logout()
+                }
+            }
+            if (response.ok) {
+                refetch();
+            }
+        } catch (error) {
+            console.log((error as Error).message);
+        }
+    }
 
     const bottomSheet = () => {
         showActionSheetWithOptions({
@@ -70,20 +93,20 @@ const StudentViewPost = ({ item }: Prop) => {
                 {!item.uri ? null :
                     <CustomImage uri={item.uri} style={styles.image} />}
             </View>
-            <View style={{
-                marginVertical: 15,
-                paddingLeft: 15,
-                flexDirection: 'row',
-                alignItems: 'center'
-            }}>
-                <View>
-                    <TouchableOpacity onPress={() => setLiked(!liked)}>
+            <View style={{ flexDirection: 'row' }}>
+                <View style={{
+                    marginVertical: 15,
+                    paddingLeft: 15,
+                    flexDirection: 'row',
+                    alignItems: 'center'
+                }}>
+                    <TouchableOpacity onPress={like}>
                         <Icon
                             style={{ marginRight: 7 }}
                             size={25}
-                            name={liked ? 'heart' : 'heart-outlined'}
-                            type={'entypo'}
-                            color={liked ? 'red' : ''}
+                            name={item.likes.includes(user?._id) ? 'heart' : 'heart-outline'}
+                            type={'material-community'}
+                            color={item.likes.includes(user?._id) ? 'red' : ''}
                         />
                     </TouchableOpacity>
                     {/* TODO: Introduce like animations
@@ -91,9 +114,28 @@ const StudentViewPost = ({ item }: Prop) => {
                 */}
                     <Text style={{ fontSize: 16, fontWeight: '600' }}>{item.likes.length}</Text>
                 </View>
-                
-            </View>
 
+                <View style={{
+                    marginVertical: 15,
+                    paddingLeft: 15,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                }}>
+                    <TouchableOpacity onPress={() => {}}>
+                        <Icon
+                            style={{ marginRight: 7 }}
+                            size={23}
+                            name={'comment-outline'}
+                            type={'material-community'}
+                            color={''}
+                        />
+                    </TouchableOpacity>
+                    {/* TODO: Introduce like animations
+                https://dev.to/vcapretz/instagram-like-button-in-react-native-and-reanimated-v2-3h3k
+                */}
+                    <Text style={{ fontSize: 16, fontWeight: '600' }}>{item.comments.length}</Text>
+                </View>
+            </View>
         </Card>
     )
 }

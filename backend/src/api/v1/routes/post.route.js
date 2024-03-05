@@ -1,5 +1,5 @@
 const express = require("express");
-const { createPost, getAllPostsByClub, deletePost, getStudentsFeed } = require('../controllers/post.controller');
+const { createPost, getAllPostsByClub, deletePost, getStudentsFeed, likePost } = require('../controllers/post.controller');
 const requireAuth = require("../middleware/requireAuth");
 
 const router = express.Router();
@@ -12,5 +12,6 @@ router.post('/create', createPost)
 router.get('/getPostsByClub', getAllPostsByClub)
 router.delete('/deletePost/:id', deletePost)
 router.get('/getStudentsFeed', getStudentsFeed)
+router.put('/like/:id', likePost)
 
 module.exports = router;

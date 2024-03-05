@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, ActivityIndicator, Alert, KeyboardAvoidingView, ImageBackground, Platform, Image as RNImage } from 'react-native';
+import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, Platform, Image as RNImage } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
@@ -12,17 +12,25 @@ import { URL, VERSION } from '@env';
 import { useLogout } from '../../../hooks/useLogout';
 import { useAppSelector } from '../../../hooks/hooks';
 import CustomToast, { ToastContext } from '../../../components/CustomToast';
+// import { Video, ResizeMode } from 'expo-av';
+
+type Media = {
+    uri: string,
+    type: 'image' | 'video' | undefined
+}
 
 export default function Post({ navigation }: CreatePostScreenProps) {
     const user = useAppSelector((state) => state.user.value);
     const [loading, setLoading] = useState(false);
     const [selected, setSelected] = useState(false);
     const [caption, setCaption] = useState("");
-    const [image, setImage] = useState<string | undefined>(undefined);
+    const [media, setMedia] = useState<Media | undefined>(undefined);
     // const hasUnsavedChanges = Boolean(!caption && !image);
     const { logout } = useLogout();
     const [permission, requestPermission] = ImagePicker.useCameraPermissions();
-    const displayToast  = useContext(ToastContext);
+    const displayToast = useContext(ToastContext);
+    const video = React.useRef(null);
+    const [status, setStatus] = React.useState({});
 
     // useEffect(() => {
     //     navigation.addListener('beforeRemove', (e) => {
@@ -54,21 +62,22 @@ export default function Post({ navigation }: CreatePostScreenProps) {
     let openImagePickerAsync = async () => {
         Haptics.selectionAsync()
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            // allowsMultipleSelection: true,
-            // allowsEditing: true,
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
             presentationStyle: ImagePicker.UIImagePickerPresentationStyle.FULL_SCREEN,
             aspect: [4, 3],
             quality: 0,
+            videoMaxDuration: 30,
+            videoQuality: ImagePicker.UIImagePickerControllerQualityType.Low
         });
 
         if (!result.canceled) {
-            setImage(result.assets[0].uri);
+            setMedia({ uri: result.assets[0].uri, type: result.assets[0].type });
             setSelected(true);
         }
 
         if (result.canceled) {
-            setImage(undefined);
+            setMedia(undefined);
             setSelected(false);
         }
     };
@@ -87,12 +96,12 @@ export default function Post({ navigation }: CreatePostScreenProps) {
             });
 
             if (!result.canceled) {
-                setImage(result.assets[0].uri);
+                setMedia({ uri: result.assets[0].uri, type: result.assets[0].type });
                 setSelected(true);
             }
 
             if (result.canceled) {
-                setImage(undefined);
+                setMedia(undefined);
                 setSelected(false);
             }
         }
@@ -100,13 +109,13 @@ export default function Post({ navigation }: CreatePostScreenProps) {
 
     const handleCreate = async () => {
         try {
-            let uri = null;
-            if (selected) uri = await handleImagePicked(image);
-            if (!uri || !caption) {
+            if (!media?.uri || !caption) {
                 displayToast?.displayToast("Select both an image and caption", "failure")
                 return;
             }
-            const post = { uri, caption, type: "image" }
+            let uri = null;
+            if (selected) uri = await handleImagePicked(media);
+            const post = { uri, caption, type: media.type }
 
             const response = await fetch(`${URL}/api/${VERSION}/post/create`, {
                 method: 'POST',
@@ -135,7 +144,7 @@ export default function Post({ navigation }: CreatePostScreenProps) {
     }
 
     const create = () => {
-        // if (loading) return;
+        if (loading) return;
         setLoading(true);
         handleCreate();
         setLoading(false);
@@ -148,25 +157,20 @@ export default function Post({ navigation }: CreatePostScreenProps) {
                 // Implement a way to show loading when post button is clicked
                 // Do the same for Creating new event
                 <Button mode="contained"
-                    onPress={handleCreate}
+                    onPress={create}
                     loading={loading}
                 >
                     Post
                 </Button>
             ),
         });
-    }, [navigation, loading, handleCreate]);
+    }, [navigation, create, loading]);
 
-    const handleImagePicked = async (pickerResult: any) => {
+    const handleImagePicked = async (content: Media) => {
         let avatar;
         try {
-            if (pickerResult.cancelled) {
-                alert("Upload cancelled");
-                return;
-            } else {
-                const uploadUrl = await uploadImage(pickerResult);
-                avatar = uploadUrl;
-            }
+            const uploadUrl = await uploadImage(content);
+            avatar = uploadUrl;
         } catch (e) {
             console.log((e as Error).message);
             alert("Upload failed");
@@ -174,7 +178,7 @@ export default function Post({ navigation }: CreatePostScreenProps) {
         return avatar;
     };
 
-    const uploadImage = async (uri: string) => {
+    const uploadImage = async (content: Media) => {
         try {
             const blob = await new Promise((resolve, reject) => {
                 const xhr = new XMLHttpRequest();
@@ -186,11 +190,12 @@ export default function Post({ navigation }: CreatePostScreenProps) {
                     reject(new TypeError("Network request failed"));
                 };
                 xhr.responseType = "blob";
-                xhr.open("GET", uri, true);
+                xhr.open("GET", content.uri, true);
                 xhr.send(null);
             });
 
             const fileRef = ref(getStorage(), `${user?._id}/${uuidv4()}`);
+            // const metadata = { contentType: content?.type === "image" ? "image/jpeg" : "video/mp4" };
             const result = await uploadBytes(fileRef, blob);
 
             // We're done with the blob, close and release it
@@ -204,7 +209,7 @@ export default function Post({ navigation }: CreatePostScreenProps) {
 
     const removeImage = () => {
         // TODO: remove image
-        setImage(undefined);
+        setMedia(undefined);
         setSelected(false);
     }
 
@@ -227,7 +232,7 @@ export default function Post({ navigation }: CreatePostScreenProps) {
                     numberOfLines={4}
                     maxLength={500}
                     editable />
-                {image ?
+                {media && media.type === "image" ?
                     // <Image
                     //     customOverlayContent={
                     //         <View style={{marginLeft: 'auto', padding: 5}}>
@@ -236,16 +241,25 @@ export default function Post({ navigation }: CreatePostScreenProps) {
                     //     }
                     //     source={{ uri: image }}
                     // style={styles.image} />
-                    <RNImage style={styles.image} source={{ uri: image }} resizeMode='cover' />
-                    : null}
+                    <RNImage style={styles.image} source={{ uri: media.uri }} resizeMode='cover' />
+                    : media && media.type === "video" ?
+                        <View>
+                            {/* <Video
+                                ref={video}
+                                style={styles.video}
+                                source={{ uri: media.uri }}
+                                useNativeControls
+                                resizeMode={ResizeMode.CONTAIN}
+                                isLooping
+                                onPlaybackStatusUpdate={status => setStatus(() => status)}
+                            /> */}
+                        </View>
+                        : null}
             </View>
-
             <View style={{ marginTop: 'auto', marginHorizontal: 35, marginBottom: 20, flexDirection: 'row' }}>
                 <TouchableIcon name="photo" onPress={openImagePickerAsync} style={styles.bottomIcon} />
                 <TouchableIcon name="camera" onPress={openCameraAsync} style={styles.bottomIcon} />
             </View>
-            {/* TODO: Work on Custom Toast Provider
-            {showToast && <CustomToast setShowToast={setShowToast} showToast={showToast} />} */}
         </KeyboardAvoidingView>
 
     );
@@ -271,9 +285,20 @@ const styles = StyleSheet.create({
         width: '100%',
         // height: 400,
         borderRadius: 10,
-        aspectRatio: 4/3
+        aspectRatio: 4 / 3
     },
     bottomIcon: {
         marginRight: 35
-    }
+    },
+    video: {
+        alignSelf: 'center',
+        width: '100%',
+        borderRadius: 10,
+        aspectRatio: 4 / 3
+    },
+    buttons: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 });
