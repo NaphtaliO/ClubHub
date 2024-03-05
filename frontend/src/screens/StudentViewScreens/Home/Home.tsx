@@ -133,7 +133,7 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
     isFetching,
     isFetchingNextPage,
     status,
-    refetch
+    refetch,
   } = useInfiniteQuery({
     queryKey: ['feed'],
     queryFn: fetchProjects,
@@ -180,7 +180,7 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
             onRefresh={onRefresh} />
         }
         data={data?.pages.flatMap(page => page)}
-        renderItem={({ item }) => <StudentViewPost item={item} />}
+        renderItem={({ item }) => <StudentViewPost item={item} refetch={refetch} />}
         keyExtractor={(item, index) => index.toString()}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.5}

@@ -20,9 +20,12 @@ import {
   MESSAGINGSENDERID,
   APPID,
   MEASUREMENTID,
+  URL,
 } from "@env";
 import { ToastContextProvider } from './src/components/CustomToast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { socket } from './src/socket';
+import { useEffect, useState } from 'react';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -47,9 +50,37 @@ if (!getApps().length) {
 
 const storage = getStorage(app);
 
+
+
 const queryClient = new QueryClient()
 
 export default function App() {
+  const [isConnected, setIsConnected] = useState(socket.connected);
+
+  useEffect(() => {
+    function onConnect() {
+      setIsConnected(true);
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    // function onFooEvent(value) {
+    //   setFooEvents(previous => [...previous, value]);
+    // }
+
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+    // socket.on('foo', onFooEvent);
+
+    return () => {
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
+      // socket.off('foo', onFooEvent);
+    };
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider store={store}>

@@ -112,12 +112,15 @@ const Calendar = ({ navigation }: CalendarScreenProps) => {
         format24h: true,
         onBackgroundLongPress: createNewEvent,
         onBackgroundLongPressOut: approveNewEvent,
-        // scrollToFirst: true,
+        scrollToFirst: true,
         // start: 0,
         // end: 24,
         unavailableHours: [{ start: 0, end: 6 }, { start: 22, end: 24 }],
         overlapEventsSpacing: 8,
         rightEdgeSpacing: 24,
+        onEventPress: (e) => {
+            navigation.navigate('CalendarEventDetails', { event: e });
+        }
     };
 
     const getAllEvents = async () => {

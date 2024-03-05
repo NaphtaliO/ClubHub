@@ -12,18 +12,28 @@ import { deleteObject, getStorage, ref } from 'firebase/storage';
 import { URL, VERSION } from '@env';
 import { useAppSelector } from '../hooks/hooks';
 import { useLogout } from '../hooks/useLogout';
+import CustomVideo from './CustomVideo';
 
 type Prop = {
     item: PostProp,
-    setPosts: (arg: PostProp[]) => void,
-    posts: PostProp[]
+    refetch: () => void,
+    navigation: any
 }
 
-const ClubViewPost = ({ item, setPosts, posts }: Prop) => {
+const ClubViewPost = ({ item, refetch, navigation }: Prop) => {
     const user = useAppSelector((state) => state.user.value);
     const [liked, setLiked] = useState<boolean>(false);
     const { showActionSheetWithOptions } = useActionSheet();
     const { logout } = useLogout();
+    const [isInView, setIsInView] = useState(false)
+
+    const checkVisible = (isVisible: boolean) => {
+        if (isVisible) {
+            setIsInView(isVisible)
+        } else {
+            setIsInView(isVisible)
+        }
+    }
 
     const deleteFromFirebase = async (url: string) => {
         if (url === null || url === "") {
@@ -45,7 +55,6 @@ const ClubViewPost = ({ item, setPosts, posts }: Prop) => {
             { text: 'Cancel', onPress: () => { }, style: 'cancel' },
             {
                 text: 'Delete', style: 'default', onPress: async () => {
-                    await deleteFromFirebase(uri)
                     try {
                         const response = await fetch(`${URL}/api/${VERSION}/post/deletePost/${id}`, {
                             method: 'DELETE',
@@ -61,8 +70,8 @@ const ClubViewPost = ({ item, setPosts, posts }: Prop) => {
                             }
                         }
                         if (response.ok) {
-                            const updatedData= posts.filter(item => item._id !== json._id);
-                            setPosts(updatedData);
+                            await deleteFromFirebase(uri)
+                            refetch();
                         }
                     } catch (error) {
                         console.log((error as Error).message);
@@ -71,6 +80,28 @@ const ClubViewPost = ({ item, setPosts, posts }: Prop) => {
             }
         ])
     };
+
+    const like = async () => {
+        try {
+            const response = await fetch(`${URL}/api/${VERSION}/post/like/${item._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${user?.token}`
+                },
+            });
+            const json = await response.json()
+            if (!response.ok) {
+                if (json.error === "Request is not authorized") {
+                    logout()
+                }
+            }
+            if (response.ok) {
+                refetch();
+            }
+        } catch (error) {
+            console.log((error as Error).message);
+        }
+    }
 
     const bottomSheet = () => {
         showActionSheetWithOptions({
@@ -90,7 +121,7 @@ const ClubViewPost = ({ item, setPosts, posts }: Prop) => {
     }
 
     return (
-        <Card style={{margin: 6}}>
+        <Card style={{ margin: 6 }}>
             <View style={{ marginHorizontal: 20 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 15 }}>
                     {/* avatar */}
@@ -112,35 +143,55 @@ const ClubViewPost = ({ item, setPosts, posts }: Prop) => {
                 <CustomText style={styles.caption} caption={item.caption} />
             </View>
             <View style={{ marginTop: 10 }}>
-                {/* Image  */}
-                {/* If image is null do nothing else return image */}
-                {!item.uri ? null :
-                    <CustomImage uri={item.uri} style={styles.image} />}
+                {/* Media  */}
+                {!item.uri ? null : item.type === "image" ?
+                    <CustomImage uri={item.uri} style={styles.image} /> : item.type === "video" ?
+                        <CustomVideo style={styles.image} uri={item.uri} /> : null}
             </View>
-            <View style={{
-                marginVertical: 15,
-                paddingLeft: 15,
-                flexDirection: 'row',
-                alignItems: 'center'
-            }}>
-                <TouchableOpacity onPress={() => setLiked(!liked)}>
-                {liked ? <Icon
-                    style={{marginRight: 7}}
-                    size={25}
-                    name='heart'
-                    type='entypo'
-                    color='red'
-                /> : <Icon
-                    style={{ marginRight: 7 }}
-                    size={25}
-                    name='heart-outlined'
-                    type='entypo'
-                    color=''
-                />}
-                </TouchableOpacity>
-                <Text style={{fontSize: 16, fontWeight: '600'}}>{ item.likes.length }</Text>
+            <View style={{ flexDirection: 'row' }}>
+                <View style={{
+                    marginVertical: 15,
+                    paddingLeft: 15,
+                    flexDirection: 'row',
+                    alignItems: 'center'
+                }}>
+                    <TouchableOpacity onPress={like}>
+                        <Icon
+                            style={{ marginRight: 7 }}
+                            size={25}
+                            name={item.likes.includes(user?._id) ? 'heart' : 'heart-outline'}
+                            type={'material-community'}
+                            color={item.likes.includes(user?._id) ? 'red' : ''}
+                        />
+                    </TouchableOpacity>
+                    {/* TODO: Introduce like animations
+                https://dev.to/vcapretz/instagram-like-button-in-react-native-and-reanimated-v2-3h3k
+                */}
+                    <Text style={{ fontSize: 16, fontWeight: '600' }}>{item.likes.length}</Text>
+                </View>
+
+                <View style={{
+                    marginVertical: 15,
+                    paddingLeft: 15,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                }}>
+                    <TouchableOpacity onPress={() => navigation.navigate('ClubCommentsScreen', { post_id: item._id })}>
+                        <Icon
+                            style={{ marginRight: 7 }}
+                            size={23}
+                            name={'comment-outline'}
+                            type={'material-community'}
+                            color={''}
+                        />
+                    </TouchableOpacity>
+                    {/* TODO: Introduce like animations
+                https://dev.to/vcapretz/instagram-like-button-in-react-native-and-reanimated-v2-3h3k
+                */}
+                    <Text style={{ fontSize: 16, fontWeight: '600' }}>{item.comments.length}</Text>
+                </View>
             </View>
-            
+
         </Card>
     )
 }
@@ -168,6 +219,6 @@ const styles = StyleSheet.create({
     },
     image: {
         width: '100%',
-        aspectRatio: 4/3
+        aspectRatio: 4 / 3
     },
 })

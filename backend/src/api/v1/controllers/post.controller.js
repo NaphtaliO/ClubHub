@@ -85,9 +85,48 @@ const deletePost = async (req, res) => {
     }
 }
 
+const likePost = async (req, res) => {
+    const user_id = req.user._id;
+    const { id } = req.params;
+    try {
+
+        const post = await Post.findById(id);
+        
+        // const postAuthor = await User.findOne({ _id: post.user_id }).select("username pushToken")
+        // const authUser = await User.findOne({ _id: user_id }).select("username")
+
+        const isLiked = post.likes.includes(user_id);
+
+        if (isLiked) {
+            let index = post.likes.indexOf(user_id);
+            if (index > -1) {
+                post.likes.splice(index, 1);
+            }
+        } else {
+            post.likes.push(user_id);
+            // if (post.user_id !== user_id.toHexString()) {
+            //     const notificationInfo = {
+            //         token: postAuthor.pushToken,
+            //         title: `${postAuthor.username}`,
+            //         body: `@${authUser.username} liked your post`,
+            //         data: { type: "liked", post_id: post._id }
+            //     };
+            //     await sendNotification(notificationInfo.token, notificationInfo.body, notificationInfo.title, notificationInfo.data);
+            // }
+        }
+
+        const updatedPost = await Post.findByIdAndUpdate(id, { likes: post.likes }, { new: true });
+        res.status(200).json(updatedPost);
+    } catch (error) {
+        console.log(error.message);
+        res.status(404).json({ message: error.message });
+    }
+};
+
 module.exports = {
     createPost,
     getAllPostsByClub,
     deletePost,
-    getStudentsFeed
+    getStudentsFeed,
+    likePost
 }

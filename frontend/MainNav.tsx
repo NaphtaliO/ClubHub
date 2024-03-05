@@ -16,6 +16,12 @@ import ClubViewTabNav from './src/navigation/ClubViewTabNav';
 import StudentViewTabNav from './src/navigation/StudentViewTabNav';
 import ClubProfile from './src/screens/StudentViewScreens/Profile/ClubProfile';
 import EditClubProfile from './src/screens/ClubViewScreens/Profile/EditClubProfile';
+import EventDetails from './src/screens/ClubViewScreens/Calendar/EventDetails';
+import CalendarEventDetails from './src/screens/StudentViewScreens/Calendar/CalendarEventDetails';
+import TermsAndConditions from './src/components/TermsAndConditions';
+import ClubCommentsScreen from './src/screens/ClubViewScreens/Home/ClubCommentsScreen';
+import LiveStream from './src/screens/ClubViewScreens/Calendar/LiveStream';
+import WatchLiveStream from './src/screens/StudentViewScreens/Calendar/WatchLiveStream';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -61,6 +67,12 @@ const MainNav = () => {
                 })}>
                 {user && user.type === "club" ? (
                     <>
+                        {!user?.acceptedTerms ? <Stack.Screen name="TermsAndConditions"
+                            component={TermsAndConditions}
+                            options={{
+                                // headerShown: false,
+                                headerLeft: () => null
+                            }} /> : null}
                         <Stack.Screen name="ClubViewTabNav" component={ClubViewTabNav}
                             options={{
                                 headerShown: false,
@@ -71,16 +83,32 @@ const MainNav = () => {
                             options={{ headerTitle: "New Event" }} />
                         <Stack.Screen name="EditClubProfile" component={EditClubProfile}
                             options={{ headerTitle: "New Event" }} />
+                        <Stack.Screen name="EventDetails" component={EventDetails}
+                            options={{ headerTitle: "Event Details" }} />
+                        <Stack.Screen name="ClubCommentsScreen" component={ClubCommentsScreen}
+                            options={{ presentation: 'modal', headerLeft: () => null, headerTitle: 'Comments' }}/>
+                        <Stack.Screen name="LiveStream" component={LiveStream}
+                            options={{ headerTitle: "Go Live", headerShown: false }} />
                     </>
                 ) : user && user.type === "student" ? (
-                    <>
-                            <Stack.Screen name="StudentViewTabNav" component={StudentViewTabNav}
+                        <>
+                            {!user?.acceptedTerms ? <Stack.Screen name="TermsAndConditions"
+                                component={TermsAndConditions}
                                 options={{
-                                    headerShown: false,
-                                }} />
-                            <Stack.Screen name="ClubProfile" component={ClubProfile} options={({ navigation, route }) => ({
-                                title: route.params.name
-                                })} />
+                                    // headerShown: false,
+                                    headerLeft: () => null
+                                }} /> : null}
+                        <Stack.Screen name="StudentViewTabNav" component={StudentViewTabNav}
+                            options={{
+                                headerShown: false,
+                            }} />
+                        <Stack.Screen name="ClubProfile" component={ClubProfile} options={({ navigation, route }) => ({
+                            title: route.params.name
+                        })} />
+                        <Stack.Screen name="CalendarEventDetails" component={CalendarEventDetails}
+                                options={{ headerTitle: "Event Details" }} />
+                        <Stack.Screen name="WatchLiveStream" component={WatchLiveStream}
+                                options={{ headerTitle: "Watch Live", headerShown: false }} />
                     </>
                 ) : (
                     <>

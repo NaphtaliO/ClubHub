@@ -11,8 +11,28 @@ export type RootStackParamList = {
   CreateEvent: undefined,
   LogIn: undefined,
   CreateAccount: undefined,
-  StartScreen: undefined
+  StartScreen: undefined,
+  LiveStream: { event: Event },
+  WatchLiveStream: { event: Event },
+  EventDetails: { event: Event },
+  CalendarEventDetails: { event: Event },
+  TermsAndConditions: undefined,
+  ClubCommentsScreen: { post_id: string },
+  StudentCommentsScreen: { post_id: string }
 };
+
+export interface Event {
+  _id?: string,
+  location?: string,
+  title?: string,
+  start?: string,
+  end?: string,
+  summary?: string,
+  club?: object,
+  rsvp?: string[]
+  createdAt?: string,
+  updatedAt?: string,
+}
 
 export type StudentViewTabParamList = {
   Home: undefined,
@@ -36,6 +56,14 @@ export type StartScreenProps = NativeStackScreenProps<RootStackParamList, 'Start
 // ClubViewScreens
 export type CreatePostScreenProps = NativeStackScreenProps<RootStackParamList, 'CreatePost'>;
 export type CreateEventScreenProps = NativeStackScreenProps<RootStackParamList, 'CreateEvent'>;
+export type ClubCommentsScreenProps = NativeStackScreenProps<RootStackParamList, 'ClubCommentsScreen'>;
+export type LiveStreamProps = NativeStackScreenProps<RootStackParamList, 'LiveStream'>;
+export type EventDetailsProps = NativeStackScreenProps<RootStackParamList, 'EventDetails'>;
+export type CalendarEventDetailsProps = NativeStackScreenProps<RootStackParamList, 'CalendarEventDetails'>;
+export type ClubHomeScreenProps = CompositeScreenProps<
+  BottomTabScreenProps<ClubViewTabParamList, 'Home'>,
+  NativeStackScreenProps<RootStackParamList>
+>;
 export type EventsScreenProps = CompositeScreenProps<
   BottomTabScreenProps<ClubViewTabParamList, 'Calendar'>,
   NativeStackScreenProps<RootStackParamList>
@@ -47,6 +75,7 @@ export type ClubViewProfileScreenProps = CompositeScreenProps<
 >;
 
 // StudentView Screens
+export type WatchLiveStreamProps = NativeStackScreenProps<RootStackParamList, 'WatchLiveStream'>;
 export type StudentHomeScreenProps = CompositeScreenProps<
   BottomTabScreenProps<StudentViewTabParamList, 'Home'>,
   NativeStackScreenProps<RootStackParamList>
@@ -54,7 +83,7 @@ export type StudentHomeScreenProps = CompositeScreenProps<
 export type SearchScreenProps = CompositeScreenProps<
   BottomTabScreenProps<StudentViewTabParamList, 'Search'>,
   NativeStackScreenProps<RootStackParamList>
-  >;
+>;
 export type CalendarScreenProps = CompositeScreenProps<
   BottomTabScreenProps<StudentViewTabParamList, 'Calendar'>,
   NativeStackScreenProps<RootStackParamList>
