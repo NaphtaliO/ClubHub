@@ -20,8 +20,10 @@ import EventDetails from './src/screens/ClubViewScreens/Calendar/EventDetails';
 import CalendarEventDetails from './src/screens/StudentViewScreens/Calendar/CalendarEventDetails';
 import TermsAndConditions from './src/components/TermsAndConditions';
 import ClubCommentsScreen from './src/screens/ClubViewScreens/Home/ClubCommentsScreen';
-import LiveStream from './src/screens/ClubViewScreens/Calendar/LiveStream';
-import WatchLiveStream from './src/screens/StudentViewScreens/Calendar/WatchLiveStream';
+import NotificationScreen from './src/screens/StudentViewScreens/Home/NotificationScreen';
+import SendNotification from './src/screens/ClubViewScreens/Create/SendNotification';
+// import LiveStream from './src/screens/ClubViewScreens/Calendar/LiveStream';
+// import WatchLiveStream from './src/screens/StudentViewScreens/Calendar/WatchLiveStream';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -87,8 +89,10 @@ const MainNav = () => {
                             options={{ headerTitle: "Event Details" }} />
                         <Stack.Screen name="ClubCommentsScreen" component={ClubCommentsScreen}
                             options={{ presentation: 'modal', headerLeft: () => null, headerTitle: 'Comments' }}/>
-                        <Stack.Screen name="LiveStream" component={LiveStream}
-                            options={{ headerTitle: "Go Live", headerShown: false }} />
+                        {/* <Stack.Screen name="LiveStream" component={LiveStream}
+                            options={{ headerTitle: "Go Live", headerShown: false }} /> */}
+                        <Stack.Screen name="SendNotification" component={SendNotification}
+                            options={{ headerTitle: "New Notification" }} />
                     </>
                 ) : user && user.type === "student" ? (
                         <>
@@ -107,8 +111,10 @@ const MainNav = () => {
                         })} />
                         <Stack.Screen name="CalendarEventDetails" component={CalendarEventDetails}
                                 options={{ headerTitle: "Event Details" }} />
-                        <Stack.Screen name="WatchLiveStream" component={WatchLiveStream}
-                                options={{ headerTitle: "Watch Live", headerShown: false }} />
+                        {/* <Stack.Screen name="WatchLiveStream" component={WatchLiveStream}
+                                options={{ headerTitle: "Watch Live", headerShown: false }} /> */}
+                            <Stack.Screen name="NotificationScreen" component={NotificationScreen}
+                                options={{ headerTitle: "Notifications" }} />
                     </>
                 ) : (
                     <>
