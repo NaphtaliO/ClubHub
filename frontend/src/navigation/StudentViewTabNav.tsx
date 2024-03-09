@@ -35,15 +35,21 @@ const StudentViewTabNav = ({ }) => {
                 tabBarShowLabel: false,
                 tabBarStyle: {
                     display: "flex",
+                    
                 },
             })}
         >
             <Tab.Screen
                 name="Home"
                 component={Home}
-                options={{
+                options={({ navigation }) => ({
+                    headerRight: () => (
+                        <TouchableOpacity onPress={() => navigation.navigate("NotificationScreen")}>
+                            <Ionicons name="notifications-outline" size={26} color="black" style={{marginRight: 23}} />
+                        </TouchableOpacity>
+                    ),
                     headerTitle: "ClubHub",
-                }}
+                })}
             />
             <Tab.Screen
                 name="Search"
