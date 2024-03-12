@@ -1,4 +1,4 @@
-import { ActivityIndicator, FlatList, Platform, RefreshControl, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Dimensions, FlatList, Platform, RefreshControl, StyleSheet, View } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { Subscription } from 'expo-modules-core';
 import { PostProp, StudentHomeScreenProps } from '../../../types/types';
@@ -9,6 +9,15 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { useLogout } from '../../../hooks/useLogout';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
+
+const { height, width } = Dimensions.get('window');
+
+const cellHeight = height * 0.6;
+const cellWidth = width;
+
+const viewabilityConfig = {
+  itemVisiblePercentThreshold: 80,
+};
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -55,6 +64,7 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const dispatch = useAppDispatch();
   const { logout } = useLogout();
+  const cellRefs = useRef<any>({});
   const [notification, setNotification] = useState();
   const notificationListener = useRef();
   const responseListener = useRef();
@@ -78,7 +88,7 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
       }
       if (response.ok) {
         console.log(json);
-        
+
       }
     } catch (error) {
       console.log((error as Error).message);
@@ -87,24 +97,22 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
 
   useEffect(() => {
     registerForPushNotificationsAsync().then(token => {
-      console.log(token);
       setPushToken(token);
-      // dispatch(setToken(token))
     });
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
     });
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
       let data = response.notification.request.content.data;
-      console.log(data);
-      
-      // if (data.type === "following") {
-      //   navigation.push('UserProfileScreen', { username: data.username, id: data.id })
-      // } else if (data.type === "comment") {
+      if (data.type === "newEvent") {
+        navigation.push('CalendarEventDetails', { event: data.event })
+      }
+      // else if (data.type === "comment") {
       //   navigation.push("CommentsScreen", { post_id: data.post_id })
       // } else if (data.type === "liked") {
       //   navigation.push("LikesScreen", { post_id: data.post_id })
       // }
+      console.log(data);
     });
 
     return () => {
@@ -146,6 +154,10 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
     },
   })
 
+  if (error) {
+    console.log(error);
+  }
+
   const onRefresh = async () => {
     setRefreshing(true);
     refetch();
@@ -164,6 +176,23 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
     }
   }
 
+  const _onViewableItemsChanged = (props: any) => {
+    const changed = props.changed;
+    changed.forEach((item: any) => {
+      const cell = cellRefs.current[item.item._id];
+      if (cell) {
+        if (item.isViewable) {
+          // console.log(item.index);
+          cell.current.playAsync()
+          // console.log("play");
+        } else if (!item.isViewable) {
+          cell.current.pauseAsync();
+          // console.log("pause");
+        }
+      }
+    });
+  };
+
   // const scrollToTop = () => {
   //   if (flatListRef.current) {
   //     flatListRef.current.scrollToOffset({ offset: 0, animated: true });
@@ -180,11 +209,27 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
             onRefresh={onRefresh} />
         }
         data={data?.pages.flatMap(page => page)}
-        renderItem={({ item }) => <StudentViewPost item={item} refetch={refetch} />}
+        renderItem={({ item }) => (
+          <StudentViewPost onVideoRef={(videoRef) => {
+            cellRefs.current[item._id] = videoRef.current;
+            // console.log(videoRef);
+          }} item={item} refetch={refetch} navigation={navigation}/>
+        )}
         keyExtractor={(item, index) => index.toString()}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.5}
         ListFooterComponent={renderFooter}
+        onViewableItemsChanged={_onViewableItemsChanged}
+        initialNumToRender={3}
+        maxToRenderPerBatch={3}
+        windowSize={5}
+        getItemLayout={(_data, index) => ({
+          length: cellHeight,
+          offset: cellHeight * index,
+          index,
+        })}
+        viewabilityConfig={viewabilityConfig}
+        removeClippedSubviews={true}
       />
     </View>
   )

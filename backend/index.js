@@ -56,10 +56,10 @@ io.on("connection", (socket) => {
   });
 });
 
-
 // V1 routes
 app.use('/api/v1/auth', require('./src/api/v1/routes/auth.route'));
 app.use('/api/v1/post', require('./src/api/v1/routes/post.route'));
 app.use('/api/v1/event', require('./src/api/v1/routes/event.route'));
 app.use('/api/v1/user', require('./src/api/v1/routes/user.route'));
 app.use('/api/v1/comment', require('./src/api/v1/routes/comment.route'));
+app.use('/api/v1/notification', require('./src/api/v1/routes/notification.route'));

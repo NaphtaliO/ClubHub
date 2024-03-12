@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { Card } from 'react-native-ui-lib';
 import CustomImage from './CustomImage';
 import { formatDistanceToNowStrict } from 'date-fns';
@@ -11,16 +11,28 @@ import { URL, VERSION } from '@env';
 import * as Haptics from 'expo-haptics';
 import { useAppSelector } from '../hooks/hooks';
 import { useLogout } from '../hooks/useLogout';
+import { Video } from 'expo-av';
+import CustomVideo from './CustomVideo';
 
 type Prop = {
     item: PostProp,
-    refetch: () => void
+    refetch: () => void,
+    navigation: any,
+    onVideoRef: (video: RefObject<Video>) => void,
 }
 
-const StudentViewPost = ({ item, refetch }: Prop) => {
+const StudentViewPost = ({ item, refetch, navigation, onVideoRef }: Prop) => {
     const user = useAppSelector((state) => state.user.value);
     const { showActionSheetWithOptions } = useActionSheet();
     const { logout } = useLogout();
+    const [status, setStatus] = useState({});
+    const video = useRef<any>(null);
+
+    useEffect(() => {
+        if (onVideoRef && typeof onVideoRef === 'function') {
+            onVideoRef(video);
+        }
+    }, [onVideoRef, video]);
 
     const vibrateOnSuccess = () => {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -88,10 +100,17 @@ const StudentViewPost = ({ item, refetch }: Prop) => {
                 <CustomText style={styles.caption} caption={item.caption} />
             </View>
             <View style={{ marginTop: 10 }}>
-                {/* Image  */}
-                {/* If image is null do nothing else return image */}
-                {!item.uri ? null :
-                    <CustomImage uri={item.uri} style={styles.image} />}
+                {/* Media  */}
+                {!item?.uri ? null : item?.type === "image" ?
+                    <CustomImage uri={item?.uri} style={styles.image} /> : item?.type === "video" ?
+                        <CustomVideo
+                            style={styles.image}
+                            uri={item?.uri}
+                            status={status}
+                            setStatus={setStatus}
+                            onVideoRef={(ref) => video.current = ref}
+                        />
+                        : null}
             </View>
             <View style={{ flexDirection: 'row' }}>
                 <View style={{
@@ -104,9 +123,9 @@ const StudentViewPost = ({ item, refetch }: Prop) => {
                         <Icon
                             style={{ marginRight: 7 }}
                             size={25}
-                            name={item.likes.includes(user?._id) ? 'heart' : 'heart-outline'}
+                            name={item?.likes?.includes(`${user?._id}`) ? 'heart' : 'heart-outline'}
                             type={'material-community'}
-                            color={item.likes.includes(user?._id) ? 'red' : ''}
+                            color={item?.likes?.includes(`${user?._id}`) ? 'red' : ''}
                         />
                     </TouchableOpacity>
                     {/* TODO: Introduce like animations

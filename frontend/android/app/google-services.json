@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "698461246004",
+    "project_id": "clubhub-fd91f",
+    "storage_bucket": "clubhub-fd91f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:698461246004:android:acbd2cf9f14a1e0a617061",
+        "android_client_info": {
+          "package_name": "com.naphtali2003.ClubHub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANwajYfa6VLkfQSoTj2BqxhG95I0ADV28"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

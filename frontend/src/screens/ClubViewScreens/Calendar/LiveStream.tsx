@@ -18,33 +18,24 @@ import { LivestreamFlipControlButton } from "../../../components/LivestreamFlipC
 import { useFocusEffect } from "@react-navigation/native";
 import { Event, LiveStreamProps } from "../../../types/types";
 import { socket } from "../../../socket";
+import { LIVESTREAMAPIKEY } from "@env";
 
 
 export default function LiveStream({ route }: LiveStreamProps) {
     const { event } = route.params
     const authUser = useAppSelector((state) => state.user.value);
 
-    const apiKey = "mmhfdzb5evj2";
-    // const token = `${user?.token}`;
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiTHVrZV9Ta3l3YWxrZXIiLCJpc3MiOiJodHRwczovL3Byb250by5nZXRzdHJlYW0uaW8iLCJzdWIiOiJ1c2VyL0x1a2VfU2t5d2Fsa2VyIiwiaWF0IjoxNzA5MTE5MzQ0LCJleHAiOjE3MDk3MjQxNDl9.XTKJj0LvApLFigjZC4QB2cKvfpn86NdE6qx-uFCZdmQ"
-    const userId = "Luke_Skywalker";
-    const callId = event._id;
-    const name = authUser?.name
-
-    // Initialize the user object. The user can be anonymous, guest, or authenticated
-    // const liveStreamUser = {
-    //     id: `${user?._id}`,
-    //     name:`${user?.name}`,
-    //     image: `${user?.avatar}`,
-    //     type: 'authenticated'
-    // };
+    const apiKey = LIVESTREAMAPIKEY;
+    const token = `${authUser?.token}`;
+    const callId = `${event._id}`
 
     const user: User = {
         // any string can be used for the id
-        id: userId,
+        id: `${authUser?._id}`,
         // name and image are used in the UI
-        name: 'Santhosh',
-        image: `https://getstream.io/random_png/?id=${userId}&name=Santhosh`,
+        name: `${authUser?.name}`,
+        image: `${authUser?.avatar}`,
+        type: 'authenticated'
     };
     const myClient = new StreamVideoClient({ apiKey, user, token });
     const myCall = myClient.call("livestream", callId);

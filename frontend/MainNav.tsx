@@ -22,6 +22,7 @@ import TermsAndConditions from './src/components/TermsAndConditions';
 import ClubCommentsScreen from './src/screens/ClubViewScreens/Home/ClubCommentsScreen';
 import NotificationScreen from './src/screens/StudentViewScreens/Home/NotificationScreen';
 import SendNotification from './src/screens/ClubViewScreens/Create/SendNotification';
+import NotificationDetails from './src/screens/StudentViewScreens/Home/NotificationDetails';
 // import LiveStream from './src/screens/ClubViewScreens/Calendar/LiveStream';
 // import WatchLiveStream from './src/screens/StudentViewScreens/Calendar/WatchLiveStream';
 
@@ -88,20 +89,20 @@ const MainNav = () => {
                         <Stack.Screen name="EventDetails" component={EventDetails}
                             options={{ headerTitle: "Event Details" }} />
                         <Stack.Screen name="ClubCommentsScreen" component={ClubCommentsScreen}
-                            options={{ presentation: 'modal', headerLeft: () => null, headerTitle: 'Comments' }}/>
+                            options={{ presentation: 'modal', headerLeft: () => null, headerTitle: 'Comments' }} />
                         {/* <Stack.Screen name="LiveStream" component={LiveStream}
                             options={{ headerTitle: "Go Live", headerShown: false }} /> */}
                         <Stack.Screen name="SendNotification" component={SendNotification}
                             options={{ headerTitle: "New Notification" }} />
                     </>
                 ) : user && user.type === "student" ? (
-                        <>
-                            {!user?.acceptedTerms ? <Stack.Screen name="TermsAndConditions"
-                                component={TermsAndConditions}
-                                options={{
-                                    // headerShown: false,
-                                    headerLeft: () => null
-                                }} /> : null}
+                    <>
+                        {!user?.acceptedTerms ? <Stack.Screen name="TermsAndConditions"
+                            component={TermsAndConditions}
+                            options={{
+                                // headerShown: false,
+                                headerLeft: () => null
+                            }} /> : null}
                         <Stack.Screen name="StudentViewTabNav" component={StudentViewTabNav}
                             options={{
                                 headerShown: false,
@@ -110,11 +111,13 @@ const MainNav = () => {
                             title: route.params.name
                         })} />
                         <Stack.Screen name="CalendarEventDetails" component={CalendarEventDetails}
-                                options={{ headerTitle: "Event Details" }} />
+                            options={{ headerTitle: "Event Details" }} />
                         {/* <Stack.Screen name="WatchLiveStream" component={WatchLiveStream}
                                 options={{ headerTitle: "Watch Live", headerShown: false }} /> */}
-                            <Stack.Screen name="NotificationScreen" component={NotificationScreen}
-                                options={{ headerTitle: "Notifications" }} />
+                        <Stack.Screen name="NotificationScreen" component={NotificationScreen}
+                            options={{ headerTitle: "Notifications" }} />
+                        <Stack.Screen name="NotificationDetails" component={NotificationDetails}
+                            options={{ headerTitle: "Details" }} />
                     </>
                 ) : (
                     <>

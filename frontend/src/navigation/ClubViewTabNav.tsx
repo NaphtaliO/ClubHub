@@ -67,7 +67,8 @@ const ClubViewTabNav = ({ }) => {
                                     navigation.navigate('CreateEvent')
                                     break;
                                 case 2:
-                                // Canceled
+                                    navigation.navigate('SendNotification')
+                                    break;
                             }
                         });
                     },

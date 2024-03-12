@@ -7,7 +7,13 @@ const { sendNotification } = require('../../../../pushNotification');
 
 const createToken = (_id) => {
     // Keep user signed in for 30 days
-    return jwt.sign({ _id }, process.env.SECRET, { expiresIn: '30d' })
+    const payload = {
+        _id,
+        user_id: _id,
+        iss: "https://pronto.getstream.io",
+        sub: `user/${_id}`
+    }
+    return jwt.sign(payload, process.env.SECRET, { expiresIn: '30d' })
 }
 
 const isValidEmail = (email) => {
@@ -81,7 +87,7 @@ const LogIn = async (req, res) => {
         res.status(200).json(userWithoutPassword)
     } catch (error) {
         res.status(400).json({ error: error.message })
-        console.log(error.message);
+        console.log(error);
     }
 }
 

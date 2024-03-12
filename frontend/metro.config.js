@@ -2,7 +2,7 @@ const { getDefaultConfig } = require('@expo/metro-config');
 const resolveFrom = require("resolve-from")
 
 const defaultConfig = getDefaultConfig(__dirname);
-// defaultConfig.resolver.sourceExts.push('cjs');
+defaultConfig.resolver.sourceExts.push('cjs');
 
 defaultConfig.resolver.resolveRequest = (context, moduleName, platform) => {
     if (

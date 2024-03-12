@@ -12,6 +12,7 @@ import { URL, VERSION } from '@env';
 import { useLogout } from '../../../hooks/useLogout';
 import { useAppSelector } from '../../../hooks/hooks';
 import CustomToast, { ToastContext } from '../../../components/CustomToast';
+import { ResizeMode, Video } from 'expo-av';
 // import { Video, ResizeMode } from 'expo-av';
 
 type Media = {
@@ -67,8 +68,9 @@ export default function Post({ navigation }: CreatePostScreenProps) {
             presentationStyle: ImagePicker.UIImagePickerPresentationStyle.FULL_SCREEN,
             aspect: [4, 3],
             quality: 0,
-            videoMaxDuration: 30,
-            videoQuality: ImagePicker.UIImagePickerControllerQualityType.Low
+            videoMaxDuration: 20,
+            videoQuality: ImagePicker.UIImagePickerControllerQualityType.Low,
+            videoExportPreset: ImagePicker.VideoExportPreset.MediumQuality
         });
 
         if (!result.canceled) {
@@ -244,7 +246,7 @@ export default function Post({ navigation }: CreatePostScreenProps) {
                     <RNImage style={styles.image} source={{ uri: media.uri }} resizeMode='cover' />
                     : media && media.type === "video" ?
                         <View>
-                            {/* <Video
+                            <Video
                                 ref={video}
                                 style={styles.video}
                                 source={{ uri: media.uri }}
@@ -252,7 +254,7 @@ export default function Post({ navigation }: CreatePostScreenProps) {
                                 resizeMode={ResizeMode.CONTAIN}
                                 isLooping
                                 onPlaybackStatusUpdate={status => setStatus(() => status)}
-                            /> */}
+                            />
                         </View>
                         : null}
             </View>

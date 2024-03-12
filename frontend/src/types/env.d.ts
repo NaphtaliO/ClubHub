@@ -8,4 +8,5 @@ declare module '@env' {
     export const MEASUREMENTID: string;
     export const URL: string;
     export const VERSION: string;
+    export const LIVESTREAMAPIKEY: string;
 }

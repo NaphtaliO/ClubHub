@@ -10,6 +10,7 @@ import { Avatar, Button, Divider, Layout, Text } from '@ui-kitten/components';
 import { ProfileSocial } from '../../../components/profile-social.component';
 import { ProfileParameterCard } from '../../../components/profile-parameter-card.component';
 import { ArrowHeadDownIcon, ArrowHeadUpIcon } from '../../../components/icons';
+import CustomImage from '../../../components/CustomImage';
 
 const Profile = ({ navigation }: ClubViewProfileScreenProps): React.ReactElement => {
   const user = useAppSelector((state) => state.user.value);
@@ -28,6 +29,7 @@ const Profile = ({ navigation }: ClubViewProfileScreenProps): React.ReactElement
       })
       const json = await response.json()
       const refreshedUser = { ...json, token: user?.token }
+      
       if (!response.ok) {
         if (json.error === "Request is not authorized") {
           logout()
@@ -47,7 +49,8 @@ const Profile = ({ navigation }: ClubViewProfileScreenProps): React.ReactElement
     refreshUser();
     setRefreshing(false);
   }
-
+  //TODO Add website to profile
+  //TODO Fix logout button
   return (
     <ScrollView
       style={styles.container}
@@ -60,11 +63,6 @@ const Profile = ({ navigation }: ClubViewProfileScreenProps): React.ReactElement
       <Layout style={styles.container} level='2' >
         <Layout style={styles.header} level='1'>
           <View style={styles.profileContainer}>
-            <Avatar
-              style={styles.profileAvatar}
-              size='giant'
-              source={{ uri: user?.avatar }}
-            />
             <View style={styles.profileDetailsContainer}>
               <Text category='h4'>{user?.name}</Text>
               <Text appearance='hint' category='s1'>{user?.location}</Text>
@@ -142,6 +140,9 @@ const styles = StyleSheet.create({
   },
   profileAvatar: {
     marginHorizontal: 8,
+    width: 65,
+    height: 65,
+    borderRadius: 50
   },
   profileDetailsContainer: {
     flex: 1,

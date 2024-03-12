@@ -120,7 +120,7 @@ const Calendar = ({ navigation }: CalendarScreenProps) => {
         rightEdgeSpacing: 24,
         onEventPress: (e) => {
             navigation.navigate('CalendarEventDetails', { event: e });
-        }
+        },
     };
 
     const getAllEvents = async () => {
