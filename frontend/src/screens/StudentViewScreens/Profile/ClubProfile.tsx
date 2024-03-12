@@ -14,6 +14,7 @@ import { ClubProfileScreen, Club } from '../../../types/types';
 import { Assets, Colors, TabController, TabControllerImperativeMethods, TabControllerItemProps, View } from 'react-native-ui-lib';
 import { logIn } from '../../../redux/userSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CustomImage from '../../../components/CustomImage';
 
 const ClubProfile = ({ route }: ClubProfileScreen) => {
     const { id } = route.params;
@@ -125,12 +126,7 @@ const ClubProfile = ({ route }: ClubProfileScreen) => {
             <Layout style={styles.container} level='2' >
                 <Layout style={styles.header} level='1'>
                     <View style={styles.profileContainer}>
-                        {/* TODO cache this image */}
-                        <Avatar
-                            style={styles.profileAvatar}
-                            size='giant'
-                            source={{ uri: club?.avatar }}
-                        />
+                        <CustomImage style={styles.profileAvatar} uri={`${club?.avatar}`} />
                         <View style={styles.profileDetailsContainer}>
                             <Text category='h4'>{club?.name}</Text>
                             <Text appearance='hint' category='s1'>{club?.location}</Text>
@@ -258,6 +254,9 @@ const styles = StyleSheet.create({
     },
     profileAvatar: {
         marginHorizontal: 8,
+        width: 65,
+        height: 65,
+        borderRadius: 50
     },
     profileDetailsContainer: {
         flex: 1,

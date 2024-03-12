@@ -18,7 +18,10 @@ export type RootStackParamList = {
   CalendarEventDetails: { event: Event },
   TermsAndConditions: undefined,
   ClubCommentsScreen: { post_id: string },
-  StudentCommentsScreen: { post_id: string }
+  StudentCommentsScreen: { post_id: string },
+  NotificationScreen: undefined,
+  SendNotification: undefined,
+  NotificationDetails: { notification: Notification }
 };
 
 export interface Event {
@@ -32,6 +35,25 @@ export interface Event {
   rsvp?: string[]
   createdAt?: string,
   updatedAt?: string,
+}
+
+export interface Notification {
+  _id: string,
+  title: string,
+  body: string,
+  data: {
+    type: 'notification' | 'newEvent',
+    message?: string,
+    event?: Event
+  },
+  club: {
+    _id: string,
+    name: string,
+    avatar: string
+  },
+  student: string,
+  createdAt: string,
+  updatedAt: string
 }
 
 export type StudentViewTabParamList = {
@@ -56,6 +78,7 @@ export type StartScreenProps = NativeStackScreenProps<RootStackParamList, 'Start
 // ClubViewScreens
 export type CreatePostScreenProps = NativeStackScreenProps<RootStackParamList, 'CreatePost'>;
 export type CreateEventScreenProps = NativeStackScreenProps<RootStackParamList, 'CreateEvent'>;
+export type SendNotificationScreenProps = NativeStackScreenProps<RootStackParamList, 'SendNotification'>;
 export type ClubCommentsScreenProps = NativeStackScreenProps<RootStackParamList, 'ClubCommentsScreen'>;
 export type LiveStreamProps = NativeStackScreenProps<RootStackParamList, 'LiveStream'>;
 export type EventDetailsProps = NativeStackScreenProps<RootStackParamList, 'EventDetails'>;
@@ -89,6 +112,8 @@ export type CalendarScreenProps = CompositeScreenProps<
   NativeStackScreenProps<RootStackParamList>
 >;
 export type ClubProfileScreen = NativeStackScreenProps<RootStackParamList, 'ClubProfile'>;
+export type NotificationScreenProp = NativeStackScreenProps<RootStackParamList, 'NotificationScreen'>;
+export type NotificationDetailsProp = NativeStackScreenProps<RootStackParamList, 'NotificationDetails'>;
 
 
 export interface Club {

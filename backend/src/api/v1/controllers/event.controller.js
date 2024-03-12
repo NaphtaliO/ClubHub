@@ -1,4 +1,7 @@
+const { sendNotification } = require("../../../../pushNotification");
+const Club = require("../models/club.model");
 const Event = require("../models/event.model");
+const Notification = require("../models/notification.model");
 const Student = require("../models/student.model");
 
 const createEvent = async (req, res) => {
@@ -6,6 +9,18 @@ const createEvent = async (req, res) => {
     const { end, start, summary, title, location } = req.body;
     try {
         const event = await Event.create({ end, start, summary, title, location, club: user_id })
+        const club = await Club.findOne({ _id: user_id }).populate('members');
+        club.members.forEach(async(member) => {
+            const pushToken = member.pushToken;
+            const notification = {
+                token: pushToken,
+                title: `New Event🎉 by ${club?.name}`,
+                body: `${event.summary}`,
+                data: { type: 'newEvent', event: event },
+            }
+            sendNotification(notification)
+            await Notification.create({ title: notification.title, body: notification.body, data: notification.data, club: user_id, student: member._id })
+        });
         res.status(200).json(event)
     } catch (error) {
         res.status(400).json({ error: error.message })

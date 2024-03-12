@@ -50,7 +50,7 @@ const sendNotification = async (notification) => {
             );
             request.on('response', (headers, flags) => {
                 for (const name in headers) {
-                    console.log(`${name}: ${headers[name]}`);
+                    // console.log(`${name}: ${headers[name]}`);
                 }
             });
 
@@ -60,7 +60,7 @@ const sendNotification = async (notification) => {
             });
 
             request.on('end', () => {
-                console.log(`\n${dataString}`);
+                // console.log(`\n${dataString}`);
                 client.close();
             });
 

@@ -28,6 +28,24 @@ const createNotification = async (req, res) => {
     }
 }
 
+const getNotifications = async (req, res) => {
+    const user = req.user;
+    try {
+        const { page, limit } = req.query;
+        const skip = (page) * limit;
+        const notifications = await Notification.find({ student: user._id })
+            .skip(skip)
+            .limit(parseInt(limit))
+            .sort({ createdAt: -1 });
+        
+        res.status(200).json(notifications)
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+        console.log(error.message);
+    }
+}
+
 module.exports = {
-    createNotification
+    createNotification,
+    getNotifications
 }

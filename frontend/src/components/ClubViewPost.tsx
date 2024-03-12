@@ -1,5 +1,5 @@
 import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { Card } from 'react-native-ui-lib';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import CustomImage from './CustomImage';
@@ -12,28 +12,28 @@ import { deleteObject, getStorage, ref } from 'firebase/storage';
 import { URL, VERSION } from '@env';
 import { useAppSelector } from '../hooks/hooks';
 import { useLogout } from '../hooks/useLogout';
+import { Video } from 'expo-av';
 import CustomVideo from './CustomVideo';
 
 type Prop = {
     item: PostProp,
     refetch: () => void,
-    navigation: any
+    navigation: any,
+    onVideoRef: (video: RefObject<Video>) => void,
 }
 
-const ClubViewPost = ({ item, refetch, navigation }: Prop) => {
+const ClubViewPost = ({ item, refetch, navigation, onVideoRef }: Prop) => {
     const user = useAppSelector((state) => state.user.value);
-    const [liked, setLiked] = useState<boolean>(false);
     const { showActionSheetWithOptions } = useActionSheet();
     const { logout } = useLogout();
-    const [isInView, setIsInView] = useState(false)
+    const [status, setStatus] = useState({});
+    const video = useRef<any>(null);
 
-    const checkVisible = (isVisible: boolean) => {
-        if (isVisible) {
-            setIsInView(isVisible)
-        } else {
-            setIsInView(isVisible)
+    useEffect(() => {
+        if (onVideoRef && typeof onVideoRef === 'function') {
+            onVideoRef(video);
         }
-    }
+    }, [onVideoRef, video]);
 
     const deleteFromFirebase = async (url: string) => {
         if (url === null || url === "") {
@@ -126,12 +126,12 @@ const ClubViewPost = ({ item, refetch, navigation }: Prop) => {
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 15 }}>
                     {/* avatar */}
                     <View style={{ flexDirection: 'row' }}>
-                        {!item.club.avatar ?
+                        {!item?.club?.avatar ?
                             <Image style={styles.avatar} source={require('../assets/default_avatar.png')} />
-                            : <CustomImage uri={item.club.avatar} style={styles.avatar} />}
+                            : <CustomImage uri={item?.club.avatar} style={styles.avatar} />}
                         <View style={{ alignSelf: 'center' }}>
-                            <Text style={styles.name}>{item.club.name}</Text>
-                            <Text style={styles.timestamp}>{`${formatDistanceToNowStrict(new Date(item.createdAt))} ago`}</Text>
+                            <Text style={styles.name}>{item?.club?.name}</Text>
+                            <Text style={styles.timestamp}>{`${formatDistanceToNowStrict(new Date(item?.createdAt))} ago`}</Text>
                         </View>
                     </View>
                     {/* Three Dots on the Right */}
@@ -140,13 +140,20 @@ const ClubViewPost = ({ item, refetch, navigation }: Prop) => {
                     </TouchableOpacity>
                 </View>
                 {/* caption */}
-                <CustomText style={styles.caption} caption={item.caption} />
+                <CustomText style={styles.caption} caption={item?.caption} />
             </View>
             <View style={{ marginTop: 10 }}>
                 {/* Media  */}
-                {!item.uri ? null : item.type === "image" ?
-                    <CustomImage uri={item.uri} style={styles.image} /> : item.type === "video" ?
-                        <CustomVideo style={styles.image} uri={item.uri} /> : null}
+                {!item?.uri ? null : item?.type === "image" ?
+                    <CustomImage uri={item?.uri} style={styles.image} /> : item?.type === "video" ?
+                        <CustomVideo
+                            style={styles.image}
+                            uri={item?.uri}
+                            status={status}
+                            setStatus={setStatus}
+                            onVideoRef={(ref) => video.current = ref}
+                        />
+                        : null}
             </View>
             <View style={{ flexDirection: 'row' }}>
                 <View style={{
@@ -159,9 +166,9 @@ const ClubViewPost = ({ item, refetch, navigation }: Prop) => {
                         <Icon
                             style={{ marginRight: 7 }}
                             size={25}
-                            name={item.likes.includes(user?._id) ? 'heart' : 'heart-outline'}
+                            name={item.likes.includes(`${user?._id}`) ? 'heart' : 'heart-outline'}
                             type={'material-community'}
-                            color={item.likes.includes(user?._id) ? 'red' : ''}
+                            color={item.likes.includes(`${user?._id}`) ? 'red' : ''}
                         />
                     </TouchableOpacity>
                     {/* TODO: Introduce like animations
@@ -191,7 +198,6 @@ const ClubViewPost = ({ item, refetch, navigation }: Prop) => {
                     <Text style={{ fontSize: 16, fontWeight: '600' }}>{item.comments.length}</Text>
                 </View>
             </View>
-
         </Card>
     )
 }

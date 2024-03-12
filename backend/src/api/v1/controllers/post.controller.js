@@ -1,3 +1,5 @@
+const { sendNotification } = require("../../../../pushNotification");
+const Club = require("../models/club.model");
 const Post = require("../models/post.model");
 const Student = require("../models/student.model");
 
@@ -5,7 +7,18 @@ const createPost = async (req, res) => {
     const user_id = req.user._id;
     const { uri, caption, type } = req.body;
     try {
-        const post = await Post.create({ uri, caption, type, club: user_id })
+        const post = await Post.create({ uri, caption, type, club: user_id });
+        const club = await Club.findOne({ _id: user_id }).populate('members');
+        club.members.forEach((member) => {
+            const pushToken = member.pushToken;
+            const notification = {
+                token: pushToken,
+                title: `New Post🎉 by ${club?.name}`,
+                body: '',
+                data: { type: 'newPost' },
+            }
+            sendNotification(notification)
+        });
         res.status(200).json(post)
     } catch (error) {
         res.status(400).json({ error: error.message })
@@ -91,7 +104,7 @@ const likePost = async (req, res) => {
     try {
 
         const post = await Post.findById(id);
-        
+
         // const postAuthor = await User.findOne({ _id: post.user_id }).select("username pushToken")
         // const authUser = await User.findOne({ _id: user_id }).select("username")
 
