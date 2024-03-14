@@ -21,7 +21,10 @@ export type RootStackParamList = {
   StudentCommentsScreen: { post_id: string },
   NotificationScreen: undefined,
   SendNotification: undefined,
-  NotificationDetails: { notification: Notification }
+  NotificationDetails: { notification: Notification },
+  InboxScreen: undefined,
+  ChatScreen: undefined,
+  ThreadScreen: undefined
 };
 
 export interface Event {
@@ -114,6 +117,9 @@ export type CalendarScreenProps = CompositeScreenProps<
 export type ClubProfileScreen = NativeStackScreenProps<RootStackParamList, 'ClubProfile'>;
 export type NotificationScreenProp = NativeStackScreenProps<RootStackParamList, 'NotificationScreen'>;
 export type NotificationDetailsProp = NativeStackScreenProps<RootStackParamList, 'NotificationDetails'>;
+export type InboxScreenProp = NativeStackScreenProps<RootStackParamList, 'InboxScreen'>;
+export type ChatScreenProp = NativeStackScreenProps<RootStackParamList, 'ChatScreen'>;
+export type ThreadScreenProp = NativeStackScreenProps<RootStackParamList, 'ThreadScreen'>;
 
 
 export interface Club {

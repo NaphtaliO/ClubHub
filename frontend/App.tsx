@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import MainNav from './MainNav';
 import { NavigationContainer } from '@react-navigation/native';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider } from 'react-redux';
 import { store } from './src/redux/store';
@@ -26,6 +27,7 @@ import { ToastContextProvider } from './src/components/CustomToast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { socket } from './src/socket';
 import { useEffect, useState } from 'react';
+import { AppProvider } from './src/context/AppContext';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -82,23 +84,24 @@ export default function App() {
   }, []);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <Provider store={store}>
-        <ActionSheetProvider>
-          <ToastContextProvider>
-            <IconRegistry icons={EvaIconsPack} />
-            <ApplicationProvider {...eva} theme={eva.light}>
-              <QueryClientProvider client={queryClient}>
-                <NavigationContainer>
-                  <MainNav />
-                  <StatusBar style="auto" />
-                </NavigationContainer>
-              </QueryClientProvider>
-            </ApplicationProvider>
-          </ToastContextProvider>
-        </ActionSheetProvider>
-      </Provider>
-    </GestureHandlerRootView>
-
+    <AppProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <Provider store={store}>
+          <ActionSheetProvider>
+            <ToastContextProvider>
+              <IconRegistry icons={EvaIconsPack} />
+              <ApplicationProvider {...eva} theme={eva.light}>
+                <QueryClientProvider client={queryClient}>
+                  <NavigationContainer>
+                    <MainNav />
+                    <StatusBar style="auto" />
+                  </NavigationContainer>
+                </QueryClientProvider>
+              </ApplicationProvider>
+            </ToastContextProvider>
+          </ActionSheetProvider>
+        </Provider>
+      </GestureHandlerRootView>
+    </AppProvider>
   );
 }
