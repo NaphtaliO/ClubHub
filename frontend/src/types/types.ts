@@ -27,7 +27,10 @@ export type RootStackParamList = {
   StudentChannelList: undefined,
   StudentChannel: undefined,
   ThreadScreen: undefined,
-  NewMessageScreen: undefined
+  NewMessageScreen: undefined,
+  ClubChannelList: undefined,
+  ClubChannel: undefined,
+  ClubNewMessageScreen: undefined,
 };
 
 export interface Event {
@@ -124,6 +127,10 @@ export type StudentChannelListScreenProp = NativeStackScreenProps<RootStackParam
 export type StudentChannelProp = NativeStackScreenProps<RootStackParamList, 'StudentChannel'>;
 export type ThreadScreenProp = NativeStackScreenProps<RootStackParamList, 'ThreadScreen'>;
 export type NewMessageScreenProp = NativeStackScreenProps<RootStackParamList, 'NewMessageScreen'>;
+export type ClubChannelListScreenProp = NativeStackScreenProps<RootStackParamList, 'ClubChannelList'>;
+export type ClubChannelProp = NativeStackScreenProps<RootStackParamList, 'ClubChannel'>;
+// export type ThreadScreenProp = NativeStackScreenProps<RootStackParamList, 'ThreadScreen'>;
+export type ClubNewMessageScreenProp = NativeStackScreenProps<RootStackParamList, 'ClubNewMessageScreen'>;
 
 
 

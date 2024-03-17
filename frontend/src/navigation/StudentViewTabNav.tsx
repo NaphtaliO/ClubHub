@@ -49,7 +49,7 @@ const StudentViewTabNav = ({ }) => {
                                 <Ionicons name="notifications-outline" size={26} color="black" style={{ marginRight: 23 }} />
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => navigation.navigate("StudentChannelList")}>
-                                <MaterialCommunityIcons name="message-reply-outline" size={26} color="black" style={{ marginRight: 23 }} />
+                                <Ionicons name="chatbubble-ellipses-outline" size={26} color="black" style={{ marginRight: 23 }} />
                             </TouchableOpacity>
                         </View>
                     ),

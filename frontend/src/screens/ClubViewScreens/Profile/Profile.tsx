@@ -63,6 +63,7 @@ const Profile = ({ navigation }: ClubViewProfileScreenProps): React.ReactElement
       <Layout style={styles.container} level='2' >
         <Layout style={styles.header} level='1'>
           <View style={styles.profileContainer}>
+            <CustomImage style={styles.profileAvatar} uri={`${user?.avatar}`} />
             <View style={styles.profileDetailsContainer}>
               <Text category='h4'>{user?.name}</Text>
               <Text appearance='hint' category='s1'>{user?.location}</Text>

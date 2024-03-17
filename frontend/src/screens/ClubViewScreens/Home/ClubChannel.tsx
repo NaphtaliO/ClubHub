@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native'
 import React from 'react'
 import { useAppContext } from '../../../context/AppContext';
 import { Channel, MessageInput, MessageList, useMessageContext, useTheme } from 'stream-chat-expo';
-import { StudentChannelProp } from '../../../types/types';
+import { ClubChannelProp } from '../../../types/types';
 import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { InlineDateSeparator } from '../../../components/InlineDateSeparator';
@@ -16,8 +16,8 @@ const CustomAvatar = () => {
     return <Image source={{ uri: message.user?.image }} />;
 };
 
-const StudentChannel = ({ navigation }: StudentChannelProp) => {
-    const { channel, messageId, setThread } = useAppContext();
+const ClubChannel = ({ navigation }: ClubChannelProp) => {
+    const { channel, messageId } = useAppContext();
     const headerHeight = useHeaderHeight();
     const {
         theme: {
@@ -50,6 +50,6 @@ const StudentChannel = ({ navigation }: StudentChannelProp) => {
     );
 }
 
-export default StudentChannel;
+export default ClubChannel;
 
 const styles = StyleSheet.create({})
