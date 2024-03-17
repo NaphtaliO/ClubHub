@@ -48,7 +48,7 @@ const StudentViewTabNav = ({ }) => {
                             <TouchableOpacity onPress={() => navigation.navigate("NotificationScreen")}>
                                 <Ionicons name="notifications-outline" size={26} color="black" style={{ marginRight: 23 }} />
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => navigation.navigate("InboxScreen")}>
+                            <TouchableOpacity onPress={() => navigation.navigate("StudentChannelList")}>
                                 <MaterialCommunityIcons name="message-reply-outline" size={26} color="black" style={{ marginRight: 23 }} />
                             </TouchableOpacity>
                         </View>

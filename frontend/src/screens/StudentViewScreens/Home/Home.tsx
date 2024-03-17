@@ -198,7 +198,7 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
   //     flatListRef.current.scrollToOffset({ offset: 0, animated: true });
   //   }
   // };
-
+  
   return (
     <View style={styles.container}>
       <FlatList
