@@ -38,6 +38,7 @@ import { useAppContext } from './src/context/AppContext';
 import { ChannelHeader } from './src/components/ChannelHeader';
 import ClubChannel from './src/screens/ClubViewScreens/Home/ClubChannel';
 import ClubChannelList from './src/screens/ClubViewScreens/Home/ClubChannelList';
+import ThreadScreen from './src/screens/StudentViewScreens/Home/ThreadScreen';
 // import LiveStream from './src/screens/ClubViewScreens/Calendar/LiveStream';
 // import WatchLiveStream from './src/screens/StudentViewScreens/Calendar/WatchLiveStream';
 
@@ -203,8 +204,7 @@ const MainNav = () => {
                                              }} />
                                 <Stack.Screen name="NewMessageScreen" component={NewMessageScreen}
                                             options={{ presentation: 'modal', headerTitle: 'New Message' }} />
-                                        <Stack.Screen name="ThreadScreen" component={NewMessageScreen}
-                                            options={{ presentation: 'modal', headerTitle: 'New Message' }} />
+                                        {/* <Stack.Screen name="ThreadScreen" component={ThreadScreen} /> */}
                             </>
                         ) : (
                             <>
