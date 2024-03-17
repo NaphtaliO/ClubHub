@@ -412,7 +412,7 @@ export const NewMessageScreen = ({ navigation }: NewMessageScreenProp) => {
         channel={currentChannel.current}
         EmptyStateIndicator={EmptyMessagesIndicator}
         enforceUniqueReaction
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : -300}
         // myMessageTheme={myMessageTheme}
         onChangeText={setMessageInputText}
         overrideOwnCapabilities={{ sendMessage: true }}

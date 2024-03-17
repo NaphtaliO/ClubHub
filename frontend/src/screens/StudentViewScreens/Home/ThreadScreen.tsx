@@ -10,3 +10,5 @@ const ThreadScreen = () => {
         </Channel>
     );
 }
+
+export default ThreadScreen;
