@@ -7,7 +7,7 @@ import Feed from "../screens/ClubViewScreens/Home/Feed";
 import CameraScreen from "../screens/ClubViewScreens/Create/CameraScreen";
 import EventsScreen from "../screens/ClubViewScreens/Calendar/EventsScreen";
 import Profile from "../screens/ClubViewScreens/Profile/Profile";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 
 const Tab = createBottomTabNavigator<ClubViewTabParamList>();
 
@@ -43,9 +43,16 @@ const ClubViewTabNav = ({ }) => {
             <Tab.Screen
                 name="Home"
                 component={Feed}
-                options={{
+                options={({ navigation }) => ({
+                    headerRight: () => (
+                        <View style={{ flexDirection: 'row' }}>
+                            <TouchableOpacity onPress={() => navigation.navigate("ClubChannelList")}>
+                                <Ionicons name="chatbubble-ellipses-outline" size={26} color="black" style={{ marginRight: 23 }} />
+                            </TouchableOpacity>
+                        </View>
+                    ),
                     headerTitle: "ClubHub",
-                }}
+                })}
             />
             <Tab.Screen
                 name="Create"

@@ -104,9 +104,9 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
     });
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
       let data = response.notification.request.content.data;
-      if (data.type === "newEvent") {
-        navigation.push('CalendarEventDetails', { event: data.event })
-      }
+      // if (data.type === "newEvent") {
+      //   navigation.push('CalendarEventDetails', { event: data.event })
+      // }
       // else if (data.type === "comment") {
       //   navigation.push("CommentsScreen", { post_id: data.post_id })
       // } else if (data.type === "liked") {
@@ -198,7 +198,7 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
   //     flatListRef.current.scrollToOffset({ offset: 0, animated: true });
   //   }
   // };
-
+  
   return (
     <View style={styles.container}>
       <FlatList

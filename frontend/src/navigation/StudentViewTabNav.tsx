@@ -1,9 +1,9 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StudentViewTabParamList } from "../types/types";
 import { useLogout } from "../hooks/useLogout";
-import { Feather, FontAwesome, Foundation, Ionicons } from "@expo/vector-icons";
+import { Feather, FontAwesome, Foundation, Ionicons, MaterialCommunityIcons, Octicons } from "@expo/vector-icons";
 import Search from "../screens/StudentViewScreens/Search/Search";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import Profile from "../screens/StudentViewScreens/Profile/Profile";
 import Calendar from "../screens/StudentViewScreens/Calendar/Calendar";
 import Home from "../screens/StudentViewScreens/Home/Home";
@@ -35,7 +35,7 @@ const StudentViewTabNav = ({ }) => {
                 tabBarShowLabel: false,
                 tabBarStyle: {
                     display: "flex",
-                    
+
                 },
             })}
         >
@@ -44,9 +44,14 @@ const StudentViewTabNav = ({ }) => {
                 component={Home}
                 options={({ navigation }) => ({
                     headerRight: () => (
-                        <TouchableOpacity onPress={() => navigation.navigate("NotificationScreen")}>
-                            <Ionicons name="notifications-outline" size={26} color="black" style={{marginRight: 23}} />
-                        </TouchableOpacity>
+                        <View style={{flexDirection: 'row'}}>
+                            <TouchableOpacity onPress={() => navigation.navigate("NotificationScreen")}>
+                                <Ionicons name="notifications-outline" size={26} color="black" style={{ marginRight: 23 }} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => navigation.navigate("StudentChannelList")}>
+                                <Ionicons name="chatbubble-ellipses-outline" size={26} color="black" style={{ marginRight: 23 }} />
+                            </TouchableOpacity>
+                        </View>
                     ),
                     headerTitle: "ClubHub",
                 })}

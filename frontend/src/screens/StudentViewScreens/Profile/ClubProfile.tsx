@@ -1,22 +1,34 @@
 import _ from 'lodash';
-import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Dimensions, FlatList, Image, RefreshControl, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
-import { Button as RNPButton } from 'react-native-paper';
-import { Avatar, Button, Divider, Layout, Text } from '@ui-kitten/components';
-import { RateBar } from '../../../components/rate-bar.component';
+import { Button, Divider, Layout, Text } from '@ui-kitten/components';
 import { ProfileSocial } from '../../../components/profile-social.component';
-import { ProfileParameterCard } from '../../../components/profile-parameter-card.component';
-import { ArrowHeadDownIcon, ArrowHeadUpIcon } from '../../../components/icons';
 import { URL, VERSION } from '@env';
 import { useLogout } from '../../../hooks/useLogout';
-import { ClubProfileScreen, Club } from '../../../types/types';
-import { Assets, Colors, TabController, TabControllerImperativeMethods, TabControllerItemProps, View } from 'react-native-ui-lib';
+import { ClubProfileScreen, Club, PostProp } from '../../../types/types';
+import { Assets, Card, Colors, TabController, TabControllerImperativeMethods, TabControllerItemProps, View } from 'react-native-ui-lib';
 import { logIn } from '../../../redux/userSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomImage from '../../../components/CustomImage';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import CustomText from '../../../components/CustomText';
+import CustomVideo from '../../../components/CustomVideo';
+import { Icon } from '@rneui/themed';
+import { formatDistanceToNowStrict } from 'date-fns';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { Video } from 'expo-av';
 
-const ClubProfile = ({ route }: ClubProfileScreen) => {
+const { height, width } = Dimensions.get('window');
+
+const cellHeight = height * 0.6;
+const cellWidth = width;
+
+const viewabilityConfig = {
+    itemVisiblePercentThreshold: 80,
+};
+
+const ClubProfile = ({ route, navigation }: ClubProfileScreen) => {
     const { id } = route.params;
     const [loading, setLoading] = useState<boolean>(false);
     const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -24,6 +36,7 @@ const ClubProfile = ({ route }: ClubProfileScreen) => {
     const [club, setClub] = useState<Club>();
     const { logout } = useLogout();
     const dispatch = useAppDispatch();
+    const cellRefs = useRef<any>({});
 
     const [asCarousel, setAsCarousel] = useState(true);
     const [centerSelected, setCenterSelected] = useState<boolean>(false);
@@ -78,6 +91,43 @@ const ClubProfile = ({ route }: ClubProfileScreen) => {
         }
     }
 
+    const fetchProjects = async ({ pageParam }: { pageParam: number }) => {
+        const res = await fetch(`${URL}/api/${VERSION}/post/getClubProfilePosts/${id}?page=${pageParam}&limit=10`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user?.token}`
+            },
+        })
+        const json = await res.json()
+        return json
+    }
+
+    const {
+        data,
+        error,
+        fetchNextPage,
+        hasNextPage,
+        isFetching,
+        isFetchingNextPage,
+        status,
+        refetch,
+    } = useInfiniteQuery({
+        queryKey: ['feed'],
+        queryFn: fetchProjects,
+        initialPageParam: 0,
+        getNextPageParam: (lastPage, allPages, lastPageParam) => {
+            if (lastPage.length === 0) {
+                return undefined
+            }
+            return lastPageParam + 1
+        },
+    })
+
+    if (error) {
+        console.log(error);
+    }
+
     const joinClub = async () => {
         try {
             const response = await fetch(`${URL}/api/${VERSION}/user/joinClub/${id}`, {
@@ -112,139 +162,270 @@ const ClubProfile = ({ route }: ClubProfileScreen) => {
     const onRefresh = () => {
         setRefreshing(true);
         getClubProfile();
+        refetch();
         setRefreshing(false);
     }
 
-    return (
-        <ScrollView
-            refreshControl={
-                <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={onRefresh} />
+    const onEndReached = () => {
+        if (hasNextPage) {
+            fetchNextPage();
+        }
+    }
+
+    const renderFooter = () => {
+        if (isFetchingNextPage) {
+            return <ActivityIndicator size='small' color='black' />
+        }
+    }
+
+    const _onViewableItemsChanged = (props: any) => {
+        const changed = props.changed;
+        changed.forEach((item: any) => {
+            const cell = cellRefs.current[item.item._id];
+            if (cell) {
+                if (item.isViewable) {
+                    // console.log(item.index);
+                    cell.current.playAsync()
+                    // console.log("play");
+                } else if (!item.isViewable) {
+                    cell.current.pauseAsync();
+                    // console.log("pause");
+                }
             }
-        >
-            <Layout style={styles.container} level='2' >
-                <Layout style={styles.header} level='1'>
-                    <View style={styles.profileContainer}>
-                        <CustomImage style={styles.profileAvatar} uri={`${club?.avatar}`} />
-                        <View style={styles.profileDetailsContainer}>
-                            <Text category='h4'>{club?.name}</Text>
-                            <Text appearance='hint' category='s1'>{club?.location}</Text>
-                            {/* TODO: fix this */}
-                            {/* <RateBar
+        });
+    };
+
+    return (
+        <FlatList
+            ListHeaderComponent={
+                <View>
+                    <Layout level='2' >
+                        <Layout style={styles.header} level='1'>
+                            <View style={styles.profileContainer}>
+                                <CustomImage style={styles.profileAvatar} uri={`${club?.avatar}`} />
+                                <View style={styles.profileDetailsContainer}>
+                                    <Text category='h4'>{club?.name}</Text>
+                                    <Text appearance='hint' category='s1'>{club?.location}</Text>
+                                    {/* TODO: fix this */}
+                                    {/* <RateBar
                       style={styles.rateBar}
                       hint='Experience'
                       value={rating}
                       onValueChange={setRating}
                     /> */}
-                        </View>
-                    </View>
-                    <Button
-                        style={styles.followButton}
-                        onPress={joinClub}>
-                        JOIN
-                    </Button>
-                    {/* <RNPButton mode="contained"
+                                </View>
+                            </View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
+                                {/* <Button
+                                    style={styles.followButton}
+                                    onPress={joinClub}>
+                                    {loading ? (<ActivityIndicator size={'large'} color={'white'} />)
+                                        : club?.members.includes(`${user?._id}`) ? 'LEAVE' : 'JOIN'}
+                                </Button> */}
+                                <TouchableOpacity onPress={joinClub}>
+                                    <View style={styles.buttonContainer}>
+                                        <Text style={styles.button}>
+                                            {club?.members.includes(`${user?._id}`) ? 'Leave' : 'Join'}
+                                        </Text>
+                                    </View>
+                                </TouchableOpacity>
+                                <TouchableOpacity>
+                                    <View style={styles.buttonContainer}>
+                                        <Text style={styles.button}>Message</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                            {/* <RNPButton mode="contained"
                         style={styles.followButton}
                         onPress={() => { }}
                         loading={loading}>
                         {club?.members.includes(user._id)}
                     </RNPButton> */}
-                    <Text
-                        style={styles.descriptionText}
-                        appearance='hint'>
-                        {club?.bio}
-                    </Text>
-                </Layout>
-                <View style={styles.profileParametersContainer}>
-                    <View style={styles.profileSocialsSection}>
-                        <ProfileSocial
-                            style={styles.profileSocialContainer}
-                            hint='Members'
-                            value={`${club?.members.length}`}
-                        />
-                        {/* <ProfileSocial
-                    style={styles.profileSocialContainer}
-                    hint='Following'
-                    value={`${profile.following}`}
-                  />
-                  <ProfileSocial
-                    style={styles.profileSocialContainer}
-                    hint='Posts'
-                    value={`${profile.posts}`}
-                  /> */}
-                    </View>
-                    <Divider style={styles.profileSectionsDivider} />
-                    <View style={styles.profileParametersSection}>
-                        <ProfileParameterCard
-                            style={styles.profileParameter}
-                            hint='Rank'
-                            value={`${1}`}
-                            icon={ArrowHeadUpIcon}
-                        />
-                        {/* <ProfileParameterCard
-                    style={styles.profileParameter}
-                    hint='Weight'
-                    value={`${profile.weight} kg`}
-                    icon={ArrowHeadDownIcon}
-                  /> */}
-                    </View>
+                            <Text
+                                style={styles.descriptionText}
+                                appearance='hint'>
+                                {club?.bio}
+                            </Text>
+                            <View style={styles.profileParametersContainer}>
+                                <View style={styles.profileSocialsSection}>
+                                    <ProfileSocial
+                                        style={styles.profileSocialContainer}
+                                        hint='Members'
+                                        value={`${club?.members.length}`}
+                                    />
+                                </View>
+                                <Divider style={styles.profileSectionsDivider} />
+                                <View style={styles.profileParametersSection}>
+                                    <ProfileSocial
+                                        style={styles.profileSocialContainer}
+                                        hint='Rank'
+                                        value={`1`}
+                                    />
+                                </View>
+                            </View>
+                        </Layout>
+                    </Layout>
                 </View>
-            </Layout>
-        </ScrollView>
-        // <View flex bg-$backgroundDefault>
-        //     <TabController
-        //         key={key}
-        //         ref={tabController}
-        //         asCarousel={asCarousel}
-        //         initialIndex={initialIndex}
-        //         onChangeIndex={(selectedIndex: number) => setSelectedIndex(selectedIndex)}
-        //         items={items}
-        //     >
-        //         <TabController.TabBar
-        //             // items={items}
-        //             key={key}
-        //             // uppercase
-        //             // indicatorStyle={{backgroundColor: 'green', height: 3}}
-        //             // indicatorInsets={0}
-        //             spreadItems={!fewItems}
-        //             backgroundColor={fewItems ? 'transparent' : undefined}
-        //             // labelColor={'green'}
-        //             // selectedLabelColor={'red'}
-        //             labelStyle={styles.labelStyle}
-        //             selectedLabelStyle={styles.selectedLabelStyle}
-        //             // iconColor={'green'}
-        //             // selectedIconColor={'blue'}
-        //             enableShadow
-        //             activeBackgroundColor={Colors.$backgroundPrimaryMedium}
-        //             centerSelected={centerSelected}
-        //         />
-        //         <TabController.PageCarousel>
-        //             <TabController.TabPage index={0}>
-        //                 <View flex>
-        //                     <Text>
-        //                         Home
-        //                     </Text>
-        //                 </View>
-        //             </TabController.TabPage>
-        //             <TabController.TabPage index={1}>
-        //                 <View style={{ flex: 1 }}>
-        //                     <Text>
-        //                         Posts
-        //                     </Text>
-        //                 </View>
-        //             </TabController.TabPage>
-        //         </TabController.PageCarousel>
-        //     </TabController>
-        // </View>
+            }
+            style={styles.container}
+            // ref={flatListRef}
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh} />
+            }
+            data={data?.pages.flatMap(page => page)}
+            renderItem={({ item }) => (
+                <Post item={item} refetch={refetch} onVideoRef={(videoRef) => {
+                    cellRefs.current[item._id] = videoRef.current;
+                    // console.log(videoRef);
+                }} />
+            )}
+            keyExtractor={(item, index) => index.toString()}
+            onEndReached={onEndReached}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={renderFooter}
+            onViewableItemsChanged={_onViewableItemsChanged}
+            initialNumToRender={3}
+            maxToRenderPerBatch={3}
+            windowSize={5}
+            getItemLayout={(_data, index) => ({
+                length: cellHeight,
+                offset: cellHeight * index,
+                index,
+            })}
+            viewabilityConfig={viewabilityConfig}
+            removeClippedSubviews={true}
+        />
     )
 }
 
 export default ClubProfile;
 
+const Post = ({ item, refetch, onVideoRef }:
+    {
+        item: PostProp,
+        refetch: () => void,
+        onVideoRef: (video: RefObject<Video>) => void,
+    }) => {
+    const user = useAppSelector(state => state.user.value);
+    const video = useRef<any>(null);
+    const [status, setStatus] = useState({});
+
+    const like = async () => {
+        try {
+            const response = await fetch(`${URL}/api/${VERSION}/post/like/${item._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${user?.token}`
+                },
+            });
+            const json = await response.json()
+            if (!response.ok) {
+                // if (json.error === "Request is not authorized") {
+                //     logout()
+                // }
+            }
+            if (response.ok) {
+                refetch();
+            }
+        } catch (error) {
+            console.log((error as Error).message);
+        }
+    }
+
+    useEffect(() => {
+        if (onVideoRef && typeof onVideoRef === 'function') {
+            onVideoRef(video);
+        }
+    }, [onVideoRef, video]);
+
+    return (
+        <Card style={{ margin: 6 }}>
+            <View style={{ marginHorizontal: 20 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 15 }}>
+                    {/* avatar */}
+                    <View style={{ flexDirection: 'row' }}>
+                        {!item?.club?.avatar ?
+                            <Image style={styles.avatar} source={require('../../../assets/default_avatar.png')} />
+                            : <CustomImage uri={item?.club.avatar} style={styles.avatar} />}
+                        <View style={{ alignSelf: 'center' }}>
+                            <Text style={styles.name}>{item?.club?.name}</Text>
+                            <Text style={styles.timestamp}>{`${formatDistanceToNowStrict(new Date(item?.createdAt))} ago`}</Text>
+                        </View>
+                    </View>
+                    {/* Three Dots on the Right */}
+                    <TouchableOpacity style={{ marginLeft: 'auto' }} onPress={() => { }}>
+                        <MaterialCommunityIcons name="dots-horizontal" size={24} color="black" />
+                    </TouchableOpacity>
+                </View>
+                {/* caption */}
+                <CustomText style={styles.caption} caption={item?.caption} />
+            </View>
+            <View style={{ marginTop: 10 }}>
+                {/* Media  */}
+                {!item?.uri ? null : item?.type === "image" ?
+                    <CustomImage uri={item?.uri} style={styles.image} /> : item?.type === "video" ?
+                        <CustomVideo
+                            style={styles.image}
+                            uri={item?.uri}
+                            status={status}
+                            setStatus={setStatus}
+                            onVideoRef={(ref) => video.current = ref}
+                        />
+                        : null}
+            </View>
+            <View style={{ flexDirection: 'row' }}>
+                <View style={{
+                    marginVertical: 15,
+                    paddingLeft: 15,
+                    flexDirection: 'row',
+                    alignItems: 'center'
+                }}>
+                    <TouchableOpacity onPress={like}>
+                        <Icon
+                            style={{ marginRight: 7 }}
+                            size={25}
+                            name={item.likes.includes(`${user?._id}`) ? 'heart' : 'heart-outline'}
+                            type={'material-community'}
+                            color={item.likes.includes(`${user?._id}`) ? 'red' : ''}
+                        />
+                    </TouchableOpacity>
+                    {/* TODO: Introduce like animations
+                https://dev.to/vcapretz/instagram-like-button-in-react-native-and-reanimated-v2-3h3k
+                */}
+                    <Text style={{ fontSize: 16, fontWeight: '600' }}>{item.likes.length}</Text>
+                </View>
+
+                <View style={{
+                    marginVertical: 15,
+                    paddingLeft: 15,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                }}>
+                    <TouchableOpacity onPress={() => { }}>
+                        <Icon
+                            style={{ marginRight: 7 }}
+                            size={23}
+                            name={'comment-outline'}
+                            type={'material-community'}
+                            color={''}
+                        />
+                    </TouchableOpacity>
+                    {/* TODO: Introduce like animations
+                https://dev.to/vcapretz/instagram-like-button-in-react-native-and-reanimated-v2-3h3k
+                */}
+                    <Text style={{ fontSize: 16, fontWeight: '600' }}>{item.comments.length}</Text>
+                </View>
+            </View>
+        </Card>
+    )
+}
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: 'white'
     },
     header: {
         padding: 16,
@@ -274,8 +455,9 @@ const styles = StyleSheet.create({
     },
     profileParametersContainer: {
         flexDirection: 'row',
-        marginVertical: 24,
+        marginTop: 10,
         marginHorizontal: 8,
+        justifyContent: 'space-evenly',
     },
     profileSectionsDivider: {
         width: 1,
@@ -289,7 +471,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     profileParametersSection: {
-        flex: 1,
+        // flex: 1,
         marginHorizontal: 16,
     },
     profileParameter: {
@@ -300,5 +482,42 @@ const styles = StyleSheet.create({
     },
     selectedLabelStyle: {
         fontSize: 16
-    }
+    },
+    avatar: {
+        borderRadius: 50,
+        width: 50,
+        height: 50,
+        marginRight: 15
+    },
+    name: {
+        fontWeight: '700',
+    },
+    timestamp: {
+        fontSize: 13,
+        color: '#606470'
+    },
+    caption: {
+        letterSpacing: 1.2,
+        fontSize: 15,
+        fontWeight: '400',
+    },
+    image: {
+        width: '100%',
+        aspectRatio: 4 / 3
+    },
+    buttonContainer: {
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        // alignSelf: 'center',
+        marginTop: 30,
+        paddingHorizontal: 50,
+        backgroundColor: '#3AB0FF',
+        borderRadius: 10,
+        width: '100%',
+    },
+    button: {
+        padding: 10,
+        color: 'white',
+        fontWeight: "600",
+    },
 });
