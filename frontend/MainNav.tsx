@@ -36,6 +36,8 @@ import { NewMessageProvider } from './src/context/NewMessageContext';
 import { Image } from 'expo-image';
 import { useAppContext } from './src/context/AppContext';
 import { ChannelHeader } from './src/components/ChannelHeader';
+import ClubChannel from './src/screens/ClubViewScreens/Home/ClubChannel';
+import ClubChannelList from './src/screens/ClubViewScreens/Home/ClubChannelList';
 // import LiveStream from './src/screens/ClubViewScreens/Calendar/LiveStream';
 // import WatchLiveStream from './src/screens/StudentViewScreens/Calendar/WatchLiveStream';
 
@@ -116,7 +118,37 @@ const MainNav = () => {
                                 {/* <Stack.Screen name="LiveStream" component={LiveStream}
                             options={{ headerTitle: "Go Live", headerShown: false }} /> */}
                                 <Stack.Screen name="SendNotification" component={SendNotification}
-                                    options={{ headerTitle: "New Notification" }} />
+                                        options={{ headerTitle: "New Notification" }} />
+                                    <Stack.Screen name='ClubChannelList' component={ClubChannelList}
+                                        options={{
+                                            headerTitle: "Messages", header: () => (
+                                                <View
+                                                    style={{
+                                                        paddingTop: insets.top,
+                                                        height: CHANNEL_LIST_SCREEN_HEADER_HEIGHT + insets.top,
+                                                        backgroundColor: 'white',
+                                                    }}>
+                                                    <ChannelListHeader />
+                                                </View>
+                                            ),
+                                        }} />
+                                    <Stack.Screen name="ClubChannel" component={ClubChannel}
+                                        options={{
+                                            header: props =>
+                                                !!insets.top && (
+                                                    <View
+                                                        style={{
+                                                            paddingTop: insets.top,
+                                                            height: 80 + insets.top,
+                                                        }}>
+                                                        <Channel channel={channel}>
+                                                            <ChannelHeader {...props} channel={channel} />
+                                                        </Channel>
+                                                    </View>
+                                                ),
+                                        }} />
+                                    {/* <Stack.Screen name="NewMessageScreen" component={NewMessageScreen}
+                                        options={{ presentation: 'modal', headerTitle: 'New Message' }} /> */}
                             </>
                         ) : user && user.type === "student" ? (
                             <>
@@ -170,8 +202,9 @@ const MainNav = () => {
                                                     ),
                                              }} />
                                 <Stack.Screen name="NewMessageScreen" component={NewMessageScreen}
-                                        options={{ presentation: 'modal', headerTitle: 'New Message' }} />
-                                    
+                                            options={{ presentation: 'modal', headerTitle: 'New Message' }} />
+                                        <Stack.Screen name="ThreadScreen" component={NewMessageScreen}
+                                            options={{ presentation: 'modal', headerTitle: 'New Message' }} />
                             </>
                         ) : (
                             <>
