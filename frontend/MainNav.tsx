@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import { StatusBar, TouchableOpacity, View } from 'react-native';
 import { ActivityIndicator, MD2Colors } from 'react-native-paper';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from "@expo/vector-icons";
-import { RootStackParamList } from './src/types/types';
+import { RootStackParamList, StreamChatGenerics, chatClient } from './src/types/types';
 import CreatePost from './src/screens/ClubViewScreens/Create/CreatePost';
 import CreateAccount from './src/screens/Authentication/CreateAccount';
 import LogIn from './src/screens/Authentication/LogIn';
@@ -23,23 +23,32 @@ import ClubCommentsScreen from './src/screens/ClubViewScreens/Home/ClubCommentsS
 import NotificationScreen from './src/screens/StudentViewScreens/Home/NotificationScreen';
 import SendNotification from './src/screens/ClubViewScreens/Create/SendNotification';
 import NotificationDetails from './src/screens/StudentViewScreens/Home/NotificationDetails';
-import InboxScreen from './src/screens/StudentViewScreens/Home/InboxScreen';
-import { Chat, OverlayProvider } from 'stream-chat-expo';
+import StudentChannelList from './src/screens/StudentViewScreens/Home/StudentChannelList';
+import { Channel, Chat, OverlayProvider, useTheme } from 'stream-chat-expo';
 import { LIVESTREAMAPIKEY } from '@env';
 import { StreamChat } from 'stream-chat';
 import { useChatClient } from './src/hooks/useChatClient';
-import ChatScreen from './src/screens/StudentViewScreens/Home/ChatScreen';
+import StudentChannel from './src/screens/StudentViewScreens/Home/StudentChannel';
+import { ChannelListHeader } from './src/components/ChannelListHeader';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { NewMessageScreen } from './src/screens/StudentViewScreens/Home/NewMessageScreen';
+import { NewMessageProvider } from './src/context/NewMessageContext';
+import { Image } from 'expo-image';
+import { useAppContext } from './src/context/AppContext';
+import { ChannelHeader } from './src/components/ChannelHeader';
 // import LiveStream from './src/screens/ClubViewScreens/Calendar/LiveStream';
 // import WatchLiveStream from './src/screens/StudentViewScreens/Calendar/WatchLiveStream';
 
+export const CHANNEL_LIST_SCREEN_HEADER_HEIGHT = 120;
 const Stack = createNativeStackNavigator<RootStackParamList>();
-const chatClient = StreamChat.getInstance(LIVESTREAMAPIKEY);
 
 const MainNav = () => {
     const [loading, setLoading] = useState(false);
     const user = useAppSelector((state) => state.user.value);
     const dispatch = useAppDispatch();
+    const insets = useSafeAreaInsets();
     const { clientIsReady } = useChatClient();
+    const { channel } = useAppContext();
 
     useEffect(() => {
         const getData = async () => {
@@ -59,12 +68,16 @@ const MainNav = () => {
         getData()
     }, []);
 
-    if (loading || !clientIsReady) return <ActivityIndicator animating={true} color={MD2Colors.red800} />;
+    if (loading) return <ActivityIndicator animating={true} color={MD2Colors.red800} style={{
+        justifyContent: 'center',
+        alignSelf: 'center'
+    }} />;
 
     return (
         <>
             <OverlayProvider>
-                <Chat client={chatClient}>
+                <NewMessageProvider>
+                <Chat client={chatClient} ImageComponent={Image}>
                     <Stack.Navigator
                         screenOptions={({ navigation }) => ({
                             headerLeft: () => (
@@ -128,10 +141,37 @@ const MainNav = () => {
                                     options={{ headerTitle: "Notifications" }} />
                                 <Stack.Screen name="NotificationDetails" component={NotificationDetails}
                                     options={{ headerTitle: "Details" }} />
-                                <Stack.Screen name="InboxScreen" component={InboxScreen}
-                                        options={{ headerTitle: "Messages" }} />
-                                    <Stack.Screen name="ChatScreen" component={ChatScreen}
-                                        options={{ headerTitle: "Details" }} />
+                                <Stack.Screen name='StudentChannelList' component={StudentChannelList}
+                                    options={{
+                                        headerTitle: "Messages", header: () => (
+                                            <View
+                                                style={{
+                                                    paddingTop: insets.top,
+                                                    height: CHANNEL_LIST_SCREEN_HEADER_HEIGHT + insets.top,
+                                                    backgroundColor: 'white',
+                                                }}>
+                                                <ChannelListHeader />
+                                            </View>
+                                        ),
+                                            }} />
+                                        <Stack.Screen name="StudentChannel" component={StudentChannel}
+                                            options={{ 
+                                                header: props =>
+                                                    !!insets.top && (
+                                                            <View
+                                                                style={{
+                                                                    paddingTop: insets.top,
+                                                                    height: 80 + insets.top,
+                                                                }}>
+                                                                <Channel channel={channel}>
+                                                                    <ChannelHeader {...props} channel={channel} />
+                                                                </Channel>
+                                                            </View>
+                                                    ),
+                                             }} />
+                                <Stack.Screen name="NewMessageScreen" component={NewMessageScreen}
+                                        options={{ presentation: 'modal', headerTitle: 'New Message' }} />
+                                    
                             </>
                         ) : (
                             <>
@@ -159,7 +199,8 @@ const MainNav = () => {
                             </>
                         )}
                     </Stack.Navigator>
-                </Chat>
+                    </Chat>
+                </NewMessageProvider>
             </OverlayProvider>
         </>
     );

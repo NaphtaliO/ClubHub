@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { StreamChat } from 'stream-chat';
 import { useAppSelector } from './hooks';
 import { LIVESTREAMAPIKEY } from '@env';
+import { DefaultStreamChatGenerics } from 'stream-chat-expo';
 
 export const useChatClient = () => {
     const user = useAppSelector((state) => state.user.value);
@@ -12,14 +13,14 @@ export const useChatClient = () => {
     const chatUser = {
         id: `${user?._id}`,
         name: `${user?.name}`,
-        // image: `${user?.avatar}`
+        image: `${user?.avatar}`
     };
 
     const token = `${user?.token}`;
+    const chatClient = StreamChat.getInstance<DefaultStreamChatGenerics>(LIVESTREAMAPIKEY);
 
     useEffect(() => {
         if (!user) return;
-        const chatClient = StreamChat.getInstance(LIVESTREAMAPIKEY);
         const setupClient = async () => {
             try {
                 await chatClient.connectUser(chatUser, token);

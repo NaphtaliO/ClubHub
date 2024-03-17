@@ -66,6 +66,29 @@ const getStudentsFeed = async (req, res) => {
     }
 }
 
+const fetchClubProfilePostsById = async (req, res) => {
+    const user = req.user;
+    const { id } = req.params;
+    if (user.type !== "student") return;
+    try {
+        const student = await Student.findById(user._id);
+        if (!student) {
+            res.status(400).json({ message: "Student not found" });
+            return;
+        }
+        const { page, limit } = req.query;
+        const skip = (page) * limit
+        const posts = await Post.find({ club: id })
+            .skip(skip)
+            .limit(parseInt(limit))
+            .sort({ createdAt: -1 });
+        res.status(200).json(posts)
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+        console.log(error.message);
+    }
+}
+
 //delete a single post
 const deletePost = async (req, res) => {
     const { id } = req.params;
@@ -141,5 +164,6 @@ module.exports = {
     getAllPostsByClub,
     deletePost,
     getStudentsFeed,
-    likePost
+    likePost,
+    fetchClubProfilePostsById
 }

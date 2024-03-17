@@ -28,6 +28,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { socket } from './src/socket';
 import { useEffect, useState } from 'react';
 import { AppProvider } from './src/context/AppContext';
+import { SearchContextProvider } from './src/context/SearchContext';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -84,24 +86,28 @@ export default function App() {
   }, []);
 
   return (
-    <AppProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <Provider store={store}>
-          <ActionSheetProvider>
-            <ToastContextProvider>
-              <IconRegistry icons={EvaIconsPack} />
-              <ApplicationProvider {...eva} theme={eva.light}>
-                <QueryClientProvider client={queryClient}>
-                  <NavigationContainer>
-                    <MainNav />
-                    <StatusBar style="auto" />
-                  </NavigationContainer>
-                </QueryClientProvider>
-              </ApplicationProvider>
-            </ToastContextProvider>
-          </ActionSheetProvider>
-        </Provider>
-      </GestureHandlerRootView>
-    </AppProvider>
+    <SafeAreaProvider>
+      <AppProvider>
+        <SearchContextProvider>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <Provider store={store}>
+              <ActionSheetProvider>
+                <ToastContextProvider>
+                  <IconRegistry icons={EvaIconsPack} />
+                  <ApplicationProvider {...eva} theme={eva.light}>
+                    <QueryClientProvider client={queryClient}>
+                      <NavigationContainer>
+                        <MainNav />
+                        <StatusBar style="auto" />
+                      </NavigationContainer>
+                    </QueryClientProvider>
+                  </ApplicationProvider>
+                </ToastContextProvider>
+              </ActionSheetProvider>
+            </Provider>
+          </GestureHandlerRootView>
+        </SearchContextProvider>
+      </AppProvider>
+    </SafeAreaProvider>
   );
 }

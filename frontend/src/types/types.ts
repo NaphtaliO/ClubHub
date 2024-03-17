@@ -1,6 +1,8 @@
+import { LIVESTREAMAPIKEY } from "@env";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { CompositeScreenProps, NavigatorScreenParams } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { StreamChat } from "stream-chat";
 
 export type RootStackParamList = {
   ClubViewTabNav: NavigatorScreenParams<ClubViewTabParamList>,
@@ -22,9 +24,10 @@ export type RootStackParamList = {
   NotificationScreen: undefined,
   SendNotification: undefined,
   NotificationDetails: { notification: Notification },
-  InboxScreen: undefined,
-  ChatScreen: undefined,
-  ThreadScreen: undefined
+  StudentChannelList: undefined,
+  StudentChannel: undefined,
+  ThreadScreen: undefined,
+  NewMessageScreen: undefined
 };
 
 export interface Event {
@@ -117,9 +120,11 @@ export type CalendarScreenProps = CompositeScreenProps<
 export type ClubProfileScreen = NativeStackScreenProps<RootStackParamList, 'ClubProfile'>;
 export type NotificationScreenProp = NativeStackScreenProps<RootStackParamList, 'NotificationScreen'>;
 export type NotificationDetailsProp = NativeStackScreenProps<RootStackParamList, 'NotificationDetails'>;
-export type InboxScreenProp = NativeStackScreenProps<RootStackParamList, 'InboxScreen'>;
-export type ChatScreenProp = NativeStackScreenProps<RootStackParamList, 'ChatScreen'>;
+export type StudentChannelListScreenProp = NativeStackScreenProps<RootStackParamList, 'StudentChannelList'>;
+export type StudentChannelProp = NativeStackScreenProps<RootStackParamList, 'StudentChannel'>;
 export type ThreadScreenProp = NativeStackScreenProps<RootStackParamList, 'ThreadScreen'>;
+export type NewMessageScreenProp = NativeStackScreenProps<RootStackParamList, 'NewMessageScreen'>;
+
 
 
 export interface Club {
@@ -189,3 +194,24 @@ export type PostProp = {
   createdAt: string,
   updatedAt: string
 }
+
+type LocalAttachmentType = Record<string, unknown>;
+type LocalChannelType = Record<string, unknown>;
+type LocalCommandType = string;
+type LocalEventType = Record<string, unknown>;
+type LocalMessageType = Record<string, unknown>;
+type LocalReactionType = Record<string, unknown>;
+type LocalUserType = Record<string, unknown>;
+
+export type StreamChatGenerics = {
+  attachmentType: LocalAttachmentType;
+  channelType: LocalChannelType;
+  commandType: LocalCommandType;
+  eventType: LocalEventType;
+  messageType: LocalMessageType;
+  reactionType: LocalReactionType;
+  userType: LocalUserType;
+};
+
+export const chatClient =
+  StreamChat.getInstance<StreamChatGenerics>(LIVESTREAMAPIKEY);
