@@ -37,3 +37,4 @@ yarn-error.*
 .env
 
 AuthKey_4FFK68U64B.p8
+GoogleService-Info.plist
