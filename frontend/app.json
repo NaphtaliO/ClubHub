@@ -20,7 +20,8 @@
         "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your Camera.",
         "NSMicrophoneUsageDescription": "$(PRODUCT_NAME) needs access to your Microphone."
       },
-      "bundleIdentifier": "com.naphtali2003.ClubHub"
+      "bundleIdentifier": "com.naphtali2003.ClubHub",
+      "googleServicesFile": "./credentials/GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
@@ -64,6 +65,16 @@
         {
           "android": {
             "extraMavenRepos": ["../../node_modules/@notifee/react-native/android/libs"]
+          }
+        }
+      ],
+      "@react-native-firebase/app",
+      "@react-native-firebase/messaging",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
           }
         }
       ]
