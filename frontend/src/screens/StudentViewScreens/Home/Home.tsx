@@ -1,6 +1,6 @@
 import { ActivityIndicator, Dimensions, FlatList, Platform, RefreshControl, StyleSheet, View } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
-import { StudentHomeScreenProps } from '../../../types/types';
+import { StudentHomeScreenProps, chatClient } from '../../../types/types';
 import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
 import StudentViewPost from '../../../components/StudentViewPost';
 import { URL, VERSION } from '@env';
@@ -9,7 +9,8 @@ import { useLogout } from '../../../hooks/useLogout';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
-import { getMessaging } from 'firebase/messaging';
+// import messaging from '@react-native-firebase/messaging';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { height, width } = Dimensions.get('window');
 
@@ -55,8 +56,8 @@ async function registerForPushNotificationsAsync() {
     token = await Notifications.getExpoPushTokenAsync({
       projectId: Constants.expoConfig?.extra?.eas.projectId
     })
-    console.log(token);
-    
+    // console.log(token);
+
   } else {
     // alert('Must use physical device for Push Notifications');
     return;
@@ -106,10 +107,10 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
     registerForPushNotificationsAsync().then(token => {
       setPushToken(token);
     });
-    
+
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       // console.log(notification);
-      
+
       setNotification(notification);
     });
 
@@ -123,64 +124,63 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
     };
   }, []);
 
-  const messaging = getMessaging();
-  const requestPermission = async () => {
-    const authStatus = await messaging.requestPermission();
-    const enabled =
-      authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  // const requestPermission = async () => {
+  //   const authStatus = await messaging().requestPermission();
+  //   const enabled =
+  //     authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-    if (enabled) {
-      console.log('Authorization status:', authStatus);
-    }
-  };
+  //   if (enabled) {
+  //     console.log('Authorization status:', authStatus);
+  //   }
+  // };
 
-  useEffect(() => {
-    // Register FCM token with stream chat server.
-    // const registerPushToken = async () => {
-      // // unsubscribe any previous listener
-      // unsubscribeTokenRefreshListenerRef.current?.();
-      // const token = await messaging().getToken();
-      // const push_provider = 'firebase';
-      // const push_provider_name = 'MyRNAppFirebasePush'; // name an alias for your push provider (optional)
-      // client.setLocalDevice({
-      //   id: token,
-      //   push_provider,
-      //   // push_provider_name is meant for optional multiple providers support, see: https://getstream.io/chat/docs/react/push_providers_and_multi_bundle
-      //   push_provider_name,
-      // });
-      // await AsyncStorage.setItem('@current_push_token', token);
+  // useEffect(() => {
+  //   // Register FCM token with stream chat server.
+  //   const registerPushToken = async () => {
+  //     // unsubscribe any previous listener
+  //     unsubscribeTokenRefreshListenerRef.current?.();
+  //     const token = await messaging().getToken();
+  //     const push_provider = 'firebase';
+  //     const push_provider_name = 'firebaseservicekey'; // name an alias for your push provider (optional)
+  //     chatClient.setLocalDevice({
+  //       id: token,
+  //       push_provider,
+  //       // push_provider_name is meant for optional multiple providers support, see: https://getstream.io/chat/docs/react/push_providers_and_multi_bundle
+  //       push_provider_name,
+  //     });
+  //     await AsyncStorage.setItem('@current_push_token', token);
 
-    //   const removeOldToken = async () => {
-    //     const oldToken = await AsyncStorage.getItem('@current_push_token');
-    //     if (oldToken !== null) {
-    //       await client.removeDevice(oldToken);
-    //     }
-    //   };
+  //     const removeOldToken = async () => {
+  //       const oldToken = await AsyncStorage.getItem('@current_push_token');
+  //       if (oldToken !== null) {
+  //         await chatClient.removeDevice(oldToken);
+  //       }
+  //     };
 
-    //   unsubscribeTokenRefreshListenerRef.current = messaging().onTokenRefresh(async newToken => {
-    //     await Promise.all([
-    //       removeOldToken(),
-    //       client.addDevice(newToken, push_provider, USER_ID, push_provider_name),
-    //       AsyncStorage.setItem('@current_push_token', newToken),
-    //     ]);
-    //   });
-    // };
+  //     unsubscribeTokenRefreshListenerRef.current = messaging().onTokenRefresh(async newToken => {
+  //       await Promise.all([
+  //         removeOldToken(),
+  //         chatClient.addDevice(newToken, push_provider, user?._id, push_provider_name),
+  //         AsyncStorage.setItem('@current_push_token', newToken),
+  //       ]);
+  //     });
+  //   };
 
-    // const init = async () => {
-    //   await requestPermission();
-    //   await registerPushToken();
-    //   await client.connectUser({ id: USER_ID }, USER_TOKEN);
+  //   const init = async () => {
+  //     await requestPermission();
+  //     await registerPushToken();
+  //     // await chatClient.connectUser({ id: `${user?._id}` }, user?.token);
 
-    //   setIsReady(true);
-    // };
+  //     // setIsReady(true);
+  //   };
 
-    // init();
+  //   init();
 
-    // return async () => {
-    //   await client?.disconnectUser();
-    //   unsubscribeTokenRefreshListenerRef.current?.();
-    // };
-  }, []);
+  //   return () => {
+  //     // await chatClient?.disconnectUser();
+  //     unsubscribeTokenRefreshListenerRef.current?.();
+  //   };
+  // }, []);
 
   const fetchProjects = async ({ pageParam }: { pageParam: number }) => {
     const res = await fetch(`${URL}/api/${VERSION}/post/getStudentsFeed?page=${pageParam}&limit=10`, {
