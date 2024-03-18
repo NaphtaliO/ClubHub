@@ -1,7 +1,6 @@
 import { ActivityIndicator, Dimensions, FlatList, Platform, RefreshControl, StyleSheet, View } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
-import { Subscription } from 'expo-modules-core';
-import { PostProp, StudentHomeScreenProps } from '../../../types/types';
+import { StudentHomeScreenProps } from '../../../types/types';
 import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
 import StudentViewPost from '../../../components/StudentViewPost';
 import { URL, VERSION } from '@env';
@@ -9,6 +8,8 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { useLogout } from '../../../hooks/useLogout';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+import { getMessaging } from 'firebase/messaging';
 
 const { height, width } = Dimensions.get('window');
 
@@ -50,7 +51,12 @@ async function registerForPushNotificationsAsync() {
       // alert('Failed to get push token for push notification!');
       return;
     }
-    token = (await Notifications.getDevicePushTokenAsync());
+    // token = (await Notifications.getDevicePushTokenAsync());
+    token = await Notifications.getExpoPushTokenAsync({
+      projectId: Constants.expoConfig?.extra?.eas.projectId
+    })
+    console.log(token);
+    
   } else {
     // alert('Must use physical device for Push Notifications');
     return;
@@ -68,8 +74,9 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
   const [notification, setNotification] = useState();
   const notificationListener = useRef();
   const responseListener = useRef();
+  const unsubscribeTokenRefreshListenerRef = useRef<() => void>();
 
-  const setPushToken = async (token: Notifications.DevicePushToken | undefined) => {
+  const setPushToken = async (token: Notifications.ExpoPushToken | undefined) => {
     if (!token) return;
     try {
       const response = await fetch(`${URL}/api/${VERSION}/user/setPushToken`, {
@@ -99,26 +106,80 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
     registerForPushNotificationsAsync().then(token => {
       setPushToken(token);
     });
+    
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      // console.log(notification);
+      
       setNotification(notification);
     });
+
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      let data = response.notification.request.content.data;
-      // if (data.type === "newEvent") {
-      //   navigation.push('CalendarEventDetails', { event: data.event })
-      // }
-      // else if (data.type === "comment") {
-      //   navigation.push("CommentsScreen", { post_id: data.post_id })
-      // } else if (data.type === "liked") {
-      //   navigation.push("LikesScreen", { post_id: data.post_id })
-      // }
-      console.log(data);
+      console.log(response.notification.request.content);
     });
 
     return () => {
       Notifications.removeNotificationSubscription(notificationListener.current);
       Notifications.removeNotificationSubscription(responseListener.current);
     };
+  }, []);
+
+  const messaging = getMessaging();
+  const requestPermission = async () => {
+    const authStatus = await messaging.requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+      console.log('Authorization status:', authStatus);
+    }
+  };
+
+  useEffect(() => {
+    // Register FCM token with stream chat server.
+    // const registerPushToken = async () => {
+      // // unsubscribe any previous listener
+      // unsubscribeTokenRefreshListenerRef.current?.();
+      // const token = await messaging().getToken();
+      // const push_provider = 'firebase';
+      // const push_provider_name = 'MyRNAppFirebasePush'; // name an alias for your push provider (optional)
+      // client.setLocalDevice({
+      //   id: token,
+      //   push_provider,
+      //   // push_provider_name is meant for optional multiple providers support, see: https://getstream.io/chat/docs/react/push_providers_and_multi_bundle
+      //   push_provider_name,
+      // });
+      // await AsyncStorage.setItem('@current_push_token', token);
+
+    //   const removeOldToken = async () => {
+    //     const oldToken = await AsyncStorage.getItem('@current_push_token');
+    //     if (oldToken !== null) {
+    //       await client.removeDevice(oldToken);
+    //     }
+    //   };
+
+    //   unsubscribeTokenRefreshListenerRef.current = messaging().onTokenRefresh(async newToken => {
+    //     await Promise.all([
+    //       removeOldToken(),
+    //       client.addDevice(newToken, push_provider, USER_ID, push_provider_name),
+    //       AsyncStorage.setItem('@current_push_token', newToken),
+    //     ]);
+    //   });
+    // };
+
+    // const init = async () => {
+    //   await requestPermission();
+    //   await registerPushToken();
+    //   await client.connectUser({ id: USER_ID }, USER_TOKEN);
+
+    //   setIsReady(true);
+    // };
+
+    // init();
+
+    // return async () => {
+    //   await client?.disconnectUser();
+    //   unsubscribeTokenRefreshListenerRef.current?.();
+    // };
   }, []);
 
   const fetchProjects = async ({ pageParam }: { pageParam: number }) => {
@@ -198,7 +259,7 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
   //     flatListRef.current.scrollToOffset({ offset: 0, animated: true });
   //   }
   // };
-  
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -213,7 +274,7 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
           <StudentViewPost onVideoRef={(videoRef) => {
             cellRefs.current[item._id] = videoRef.current;
             // console.log(videoRef);
-          }} item={item} refetch={refetch} navigation={navigation}/>
+          }} item={item} refetch={refetch} navigation={navigation} />
         )}
         keyExtractor={(item, index) => index.toString()}
         onEndReached={onEndReached}
