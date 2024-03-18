@@ -1,5 +1,6 @@
 const { sendNotification } = require("../../../../pushNotification");
 const Club = require("../models/club.model");
+const Notification = require("../models/notification.model");
 const Post = require("../models/post.model");
 const Student = require("../models/student.model");
 
@@ -9,15 +10,16 @@ const createPost = async (req, res) => {
     try {
         const post = await Post.create({ uri, caption, type, club: user_id });
         const club = await Club.findOne({ _id: user_id }).populate('members');
-        club.members.forEach((member) => {
+        club.members.forEach(async(member) => {
             const pushToken = member.pushToken;
             const notification = {
                 token: pushToken,
-                title: `New Post🎉 by ${club?.name}`,
-                body: '',
-                data: { type: 'newPost' },
+                title: `${club?.name}`,
+                body: 'New Post🎉',
+                data: { type: 'newPost', post: post },
             }
-            sendNotification(notification)
+            sendNotification(notification);
+            await Notification.create({ title: notification.title, body: notification.body, data: notification.data, club: user_id, student: member._id })
         });
         res.status(200).json(post)
     } catch (error) {

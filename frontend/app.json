@@ -65,18 +65,25 @@
         {
           "android": {
             "extraMavenRepos": ["../../node_modules/@notifee/react-native/android/libs"]
+          },
+          "ios": {
+            "useFrameworks": "static"
           }
         }
       ],
       "@react-native-firebase/app",
       "@react-native-firebase/messaging",
       [
-        "expo-build-properties",
-        {
-          "ios": {
-            "useFrameworks": "static"
-          }
-        }
+        "expo-notifications"
+        // ,
+        // {
+        //   "icon": "./local/assets/notification-icon.png",
+        //   "color": "#ffffff",
+        //   "sounds": [
+        //     "./local/assets/notification-sound.wav",
+        //     "./local/assets/notification-sound-other.wav"
+        //   ]
+        // }
       ]
     ],
     "extra": {
