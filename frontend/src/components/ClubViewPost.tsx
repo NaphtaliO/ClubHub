@@ -183,7 +183,7 @@ const ClubViewPost = ({ item, refetch, navigation, onVideoRef }: Prop) => {
                     flexDirection: 'row',
                     alignItems: 'center',
                 }}>
-                    <TouchableOpacity onPress={() => navigation.navigate('ClubCommentsScreen', { post_id: item._id })}>
+                    <TouchableOpacity onPress={() => navigation.navigate('ClubCommentsScreen', { post_id: item._id, refetch: refetch })}>
                         <Icon
                             style={{ marginRight: 7 }}
                             size={23}

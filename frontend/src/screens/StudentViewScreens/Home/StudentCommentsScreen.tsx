@@ -3,14 +3,14 @@ import React, { useEffect, useState } from 'react';
 import { useAppSelector } from '../../../hooks/hooks';
 import { URL, VERSION } from '@env';
 import { useLogout } from '../../../hooks/useLogout';
-import { ClubCommentsScreenProps, CommentProp } from '../../../types/types';
+import { CommentProp, StudentCommentsScreenProps } from '../../../types/types';
 import CommentItem from '../../../components/CommentItem';
 
 LogBox.ignoreLogs([
     'Non-serializable values were found in the navigation state',
 ]);
 
-const ClubCommentsScreen = ({ navigation, route }: ClubCommentsScreenProps) => {
+const StudentCommentsScreen = ({ navigation, route }: StudentCommentsScreenProps) => {
     const { post_id, refetch } = route.params;
     const user = useAppSelector((state) => state.user.value);
     const [loading, setLoading] = useState<boolean>(false);
@@ -65,11 +65,11 @@ const ClubCommentsScreen = ({ navigation, route }: ClubCommentsScreenProps) => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${user?.token}`
                 },
-                body: JSON.stringify({ comment, post_id, club: user?._id })
+                body: JSON.stringify({ comment, post_id, student: user?._id })
             })
             const json = await response.json();
             let res = {
-                ...json, club: {
+                ...json, student: {
                     _id: user?._id,
                     name: user?.name,
                     avatar: user?.avatar,
@@ -123,46 +123,46 @@ const ClubCommentsScreen = ({ navigation, route }: ClubCommentsScreenProps) => {
         getComments();
     }, [])
 
-  return (
-      <View style={styles.container}>
-          <FlatList
-              refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-              data={comments}
-              showsVerticalScrollIndicator={true}
-              renderItem={({ item }) => <CommentItem item={item} deleteComment={deleteComment} />}
-              keyExtractor={item => item._id}
+    return (
+        <View style={styles.container}>
+            <FlatList
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                data={comments}
+                showsVerticalScrollIndicator={true}
+                renderItem={({ item }) => <CommentItem item={item} deleteComment={deleteComment} />}
+                keyExtractor={item => item._id}
             //   ListEmptyComponent={<ListEmpty title={"No Comments yet"} message={`Comments on this post will appear here`} />}
-          />
+            />
 
-          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
-              keyboardVerticalOffset={84}>
-              <View style={{ marginTop: 'auto', marginHorizontal: 20 }}
-              // onLayout={event => {
-              //   let { height } = event.nativeEvent.layout;
-              //   console.log(height);
-              // }}
-              // Get height of the view for keyboard avoiding view vertical offset
-              >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 20 }}>
-                      <TextInput
-                          style={styles.input}
-                          onChangeText={text => setComment(text)}
-                          value={comment}
-                          placeholder={'Add comment...'}
-                          autoCorrect={false}
-                          multiline={true}
-                      />
-                      <TouchableOpacity onPress={createComment} style={{ alignItems: 'center', justifyContent: 'center' }}>
-                          <Text>Send</Text>
-                      </TouchableOpacity>
-                  </View>
-              </View>
-          </KeyboardAvoidingView>
-      </View>
-  )
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
+                keyboardVerticalOffset={84}>
+                <View style={{ marginTop: 'auto', marginHorizontal: 20 }}
+                // onLayout={event => {
+                //   let { height } = event.nativeEvent.layout;
+                //   console.log(height);
+                // }}
+                // Get height of the view for keyboard avoiding view vertical offset
+                >
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 20 }}>
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={text => setComment(text)}
+                            value={comment}
+                            placeholder={'Add comment...'}
+                            autoCorrect={false}
+                            multiline={true}
+                        />
+                        <TouchableOpacity onPress={createComment} style={{ alignItems: 'center', justifyContent: 'center' }}>
+                            <Text>Send</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </KeyboardAvoidingView>
+        </View>
+    )
 }
 
-export default ClubCommentsScreen
+export default StudentCommentsScreen
 
 const styles = StyleSheet.create({
     container: {
