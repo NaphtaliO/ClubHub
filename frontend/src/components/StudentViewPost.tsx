@@ -5,7 +5,7 @@ import CustomImage from './CustomImage';
 import { formatDistanceToNowStrict } from 'date-fns';
 import CustomText from './CustomText';
 import { Icon } from '@rneui/themed';
-import { PostProp } from '../types/types';
+import { PostProp, StudentHomeScreenProps } from '../types/types';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { URL, VERSION } from '@env';
 import * as Haptics from 'expo-haptics';
@@ -17,11 +17,10 @@ import CustomVideo from './CustomVideo';
 type Prop = {
     item: PostProp,
     refetch: () => void,
-    navigation: any,
     onVideoRef: (video: RefObject<Video>) => void,
 }
 
-const StudentViewPost = ({ item, refetch, navigation, onVideoRef }: Prop) => {
+const StudentViewPost = ({ item, refetch, navigation, onVideoRef }: Prop & StudentHomeScreenProps) => {
     const user = useAppSelector((state) => state.user.value);
     const { showActionSheetWithOptions } = useActionSheet();
     const { logout } = useLogout();
@@ -140,7 +139,7 @@ const StudentViewPost = ({ item, refetch, navigation, onVideoRef }: Prop) => {
                     flexDirection: 'row',
                     alignItems: 'center',
                 }}>
-                    <TouchableOpacity onPress={() => {}}>
+                    <TouchableOpacity onPress={() => navigation.navigate('StudentCommentsScreen', { post_id: item._id, refetch: refetch, })}>
                         <Icon
                             style={{ marginRight: 7 }}
                             size={23}

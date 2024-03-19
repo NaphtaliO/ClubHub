@@ -1,21 +1,21 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import { NotificationDetailsProp } from '../../../types/types'
+import { ScrollView, StyleSheet, Text } from 'react-native';
+import React from 'react';
+import { NotificationDetailsProp } from '../../../types/types';
 
 const NotificationDetails = ({ route }: NotificationDetailsProp) => {
     const { notification } = route.params;
-    
-  return (
-      <ScrollView style={styles.container}
-          contentContainerStyle={{
-          justifyContent: 'center',
-              alignItems: 'center'
-          }}>
-          <Text style={styles.title}>General Notification</Text>
-          <Text style={styles.body}>Title: {notification.body}</Text>
-          <Text style={styles.message}>Message: {notification.data.message}</Text>
-    </ScrollView>
-  )
+
+    return (
+        <ScrollView style={styles.container}
+            contentContainerStyle={{
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}>
+            <Text style={styles.title}>General Notification</Text>
+            <Text style={styles.body}>Title: {notification.body}</Text>
+            <Text style={styles.message}>Message: {notification.data.message}</Text>
+        </ScrollView>
+    )
 }
 
 export default NotificationDetails
