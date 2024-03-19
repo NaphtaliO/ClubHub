@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native'
 import React from 'react'
 import { useAppContext } from '../../../context/AppContext';
-import { Channel, MessageInput, MessageList, useMessageContext, useTheme } from 'stream-chat-expo';
+import { Channel, ChannelAvatar, MessageInput, MessageList, useMessageContext, useTheme } from 'stream-chat-expo';
 import { StudentChannelProp } from '../../../types/types';
 import { Image } from 'expo-image';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,9 +11,14 @@ import { myMessageTheme } from '../../../Constants';
 
 
 const CustomAvatar = () => {
+    const { channel } = useAppContext();
     const { message } = useMessageContext();
 
-    return <Image source={{ uri: message?.user?.image }} />;
+    if (!message?.user?.image) {
+        return <ChannelAvatar channel={channel} />
+    }
+
+    return <Image source={message?.user?.image} style={styles.image} />;
 };
 
 const StudentChannel = ({ navigation }: StudentChannelProp) => {
@@ -28,13 +33,13 @@ const StudentChannel = ({ navigation }: StudentChannelProp) => {
     } = useTheme();
 
     return (
-        <View style={{flex: 1, backgroundColor: 'white', paddingBottom: insets.bottom}}>
+        <View style={{ flex: 1, backgroundColor: 'white', paddingBottom: insets.bottom }}>
             <Channel
                 channel={channel}
                 messageId={messageId}
-                MessageAvatar={CustomAvatar}
-            // myMessageTheme={myMessageTheme}
-            keyboardVerticalOffset={headerHeight}
+                // MessageAvatar={CustomAvatar}
+                // myMessageTheme={myMessageTheme}
+                keyboardVerticalOffset={headerHeight}
             >
                 <MessageList
                     StickyHeader={() => null}
@@ -54,4 +59,11 @@ const StudentChannel = ({ navigation }: StudentChannelProp) => {
 
 export default StudentChannel;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    image: {
+        width: 30,
+        height: 30,
+        borderRadius: 50,
+        marginRight: 5
+    }
+})

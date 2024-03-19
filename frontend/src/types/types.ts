@@ -19,8 +19,8 @@ export type RootStackParamList = {
   EventDetails: { event: Event },
   CalendarEventDetails: { event: Event },
   TermsAndConditions: undefined,
-  ClubCommentsScreen: { post_id: string },
-  StudentCommentsScreen: { post_id: string },
+  ClubCommentsScreen: { post_id: string, refetch: () => void },
+  StudentCommentsScreen: { post_id: string, refetch: () => void },
   NotificationScreen: undefined,
   SendNotification: undefined,
   NotificationDetails: { notification: Notification },
@@ -119,7 +119,8 @@ export type SearchScreenProps = CompositeScreenProps<
 export type CalendarScreenProps = CompositeScreenProps<
   BottomTabScreenProps<StudentViewTabParamList, 'Calendar'>,
   NativeStackScreenProps<RootStackParamList>
->;
+  >;
+export type StudentCommentsScreenProps = NativeStackScreenProps<RootStackParamList, 'StudentCommentsScreen'>;
 export type ClubProfileScreen = NativeStackScreenProps<RootStackParamList, 'ClubProfile'>;
 export type NotificationScreenProp = NativeStackScreenProps<RootStackParamList, 'NotificationScreen'>;
 export type NotificationDetailsProp = NativeStackScreenProps<RootStackParamList, 'NotificationDetails'>;
@@ -198,6 +199,24 @@ export type PostProp = {
     avatar: "string"
   },
   comments: string[],
+  createdAt: string,
+  updatedAt: string
+}
+
+export type CommentProp = {
+  _id: string,
+  comment: string,
+  post: string,
+  student?: {
+    _id: string,
+    avatar: string,
+    name: string
+  },
+  club?: {
+    _id: string,
+    avatar: string,
+    name: string
+  },
   createdAt: string,
   updatedAt: string
 }

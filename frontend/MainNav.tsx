@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StatusBar, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { ActivityIndicator, MD2Colors } from 'react-native-paper';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from "@expo/vector-icons";
@@ -24,9 +24,7 @@ import NotificationScreen from './src/screens/StudentViewScreens/Home/Notificati
 import SendNotification from './src/screens/ClubViewScreens/Create/SendNotification';
 import NotificationDetails from './src/screens/StudentViewScreens/Home/NotificationDetails';
 import StudentChannelList from './src/screens/StudentViewScreens/Home/StudentChannelList';
-import { Channel, Chat, OverlayProvider, useTheme } from 'stream-chat-expo';
-import { LIVESTREAMAPIKEY } from '@env';
-import { StreamChat } from 'stream-chat';
+import { Channel, Chat, OverlayProvider } from 'stream-chat-expo';
 import { useChatClient } from './src/hooks/useChatClient';
 import StudentChannel from './src/screens/StudentViewScreens/Home/StudentChannel';
 import { ChannelListHeader } from './src/components/ChannelListHeader';
@@ -39,6 +37,7 @@ import { ChannelHeader } from './src/components/ChannelHeader';
 import ClubChannel from './src/screens/ClubViewScreens/Home/ClubChannel';
 import ClubChannelList from './src/screens/ClubViewScreens/Home/ClubChannelList';
 import ThreadScreen from './src/screens/StudentViewScreens/Home/ThreadScreen';
+import StudentCommentsScreen from './src/screens/StudentViewScreens/Home/StudentCommentsScreen';
 // import LiveStream from './src/screens/ClubViewScreens/Calendar/LiveStream';
 // import WatchLiveStream from './src/screens/StudentViewScreens/Calendar/WatchLiveStream';
 
@@ -205,6 +204,8 @@ const MainNav = () => {
                                 <Stack.Screen name="NewMessageScreen" component={NewMessageScreen}
                                             options={{ presentation: 'modal', headerTitle: 'New Message' }} />
                                         {/* <Stack.Screen name="ThreadScreen" component={ThreadScreen} /> */}
+                                        <Stack.Screen name="StudentCommentsScreen" component={StudentCommentsScreen}
+                                            options={{ presentation: 'modal', headerLeft: () => null, headerTitle: 'Comments' }} />
                             </>
                         ) : (
                             <>
