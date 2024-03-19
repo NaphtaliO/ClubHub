@@ -96,7 +96,6 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
       }
       if (response.ok) {
         console.log(json);
-
       }
     } catch (error) {
       console.log((error as Error).message);
