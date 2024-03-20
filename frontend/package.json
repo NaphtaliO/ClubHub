@@ -73,7 +73,8 @@
     "socket.io-client": "^4.7.4",
     "stream-chat": "^8.24.0",
     "stream-chat-expo": "^5.26.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "expo-updates": "~0.24.12"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
