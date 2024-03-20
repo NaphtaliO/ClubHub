@@ -24,15 +24,13 @@
       "googleServicesFile": "./credentials/GoogleService-Info.plist"
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./src/assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
+      "icon": "./src/assets/adaptive-icon.png",
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
       "package": "com.naphtali2003.ClubHub",
+      "softwareKeyboardLayoutMode": "pan",
       "googleServicesFile": "./credentials/google-services.json",
       "versionCode": 1
     },
