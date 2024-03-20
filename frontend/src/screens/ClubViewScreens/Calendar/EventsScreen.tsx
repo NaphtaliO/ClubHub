@@ -124,7 +124,6 @@ const Calendar = ({ navigation }: EventsScreenProps) => {
         // onEventPress: () => navigation.navigate('LiveStream'),
         onEventPress: (e) => {
             navigation.navigate('EventDetails', { event: e });
-            console.log(e);
         }
         // renderEvent: () => ()
     };

@@ -41,7 +41,7 @@ export interface Event {
   end?: string,
   summary?: string,
   club?: object,
-  rsvp?: string[]
+  rsvp?: { accepted: string[], declined: string[] },
   createdAt?: string,
   updatedAt?: string,
 }
