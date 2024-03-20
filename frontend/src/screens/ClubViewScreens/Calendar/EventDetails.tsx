@@ -5,6 +5,7 @@ import { URL, VERSION } from '@env';
 import { useAppSelector } from '../../../hooks/hooks';
 import { useLogout } from '../../../hooks/useLogout';
 import { Colors, LoaderScreen } from 'react-native-ui-lib';
+import { AntDesign, Fontisto } from '@expo/vector-icons';
 
 type Prop = {
     setEvents: () => void
@@ -17,8 +18,8 @@ const EventDetails = ({ route, navigation }: EventDetailsProps) => {
     const [loading, setLoading] = useState<boolean>(false);
 
     // Convert string dates to Date objects
-    const startDate = new Date(event.start);
-    const endDate = new Date(event.end);
+    const startDate = new Date(`${event.start}`);
+    const endDate = new Date(`${event.end}`);
 
     // Format date strings
     const formattedStartDate = startDate.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -72,11 +73,23 @@ const EventDetails = ({ route, navigation }: EventDetailsProps) => {
             <Text style={styles.date}>{formattedStartDate}</Text>
             <Text style={styles.date}>from {formattedStartTime} to {formattedEndTime}</Text>
             <Text style={[styles.date, { paddingTop: 10 }]}>{event.summary}</Text>
+            <View style={styles.rsvpContainer}>
+                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                    <AntDesign name="smile-circle" size={24} color="green" />
+                    <Text style={styles.rsvpText}>Accepted: {event.rsvp?.accepted.length}</Text>
+                </View>
+                
+                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                    <AntDesign name="frown" size={24} color="red" />
+                    <Text style={styles.rsvpText}>Declined: {event.rsvp?.declined.length}</Text>
+                </View>
+                
+            </View>
             <View style={styles.buttonContainer}>
                 <Button title='Go Live' color={''}
                     onPress={() => navigation.navigate('LiveStream', { event: event })}
                 />
-                <Button title='Delete Event' color={'red'} onPress={shouldDelete}/>
+                <Button title='Delete Event' color={'red'} onPress={shouldDelete} />
             </View>
             {loading && <LoaderScreen color={Colors.blue30} message="" overlay />}
         </View>
@@ -111,5 +124,15 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginTop: 'auto',
         marginBottom: 15
+    },
+    rsvpContainer: {
+        flexDirection: 'row',
+        marginTop: 20,
+        // justifyContent: 'space-around'
+    },
+    rsvpText: {
+        fontSize: 16,
+        marginRight: 30,
+        marginLeft: 5
     }
 })

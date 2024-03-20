@@ -9,7 +9,10 @@ const eventSchema = new Schema({
     summary: { type: String },
     location: { type: String },
     club: { type: Schema.Types.ObjectId, ref: "Club", required: true }, // club id of the owner
-    rsvp: [{ type: Schema.Types.ObjectId, ref: "Student" }],
+    rsvp: {
+        accepted: [{ type: Schema.Types.ObjectId, ref: "Student" }],
+        declined: [{ type: Schema.Types.ObjectId, ref: "Student" }]
+    },
 }, { timestamps: true });
 
 const Event = mongoose.model('Event', eventSchema);
