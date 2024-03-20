@@ -6,8 +6,6 @@ dayjs.extend(calendar);
 
 const IOS_GREEN = '#53d769';
 
-export const THEME_COLOUR: string = '#3AB0FF';
-
 export const theme = {
     ...DefaultTheme,
     colors: {
@@ -18,6 +16,8 @@ export const theme = {
         error: '#f13a59',
     },
 }
+
+export const THEME_COLOUR: string = theme.colors.primary;
 
 export function formatLatestMessageDate(date?: Date | string) {
     return dayjs(date).calendar(undefined, {
