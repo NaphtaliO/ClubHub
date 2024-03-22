@@ -46,7 +46,7 @@ export const CHANNEL_LIST_SCREEN_HEADER_HEIGHT = 120;
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const MainNav = () => {
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const user = useAppSelector((state) => state.user.value);
     const dispatch = useAppDispatch();
     const insets = useSafeAreaInsets();
