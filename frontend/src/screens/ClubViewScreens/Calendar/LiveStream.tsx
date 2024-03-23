@@ -93,7 +93,7 @@ const LiveStreamUI = ({event}: {event: Event}) => {
         } else {
             socket.emit('stopStreaming', { eventId: event._id });
         }
-        console.log(isCallLive);
+        // console.log(isCallLive);
         
     }, [isCallLive, socket])
 

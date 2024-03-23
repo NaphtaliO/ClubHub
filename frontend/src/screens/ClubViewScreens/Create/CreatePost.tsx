@@ -91,10 +91,14 @@ export default function Post({ navigation }: CreatePostScreenProps) {
         } else {
             Haptics.selectionAsync()
             let result = await ImagePicker.launchCameraAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                allowsEditing: true,
+                presentationStyle: ImagePicker.UIImagePickerPresentationStyle.FULL_SCREEN,
                 aspect: [4, 3],
-                quality: 0.2,
-                cameraType: ImagePicker.CameraType.front
+                quality: 0,
+                videoMaxDuration: 20,
+                videoQuality: ImagePicker.UIImagePickerControllerQualityType.Low,
+                videoExportPreset: ImagePicker.VideoExportPreset.MediumQuality
             });
 
             if (!result.canceled) {
