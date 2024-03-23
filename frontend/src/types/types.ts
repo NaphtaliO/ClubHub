@@ -9,6 +9,7 @@ export type RootStackParamList = {
   StudentViewTabNav: NavigatorScreenParams<StudentViewTabParamList>,
   ClubProfile: { id: string, name: string },
   EditClubProfile: undefined,
+  EditStudentProfile: undefined,
   CreatePost: undefined,
   CreateEvent: undefined,
   LogIn: undefined,
@@ -101,7 +102,7 @@ export type EventsScreenProps = CompositeScreenProps<
   NativeStackScreenProps<RootStackParamList>
 >;
 
-export type ClubViewProfileScreenProps = CompositeScreenProps<
+export type ClubProfileScreenProps = CompositeScreenProps<
   BottomTabScreenProps<ClubViewTabParamList, 'Profile'>,
   NativeStackScreenProps<RootStackParamList>
 >;
@@ -120,6 +121,10 @@ export type CalendarScreenProps = CompositeScreenProps<
   BottomTabScreenProps<StudentViewTabParamList, 'Calendar'>,
   NativeStackScreenProps<RootStackParamList>
   >;
+export type StudentProfileScreenProps = CompositeScreenProps<
+  BottomTabScreenProps<StudentViewTabParamList, 'Profile'>,
+  NativeStackScreenProps<RootStackParamList>
+>;
 export type StudentCommentsScreenProps = NativeStackScreenProps<RootStackParamList, 'StudentCommentsScreen'>;
 export type ClubProfileScreen = NativeStackScreenProps<RootStackParamList, 'ClubProfile'>;
 export type NotificationScreenProp = NativeStackScreenProps<RootStackParamList, 'NotificationScreen'>;
@@ -132,6 +137,7 @@ export type ClubChannelListScreenProp = NativeStackScreenProps<RootStackParamLis
 export type ClubChannelProp = NativeStackScreenProps<RootStackParamList, 'ClubChannel'>;
 // export type ThreadScreenProp = NativeStackScreenProps<RootStackParamList, 'ThreadScreen'>;
 export type ClubNewMessageScreenProp = NativeStackScreenProps<RootStackParamList, 'ClubNewMessageScreen'>;
+export type EditStudentProfileProp = NativeStackScreenProps<RootStackParamList, 'EditStudentProfile'>;
 
 
 

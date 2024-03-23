@@ -24,9 +24,9 @@ const CustomVideo = ({ style, uri, status, setStatus, onVideoRef }: Prop) => {
             onVideoRef(video);
         }
         return () => {
-            if (video.current) {
-                video.current.unloadAsync;
-            }
+            // if (video.current) {
+            //     video.current.unloadAsync;
+            // }
         };
     }, [onVideoRef, video]);
 

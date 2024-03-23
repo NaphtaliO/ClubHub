@@ -55,7 +55,6 @@ const MainNav = () => {
 
     useEffect(() => {
         const getData = async () => {
-
             if (loading) return;
             setLoading(true);
             try {
