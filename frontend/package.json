@@ -74,7 +74,9 @@
     "socket.io-client": "^4.7.4",
     "stream-chat": "^8.24.0",
     "stream-chat-expo": "^5.26.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "validator": "^13.11.0",
+    "expo-web-browser": "~12.8.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

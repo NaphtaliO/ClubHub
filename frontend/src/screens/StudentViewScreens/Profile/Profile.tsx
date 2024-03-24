@@ -11,6 +11,8 @@ import { useLogout } from '../../../hooks/useLogout'
 import { URL, VERSION } from '@env'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { logIn } from '../../../redux/userSlice'
+import { Feather } from '@expo/vector-icons';
+import * as WebBrowser from 'expo-web-browser';
 
 const Profile = ({ navigation }: StudentProfileScreenProps) => {
   const user = useAppSelector((state) => state.user.value);
@@ -69,14 +71,6 @@ const Profile = ({ navigation }: StudentProfileScreenProps) => {
               <CustomImage style={styles.profileAvatar} uri={`${user?.avatar}`} />}
             <View style={styles.profileDetailsContainer}>
               <Text category='h4'>{user?.name}</Text>
-              <Text appearance='hint' category='s1'>{user?.location}</Text>
-              {/* TODO: fix this */}
-              {/* <RateBar
-              style={styles.rateBar}
-              hint='Experience'
-              value={rating}
-              onValueChange={setRating}
-            /> */}
             </View>
           </View>
           <Button
@@ -90,39 +84,22 @@ const Profile = ({ navigation }: StudentProfileScreenProps) => {
             appearance='hint'>
             {user?.bio}
           </Text>
+          {user?.website ?
+            <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+              <Feather name="link" size={15} color="black" style={{paddingRight: 5}} />
+              {/* <TouchableOpacity onPress={() => WebBrowser.openBrowserAsync(user.website)} > */}
+                <Text style={{ color: '#2155CD' }}>{user?.website}</Text>
+              {/* </TouchableOpacity> */}
+            </View>
+            : null}
         </Layout>
         <View style={styles.profileParametersContainer}>
           <View style={styles.profileSocialsSection}>
-            {/* <ProfileSocial
-              style={styles.profileSocialContainer}
-              hint='Members'
-              value={`${user?.members?.length}`}
-            /> */}
-            {/* <ProfileSocial
-            style={styles.profileSocialContainer}
-            hint='Following'
-            value={`${profile.following}`}
-          />
-          <ProfileSocial
-            style={styles.profileSocialContainer}
-            hint='Posts'
-            value={`${profile.posts}`}
-          /> */}
+            
           </View>
           <Divider style={styles.profileSectionsDivider} />
           <View style={styles.profileParametersSection}>
-            {/* <ProfileParameterCard
-              style={styles.profileParameter}
-              hint='Rank'
-              value={`${1}`}
-              icon={ArrowHeadUpIcon}
-            /> */}
-            {/* <ProfileParameterCard
-            style={styles.profileParameter}
-            hint='Weight'
-            value={`${profile.weight} kg`}
-            icon={ArrowHeadDownIcon}
-          /> */}
+            
           </View>
         </View>
       </Layout>

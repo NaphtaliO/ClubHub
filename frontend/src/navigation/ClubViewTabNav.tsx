@@ -7,7 +7,7 @@ import Feed from "../screens/ClubViewScreens/Home/Feed";
 import CameraScreen from "../screens/ClubViewScreens/Create/CameraScreen";
 import EventsScreen from "../screens/ClubViewScreens/Calendar/EventsScreen";
 import Profile from "../screens/ClubViewScreens/Profile/Profile";
-import { TouchableOpacity, View } from "react-native";
+import { Alert, TouchableOpacity, View } from "react-native";
 
 const Tab = createBottomTabNavigator<ClubViewTabParamList>();
 
@@ -90,8 +90,17 @@ const ClubViewTabNav = ({ }) => {
                 component={Profile}
                 options={{
                     headerRight: () => (
-                        <TouchableOpacity onPress={logout}>
-                            <Feather name="settings"
+                        <TouchableOpacity onPress={() => {
+                            Alert.alert('Logout', 'Logout of this account?', [
+                                {
+                                    text: 'Cancel',
+                                    onPress: () => { },
+                                    style: 'cancel',
+                                },
+                                { text: 'Logout', onPress: () => logout(), style: 'destructive' },
+                            ]);
+                        }}>
+                            <Feather name="log-out"
                                 size={24}
                                 color="black"
                                 style={{ marginRight: 15 }} />

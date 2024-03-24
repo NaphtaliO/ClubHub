@@ -11,6 +11,7 @@ import { ProfileSocial } from '../../../components/profile-social.component';
 import { ProfileParameterCard } from '../../../components/profile-parameter-card.component';
 import { ArrowHeadDownIcon, ArrowHeadUpIcon } from '../../../components/icons';
 import CustomImage from '../../../components/CustomImage';
+import { Feather } from '@expo/vector-icons';
 
 const Profile = ({ navigation }: ClubProfileScreenProps): React.ReactElement => {
   const user = useAppSelector((state) => state.user.value);
@@ -86,6 +87,14 @@ const Profile = ({ navigation }: ClubProfileScreenProps): React.ReactElement => 
             appearance='hint'>
             {user?.bio}
           </Text>
+          {user?.website ?
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Feather name="link" size={15} color="black" style={{ paddingRight: 5 }} />
+              {/* <TouchableOpacity onPress={() => WebBrowser.openBrowserAsync(user.website)} > */}
+              <Text style={{ color: '#2155CD' }}>{user?.website}</Text>
+              {/* </TouchableOpacity> */}
+            </View>
+            : null}
         </Layout>
         <View style={styles.profileParametersContainer}>
           <View style={styles.profileSocialsSection}>
