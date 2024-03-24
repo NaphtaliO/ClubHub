@@ -1,5 +1,5 @@
 const express = require("express");
-const { searchClub, refreshUser, fetchClubProfileById, joinClub, setPushToken, acceptTerms } = require('../controllers/user.controller');
+const { searchClub, refreshUser, fetchClubProfileById, joinClub, setPushToken, acceptTerms, deleteUser, updateNotificationsSettings } = require('../controllers/user.controller');
 const requireAuth = require("../middleware/requireAuth");
 
 const router = express.Router();
@@ -13,6 +13,8 @@ router.get('/getClubProfile/:id', fetchClubProfileById);
 router.put("/joinClub/:club_id", joinClub);
 //update pushToken
 router.put("/setPushToken", setPushToken);
-router.put("/acceptTerms", acceptTerms)
+router.put("/acceptTerms", acceptTerms);
+router.put("/updateNotificationsSettings", updateNotificationsSettings);
+router.delete("/delete", deleteUser)
 
 module.exports = router;

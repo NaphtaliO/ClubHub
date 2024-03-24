@@ -32,6 +32,9 @@ export type RootStackParamList = {
   ClubChannelList: undefined,
   ClubChannel: undefined,
   ClubNewMessageScreen: undefined,
+  StudentSettings: undefined,
+  DeleteAccount: undefined,
+  NotificationSettings: undefined,
 };
 
 export interface Event {
@@ -138,6 +141,9 @@ export type ClubChannelProp = NativeStackScreenProps<RootStackParamList, 'ClubCh
 // export type ThreadScreenProp = NativeStackScreenProps<RootStackParamList, 'ThreadScreen'>;
 export type ClubNewMessageScreenProp = NativeStackScreenProps<RootStackParamList, 'ClubNewMessageScreen'>;
 export type EditStudentProfileProp = NativeStackScreenProps<RootStackParamList, 'EditStudentProfile'>;
+export type StudentSettingsScreenProp = NativeStackScreenProps<RootStackParamList, 'StudentSettings'>;
+export type DeleteAccountScreenProp = NativeStackScreenProps<RootStackParamList, 'DeleteAccount'>;
+export type NotificationSettingsScreenProp = NativeStackScreenProps<RootStackParamList, 'NotificationSettings'>;
 
 
 
@@ -171,6 +177,15 @@ export interface Student {
   token: string;
   members: string[];
   blockedUsers: string[];
+  settings?: {
+    notifications: {
+      newEvents: boolean,
+      announcements: boolean,
+      newPosts: boolean,
+      chat: boolean,
+      liveStream: boolean,
+    }
+  }
 }
 
 export interface State {
@@ -190,6 +205,15 @@ export interface State {
     members?: string[];
     memberships?: string[];
     blockedUsers?: string[];
+    settings?: {
+      notifications: {
+        newEvents: boolean,
+        announcements: boolean,
+        newPosts: boolean,
+        chat: boolean,
+        liveStream: boolean,
+      }
+    }
   } | null
 }
 

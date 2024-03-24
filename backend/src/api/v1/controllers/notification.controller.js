@@ -17,7 +17,9 @@ const createNotification = async (req, res) => {
                 body: body,
                 data: data,
             }
-            sendNotification(notification);
+            if (member.settings.notifications.announcements) {
+                sendNotification(notification);
+            }
             await Notification.create({ title: notification.title, body, data, club: user._id, student: member._id })
         });
 
@@ -37,7 +39,7 @@ const getNotifications = async (req, res) => {
             .skip(skip)
             .limit(parseInt(limit))
             .sort({ createdAt: -1 });
-        
+
         res.status(200).json(notifications)
     } catch (error) {
         res.status(400).json({ error: error.message })
