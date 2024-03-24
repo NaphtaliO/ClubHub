@@ -6,8 +6,9 @@ import { useAppSelector } from '../../../hooks/hooks'
 import { ProfileSocial } from '../../../components/profile-social.component'
 import { ArrowHeadUpIcon } from '../../../components/icons'
 import { ProfileParameterCard } from '../../../components/profile-parameter-card.component'
+import { StudentProfileScreenProps } from '../../../types/types'
 
-const Profile = () => {
+const Profile = ({ navigation }: StudentProfileScreenProps) => {
   const user = useAppSelector((state) => state.user.value);
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = () => {
@@ -45,7 +46,7 @@ const Profile = () => {
           </View>
           <Button
             style={styles.followButton}
-            // onPress={() => navigation.navigate('EditClubProfile')}
+            onPress={() => navigation.navigate('EditStudentProfile')}
           >
             EDIT PROFILE
           </Button>

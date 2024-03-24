@@ -15,6 +15,15 @@ const studentSchema = new Schema({
     pushToken: { type: Object, default: {} },
     blockedUsers: [{ type: Schema.Types.ObjectId, ref: "User" }],
     acceptedTerms: { type: Boolean, default: false },
+    settings: {
+        notifications: {
+            newEvents: { type: Boolean, default: true },
+            announcements: { type: Boolean, default: true },
+            newPosts: { type: Boolean, default: true },
+            chat: { type: Boolean, default: true },
+            liveStream: { type: Boolean, default: true }
+        }
+    }
 }, { timestamps: true });
 
 const Student = mongoose.model('Student', studentSchema);

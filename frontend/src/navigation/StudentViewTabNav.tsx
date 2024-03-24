@@ -70,16 +70,16 @@ const StudentViewTabNav = ({ }) => {
             <Tab.Screen
                 name="Profile"
                 component={Profile}
-                options={{
+                options={({ navigation }) => ({
                     headerRight: () => (
-                        <TouchableOpacity onPress={logout}>
+                        <TouchableOpacity onPress={() => navigation.navigate('StudentSettings')}>
                             <Feather name="settings"
                                 size={24}
                                 color="black"
                                 style={{ marginRight: 15 }} />
                         </TouchableOpacity>
                     )
-                }}
+                })}
             />
         </Tab.Navigator>
     );

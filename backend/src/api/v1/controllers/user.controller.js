@@ -1,5 +1,6 @@
 const Club = require('../models/club.model');
 const Student = require('../models/student.model');
+const Post = require("../models/post.model");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const validator = require('validator');
@@ -206,6 +207,78 @@ const acceptTerms = async (req, res) => {
     }
 }
 
+const updateNotificationsSettings = async (req, res) => {
+    const user = req.user;
+    const {
+        newEvents,
+        generalAnnouncements,
+        newPosts,
+        chatNotifications,
+        liveStreamNotifications
+    } = req.body;
+    try {
+        const updatedSettings = {
+            notifications: {
+                newEvents,
+                announcements: generalAnnouncements,
+                newPosts,
+                chat: chatNotifications,
+                liveStream: liveStreamNotifications
+            }
+        };
+
+        const student = await Student.findByIdAndUpdate({ _id: user._id }, { $set: { settings: updatedSettings } }, { new: true });
+        res.status(200).json(student);
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+        console.log(error.message);
+    }
+}
+
+const deleteUser = async (req, res) => {
+    const user = req.user;
+    if (user.type !== "student") return;
+    try {
+        const user = await Student.findOne({ _id: user._id });
+        if (!user) return;
+        const userComments = await Comment.find({ student: user._id });
+
+        // Update users who have this user in their favourites, followers, following, blockedUsers
+        await Club.updateMany(
+            {
+                $or: [
+                    { members: user._id },
+                ],
+            },
+            {
+                $pull: {
+                    members: user._id,
+                },
+            }
+        );
+
+        // Update posts that have this user's ID in their likes array
+        await Post.updateMany(
+            { likes: user._id },
+            { $pull: { likes: user._id } }
+        );
+
+        // Remove comments created by the user from posts' comments array
+        await Post.updateMany(
+            { comments: { $in: userComments.map(comment => comment._id) } },
+            { $pull: { comments: { $in: userComments.map(comment => comment._id) } } }
+        );
+
+        // Delete User posts, comments and then the User
+        await Comment.deleteMany({ student: user._id })
+        await Student.findOneAndDelete({ _id: user.id })
+        res.status(200).json({ message: 'Success' })
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+        console.log(error.message);
+    }
+}
+
 module.exports = {
     createClubAdmin,
     createStudent,
@@ -215,5 +288,7 @@ module.exports = {
     fetchClubProfileById,
     joinClub,
     setPushToken,
-    acceptTerms
+    acceptTerms,
+    updateNotificationsSettings,
+    deleteUser
 }

@@ -83,10 +83,10 @@ const Feed = ({ navigation }: ClubHomeScreenProps) => {
       if (cell) {
         if (item.isViewable) {
           // console.log(item.index);
-          cell.current.playAsync()
+          cell.current?.playAsync()
           // console.log("play");
         } else if (!item.isViewable) {
-          cell.current.pauseAsync();
+          cell.current?.pauseAsync();
           // console.log("pause");
         }
       }

@@ -52,11 +52,11 @@ async function registerForPushNotificationsAsync() {
       // alert('Failed to get push token for push notification!');
       return;
     }
-    // token = (await Notifications.getDevicePushTokenAsync());
-    token = await Notifications.getExpoPushTokenAsync({
-      projectId: Constants.expoConfig?.extra?.eas.projectId
-    })
-    // console.log(token);
+    token = (await Notifications.getDevicePushTokenAsync());
+    // token = await Notifications.getExpoPushTokenAsync({
+    //   projectId: Constants.expoConfig?.extra?.eas.projectId
+    // })
+    console.log(token);
 
   } else {
     // alert('Must use physical device for Push Notifications');
@@ -77,7 +77,7 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
   const responseListener = useRef();
   const unsubscribeTokenRefreshListenerRef = useRef<() => void>();
 
-  const setPushToken = async (token: Notifications.ExpoPushToken | undefined) => {
+  const setPushToken = async (token: Notifications.DevicePushToken | undefined) => {
     if (!token) return;
     try {
       const response = await fetch(`${URL}/api/${VERSION}/user/setPushToken`, {
@@ -108,13 +108,12 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
     });
 
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      // console.log(notification);
-
       setNotification(notification);
     });
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response.notification.request.content);
+      // console.log(response);
+      alert("notification clicked")
     });
 
     return () => {
@@ -243,10 +242,10 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
       if (cell) {
         if (item.isViewable) {
           // console.log(item.index);
-          cell.current.playAsync()
+          cell.current?.playAsync()
           // console.log("play");
         } else if (!item.isViewable) {
-          cell.current.pauseAsync();
+          cell.current?.pauseAsync();
           // console.log("pause");
         }
       }

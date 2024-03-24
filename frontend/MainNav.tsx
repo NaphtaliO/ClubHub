@@ -38,8 +38,12 @@ import ClubChannel from './src/screens/ClubViewScreens/Home/ClubChannel';
 import ClubChannelList from './src/screens/ClubViewScreens/Home/ClubChannelList';
 import ThreadScreen from './src/screens/StudentViewScreens/Home/ThreadScreen';
 import StudentCommentsScreen from './src/screens/StudentViewScreens/Home/StudentCommentsScreen';
-// import LiveStream from './src/screens/ClubViewScreens/Calendar/LiveStream';
-// import WatchLiveStream from './src/screens/StudentViewScreens/Calendar/WatchLiveStream';
+import LiveStream from './src/screens/ClubViewScreens/Calendar/LiveStream';
+import WatchLiveStream from './src/screens/StudentViewScreens/Calendar/WatchLiveStream';
+import EditStudentProfile from './src/screens/StudentViewScreens/Profile/EditStudentProfile';
+import StudentSettings from './src/screens/StudentViewScreens/Profile/Settings/StudentSettings';
+import DeleteAccount from './src/screens/StudentViewScreens/Profile/Settings/DeleteAccount';
+import NotificationSettings from './src/screens/StudentViewScreens/Profile/Settings/NotificationSettings';
 
 export const CHANNEL_LIST_SCREEN_HEADER_HEIGHT = 120;
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -54,7 +58,6 @@ const MainNav = () => {
 
     useEffect(() => {
         const getData = async () => {
-
             if (loading) return;
             setLoading(true);
             try {
@@ -70,54 +73,58 @@ const MainNav = () => {
         getData()
     }, []);
 
-    if (loading) return <ActivityIndicator animating={true} color={MD2Colors.red800} style={{
-        justifyContent: 'center',
-        alignSelf: 'center'
-    }} />;
+    if (loading) {
+        return (
+            <View style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center' }}>
+                <ActivityIndicator size={30} animating={true} color={MD2Colors.red800} />
+            </View>
+            
+        )
+    };
 
     return (
         <>
             <OverlayProvider>
                 <NewMessageProvider>
-                <Chat client={chatClient} ImageComponent={Image}>
-                    <Stack.Navigator
-                        screenOptions={({ navigation }) => ({
-                            headerLeft: () => (
-                                <TouchableOpacity onPress={() => navigation.goBack()}>
-                                    <Ionicons
-                                        name="chevron-back"
-                                        size={26}
-                                        color="black"
-                                        style={{}}
-                                    />
-                                </TouchableOpacity>
-                            )
-                        })}>
-                        {user && user.type === "club" ? (
-                            <>
-                                {!user?.acceptedTerms ? <Stack.Screen name="TermsAndConditions"
-                                    component={TermsAndConditions}
-                                    options={{
-                                        // headerShown: false,
-                                        headerLeft: () => null
-                                    }} /> : null}
-                                <Stack.Screen name="ClubViewTabNav" component={ClubViewTabNav}
-                                    options={{
-                                        headerShown: false,
-                                    }} />
-                                <Stack.Screen name="CreatePost" component={CreatePost}
-                                    options={{ headerTitle: "New Post" }} />
-                                <Stack.Screen name="CreateEvent" component={CreateEvent}
-                                    options={{ headerTitle: "New Event" }} />
-                                <Stack.Screen name="EditClubProfile" component={EditClubProfile}
-                                    options={{ headerTitle: "New Event" }} />
-                                <Stack.Screen name="EventDetails" component={EventDetails}
-                                    options={{ headerTitle: "Event Details" }} />
-                                <Stack.Screen name="ClubCommentsScreen" component={ClubCommentsScreen}
-                                    options={{ presentation: 'modal', headerLeft: () => null, headerTitle: 'Comments' }} />
-                                {/* <Stack.Screen name="LiveStream" component={LiveStream}
-                            options={{ headerTitle: "Go Live", headerShown: false }} /> */}
-                                <Stack.Screen name="SendNotification" component={SendNotification}
+                    <Chat client={chatClient} ImageComponent={Image}>
+                        <Stack.Navigator
+                            screenOptions={({ navigation }) => ({
+                                headerLeft: () => (
+                                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                                        <Ionicons
+                                            name="chevron-back"
+                                            size={26}
+                                            color="black"
+                                            style={{}}
+                                        />
+                                    </TouchableOpacity>
+                                )
+                            })}>
+                            {user && user.type === "club" ? (
+                                <>
+                                    {!user?.acceptedTerms ? <Stack.Screen name="TermsAndConditions"
+                                        component={TermsAndConditions}
+                                        options={{
+                                            // headerShown: false,
+                                            headerLeft: () => null
+                                        }} /> : null}
+                                    <Stack.Screen name="ClubViewTabNav" component={ClubViewTabNav}
+                                        options={{
+                                            headerShown: false,
+                                        }} />
+                                    <Stack.Screen name="CreatePost" component={CreatePost}
+                                        options={{ headerTitle: "New Post" }} />
+                                    <Stack.Screen name="CreateEvent" component={CreateEvent}
+                                        options={{ headerTitle: "New Event" }} />
+                                    <Stack.Screen name="EditClubProfile" component={EditClubProfile}
+                                        options={{ headerTitle: "New Event" }} />
+                                    <Stack.Screen name="EventDetails" component={EventDetails}
+                                        options={{ headerTitle: "Event Details" }} />
+                                    <Stack.Screen name="ClubCommentsScreen" component={ClubCommentsScreen}
+                                        options={{ presentation: 'modal', headerLeft: () => null, headerTitle: 'Comments' }} />
+                                    <Stack.Screen name="LiveStream" component={LiveStream}
+                                        options={{ headerTitle: "Go Live", headerShown: false }} />
+                                    <Stack.Screen name="SendNotification" component={SendNotification}
                                         options={{ headerTitle: "New Notification" }} />
                                     <Stack.Screen name='ClubChannelList' component={ClubChannelList}
                                         options={{
@@ -149,90 +156,98 @@ const MainNav = () => {
                                         }} />
                                     {/* <Stack.Screen name="NewMessageScreen" component={NewMessageScreen}
                                         options={{ presentation: 'modal', headerTitle: 'New Message' }} /> */}
-                            </>
-                        ) : user && user.type === "student" ? (
-                            <>
-                                {!user?.acceptedTerms ? <Stack.Screen name="TermsAndConditions"
-                                    component={TermsAndConditions}
-                                    options={{
-                                        // headerShown: false,
-                                        headerLeft: () => null
-                                    }} /> : null}
-                                <Stack.Screen name="StudentViewTabNav" component={StudentViewTabNav}
-                                    options={{
-                                        headerShown: false,
-                                    }} />
-                                <Stack.Screen name="ClubProfile" component={ClubProfile} options={({ navigation, route }) => ({
-                                    title: route.params.name
-                                })} />
-                                <Stack.Screen name="CalendarEventDetails" component={CalendarEventDetails}
-                                    options={{ headerTitle: "Event Details" }} />
-                                {/* <Stack.Screen name="WatchLiveStream" component={WatchLiveStream}
-                                options={{ headerTitle: "Watch Live", headerShown: false }} /> */}
-                                <Stack.Screen name="NotificationScreen" component={NotificationScreen}
-                                    options={{ headerTitle: "Notifications" }} />
-                                <Stack.Screen name="NotificationDetails" component={NotificationDetails}
-                                    options={{ headerTitle: "Details" }} />
-                                <Stack.Screen name='StudentChannelList' component={StudentChannelList}
-                                    options={{
-                                        headerTitle: "Messages", header: () => (
-                                            <View
-                                                style={{
-                                                    paddingTop: insets.top,
-                                                    height: CHANNEL_LIST_SCREEN_HEADER_HEIGHT + insets.top,
-                                                    backgroundColor: 'white',
-                                                }}>
-                                                <ChannelListHeader />
-                                            </View>
-                                        ),
-                                            }} />
-                                        <Stack.Screen name="StudentChannel" component={StudentChannel}
-                                            options={{ 
-                                                header: props =>
-                                                    !!insets.top && (
-                                                            <View
-                                                                style={{
-                                                                    paddingTop: insets.top,
-                                                                    height: 80 + insets.top,
-                                                                }}>
-                                                                <Channel channel={channel}>
-                                                                    <ChannelHeader {...props} channel={channel} />
-                                                                </Channel>
-                                                            </View>
-                                                    ),
-                                             }} />
-                                <Stack.Screen name="NewMessageScreen" component={NewMessageScreen}
-                                            options={{ presentation: 'modal', headerTitle: 'New Message' }} />
-                                        {/* <Stack.Screen name="ThreadScreen" component={ThreadScreen} /> */}
-                                        <Stack.Screen name="StudentCommentsScreen" component={StudentCommentsScreen}
-                                            options={{ presentation: 'modal', headerLeft: () => null, headerTitle: 'Comments' }} />
-                            </>
-                        ) : (
-                            <>
-                                <Stack.Screen
-                                    name="StartScreen"
-                                    component={StartScreen}
-                                    options={{
-                                        headerShown: false,
-                                    }}
-                                />
-                                <Stack.Screen
-                                    name="LogIn"
-                                    component={LogIn}
-                                    options={{
-                                        headerShown: false,
-                                    }}
-                                />
-                                <Stack.Screen
-                                    name="CreateAccount"
-                                    component={CreateAccount}
-                                    options={{
-                                        headerShown: false,
-                                    }}
-                                />
-                            </>
-                        )}
-                    </Stack.Navigator>
+                                </>
+                            ) : user && user.type === "student" ? (
+                                <>
+                                    {!user?.acceptedTerms ? <Stack.Screen name="TermsAndConditions"
+                                        component={TermsAndConditions}
+                                        options={{
+                                            // headerShown: false,
+                                            headerLeft: () => null
+                                        }} /> : null}
+                                    <Stack.Screen name="StudentViewTabNav" component={StudentViewTabNav}
+                                        options={{
+                                            headerShown: false,
+                                        }} />
+                                    <Stack.Screen name="ClubProfile" component={ClubProfile} options={({ navigation, route }) => ({
+                                        title: route.params.name
+                                    })} />
+                                    <Stack.Screen name="CalendarEventDetails" component={CalendarEventDetails}
+                                        options={{ headerTitle: "Event Details" }} />
+                                    <Stack.Screen name="WatchLiveStream" component={WatchLiveStream}
+                                        options={{ headerTitle: "Watch Live", headerShown: false }} />
+                                    <Stack.Screen name="NotificationScreen" component={NotificationScreen}
+                                        options={{ headerTitle: "Notifications" }} />
+                                    <Stack.Screen name="NotificationDetails" component={NotificationDetails}
+                                        options={{ headerTitle: "Details" }} />
+                                    <Stack.Screen name='StudentChannelList' component={StudentChannelList}
+                                        options={{
+                                            headerTitle: "Messages", header: () => (
+                                                <View
+                                                    style={{
+                                                        paddingTop: insets.top,
+                                                        height: CHANNEL_LIST_SCREEN_HEADER_HEIGHT + insets.top,
+                                                        backgroundColor: 'white',
+                                                    }}>
+                                                    <ChannelListHeader />
+                                                </View>
+                                            ),
+                                        }} />
+                                    <Stack.Screen name="StudentChannel" component={StudentChannel}
+                                        options={{
+                                            header: props =>
+                                                !!insets.top && (
+                                                    <View
+                                                        style={{
+                                                            paddingTop: insets.top,
+                                                            height: 80 + insets.top,
+                                                        }}>
+                                                        <Channel channel={channel}>
+                                                            <ChannelHeader {...props} channel={channel} />
+                                                        </Channel>
+                                                    </View>
+                                                ),
+                                        }} />
+                                    <Stack.Screen name="NewMessageScreen" component={NewMessageScreen}
+                                        options={{ presentation: 'modal', headerTitle: 'New Message' }} />
+                                    {/* <Stack.Screen name="ThreadScreen" component={ThreadScreen} /> */}
+                                    <Stack.Screen name="StudentCommentsScreen" component={StudentCommentsScreen}
+                                        options={{ presentation: 'modal', headerLeft: () => null, headerTitle: 'Comments' }} />
+                                    <Stack.Screen name="EditStudentProfile" component={EditStudentProfile}
+                                            options={{}} />
+                                        <Stack.Screen name="StudentSettings" component={StudentSettings}
+                                            options={{ headerTitle: "Settings" }} />
+                                        <Stack.Screen name="DeleteAccount" component={DeleteAccount}
+                                            options={{ headerTitle: "Delete Account" }} />
+                                        <Stack.Screen name="NotificationSettings" component={NotificationSettings}
+                                            options={{ headerTitle: "Settings" }} />
+                                </>
+                            ) : (
+                                <>
+                                    <Stack.Screen
+                                        name="StartScreen"
+                                        component={StartScreen}
+                                        options={{
+                                            headerShown: false,
+                                        }}
+                                    />
+                                    <Stack.Screen
+                                        name="LogIn"
+                                        component={LogIn}
+                                        options={{
+                                            headerShown: false,
+                                        }}
+                                    />
+                                    <Stack.Screen
+                                        name="CreateAccount"
+                                        component={CreateAccount}
+                                        options={{
+                                            headerShown: false,
+                                        }}
+                                    />
+                                </>
+                            )}
+                        </Stack.Navigator>
                     </Chat>
                 </NewMessageProvider>
             </OverlayProvider>
