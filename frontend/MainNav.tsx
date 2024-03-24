@@ -117,7 +117,7 @@ const MainNav = () => {
                                     <Stack.Screen name="CreateEvent" component={CreateEvent}
                                         options={{ headerTitle: "New Event" }} />
                                     <Stack.Screen name="EditClubProfile" component={EditClubProfile}
-                                        options={{ headerTitle: "New Event" }} />
+                                        options={{ headerTitle: "Edit Profile" }} />
                                     <Stack.Screen name="EventDetails" component={EventDetails}
                                         options={{ headerTitle: "Event Details" }} />
                                     <Stack.Screen name="ClubCommentsScreen" component={ClubCommentsScreen}
@@ -214,7 +214,7 @@ const MainNav = () => {
                                     <Stack.Screen name="StudentCommentsScreen" component={StudentCommentsScreen}
                                         options={{ presentation: 'modal', headerLeft: () => null, headerTitle: 'Comments' }} />
                                     <Stack.Screen name="EditStudentProfile" component={EditStudentProfile}
-                                            options={{}} />
+                                            options={{ headerTitle: "Edit Profile" }} />
                                         <Stack.Screen name="StudentSettings" component={StudentSettings}
                                             options={{ headerTitle: "Settings" }} />
                                         <Stack.Screen name="DeleteAccount" component={DeleteAccount}

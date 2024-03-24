@@ -2,17 +2,52 @@ import { Image, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View }
 import React, { useState } from 'react'
 import { Button, Divider, Layout, Text } from '@ui-kitten/components'
 import CustomImage from '../../../components/CustomImage'
-import { useAppSelector } from '../../../hooks/hooks'
+import { useAppDispatch, useAppSelector } from '../../../hooks/hooks'
 import { ProfileSocial } from '../../../components/profile-social.component'
 import { ArrowHeadUpIcon } from '../../../components/icons'
 import { ProfileParameterCard } from '../../../components/profile-parameter-card.component'
 import { StudentProfileScreenProps } from '../../../types/types'
+import { useLogout } from '../../../hooks/useLogout'
+import { URL, VERSION } from '@env'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { logIn } from '../../../redux/userSlice'
 
 const Profile = ({ navigation }: StudentProfileScreenProps) => {
   const user = useAppSelector((state) => state.user.value);
   const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = () => {
+  const { logout } = useLogout();
+  const dispatch = useAppDispatch();
 
+  const refreshUser = async () => {
+    try {
+      const response = await fetch(`${URL}/api/${VERSION}/user/refreshUser`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user?.token}`
+        }
+      })
+      const json = await response.json();
+      const refreshedUser = { ...json, token: user?.token }
+
+      if (!response.ok) {
+        if (json.error === "Request is not authorized") {
+          logout()
+        }
+      }
+      if (response.ok) {
+        await AsyncStorage.setItem('user', JSON.stringify(refreshedUser));
+        dispatch(logIn(refreshedUser));
+      }
+    } catch (error) {
+      console.log((error as Error).message);
+    }
+  }
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    refreshUser();
+    setRefreshing(false);
   }
 
   return (

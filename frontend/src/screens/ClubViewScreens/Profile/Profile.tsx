@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
-import { ClubViewProfileScreenProps, } from '../../../types/types';
+import { ClubProfileScreenProps, } from '../../../types/types';
 import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
 import { URL, VERSION } from '@env';
 import { useLogout } from '../../../hooks/useLogout';
@@ -12,7 +12,7 @@ import { ProfileParameterCard } from '../../../components/profile-parameter-card
 import { ArrowHeadDownIcon, ArrowHeadUpIcon } from '../../../components/icons';
 import CustomImage from '../../../components/CustomImage';
 
-const Profile = ({ navigation }: ClubViewProfileScreenProps): React.ReactElement => {
+const Profile = ({ navigation }: ClubProfileScreenProps): React.ReactElement => {
   const user = useAppSelector((state) => state.user.value);
   const dispatch = useAppDispatch();
   const [refreshing, setRefreshing] = useState<boolean>(false);
