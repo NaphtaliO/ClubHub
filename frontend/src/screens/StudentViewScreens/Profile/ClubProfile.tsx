@@ -6,7 +6,7 @@ import { Button, Divider, Layout, Text } from '@ui-kitten/components';
 import { ProfileSocial } from '../../../components/profile-social.component';
 import { URL, VERSION } from '@env';
 import { useLogout } from '../../../hooks/useLogout';
-import { ClubProfileScreen, Club, PostProp } from '../../../types/types';
+import { ClubProfileScreen, Club, PostProp, chatClient } from '../../../types/types';
 import { Assets, Card, Colors, TabController, TabControllerImperativeMethods, TabControllerItemProps, View } from 'react-native-ui-lib';
 import { logIn } from '../../../redux/userSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -18,6 +18,10 @@ import { Icon } from '@rneui/themed';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Video } from 'expo-av';
+import { useAppContext } from '../../../context/AppContext';
+import type {
+    Channel as StreamChatChannel,
+} from 'stream-chat';
 
 const { height, width } = Dimensions.get('window');
 
@@ -45,6 +49,9 @@ const ClubProfile = ({ route, navigation }: ClubProfileScreen) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [key, setKey] = useState(Date.now());
     const tabController = React.createRef<TabControllerImperativeMethods>();
+    const { setChannel } = useAppContext();
+    const currentChannel = useRef<StreamChatChannel>();
+    const isDraft = useRef(true);
 
     const TABS = ['Home', 'Posts'];
 
@@ -195,6 +202,54 @@ const ClubProfile = ({ route, navigation }: ClubProfileScreen) => {
         });
     };
 
+    const message = async () => {
+        if (!chatClient?.user?.id) {
+            return;
+        }
+
+        const members = [chatClient.user.id, id];
+        // Check if the channel already exists.
+        const channels = await chatClient.queryChannels({
+            distinct: true,
+            members,
+        });
+
+        if (channels.length === 1) {
+            // Channel already exist
+            currentChannel.current = channels[0];
+            isDraft.current = false;
+        } else {
+            // Channel doesn't exist.
+            isDraft.current = true;
+            const channel = chatClient.channel('messaging', {
+                members,
+            });
+
+            // Hack to trick channel component into accepting channel without watching it.
+            channel.initialized = true;
+            currentChannel.current = channel;
+        }
+
+        try {
+            if (!id || !currentChannel.current) {
+                throw new Error('Missing user or current channel');
+            }
+
+            if (isDraft.current) {
+                currentChannel.current.initialized = false;
+                await currentChannel.current.create();
+            }
+
+            if (currentChannel.current.id) {
+                await setChannel(currentChannel.current);
+                // navigation.replace('Main', { screen: 'Channel' });
+                navigation.navigate('StudentChannel')
+            }
+        } catch (error) {
+            console.log((error as Error));
+        }
+    }
+
     return (
         <FlatList
             ListHeaderComponent={
@@ -229,7 +284,7 @@ const ClubProfile = ({ route, navigation }: ClubProfileScreen) => {
                                         </Text>
                                     </View>
                                 </TouchableOpacity>
-                                <TouchableOpacity>
+                                <TouchableOpacity onPress={message}>
                                     <View style={styles.buttonContainer}>
                                         <Text style={styles.button}>Message</Text>
                                     </View>

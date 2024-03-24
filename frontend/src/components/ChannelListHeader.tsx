@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { SearchContext } from '../context/SearchContext';
 import { IconProps, RootSvg, RootPath } from 'stream-chat-expo';
 import { Ionicons } from '@expo/vector-icons';
+import { useAppSelector } from '../hooks/hooks';
 
 export const Compose: React.FC<IconProps> = props => (
     <RootSvg {...props} viewBox="0 0 24 24">
@@ -65,6 +66,7 @@ const styles = StyleSheet.create({
 });
 
 export const ChannelListHeader = () => {
+    const user = useAppSelector((state) => state.user.value);
     const {
         theme: {
             colors: { black, grey, grey_whisper, white_snow, accent_blue },
@@ -124,9 +126,11 @@ export const ChannelListHeader = () => {
                             />
                         </TouchableOpacity>
                         <Text style={[styles.titleText]}>Messages</Text>
-                        <TouchableOpacity onPress={onClickNewMessage}>
+                        {user?.type === "student" ?
+                            <TouchableOpacity onPress={onClickNewMessage}>
                             <Compose height={30} width={30} pathFill={accent_blue} />
-                        </TouchableOpacity>
+                            </TouchableOpacity> :
+                            <View></View>} 
                     </View>
 
                     <View

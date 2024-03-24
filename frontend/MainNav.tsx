@@ -3,7 +3,7 @@ import { TouchableOpacity, View } from 'react-native';
 import { ActivityIndicator, MD2Colors } from 'react-native-paper';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from "@expo/vector-icons";
-import { RootStackParamList, StreamChatGenerics, chatClient } from './src/types/types';
+import { RootStackParamList, chatClient } from './src/types/types';
 import CreatePost from './src/screens/ClubViewScreens/Create/CreatePost';
 import CreateAccount from './src/screens/Authentication/CreateAccount';
 import LogIn from './src/screens/Authentication/LogIn';
@@ -78,7 +78,7 @@ const MainNav = () => {
             <View style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center' }}>
                 <ActivityIndicator size={30} animating={true} color={MD2Colors.red800} />
             </View>
-            
+
         )
     };
 
@@ -214,13 +214,13 @@ const MainNav = () => {
                                     <Stack.Screen name="StudentCommentsScreen" component={StudentCommentsScreen}
                                         options={{ presentation: 'modal', headerLeft: () => null, headerTitle: 'Comments' }} />
                                     <Stack.Screen name="EditStudentProfile" component={EditStudentProfile}
-                                            options={{ headerTitle: "Edit Profile" }} />
-                                        <Stack.Screen name="StudentSettings" component={StudentSettings}
-                                            options={{ headerTitle: "Settings" }} />
-                                        <Stack.Screen name="DeleteAccount" component={DeleteAccount}
-                                            options={{ headerTitle: "Delete Account" }} />
-                                        <Stack.Screen name="NotificationSettings" component={NotificationSettings}
-                                            options={{ headerTitle: "Settings" }} />
+                                        options={{ headerTitle: "Edit Profile" }} />
+                                    <Stack.Screen name="StudentSettings" component={StudentSettings}
+                                        options={{ headerTitle: "Settings" }} />
+                                    <Stack.Screen name="DeleteAccount" component={DeleteAccount}
+                                        options={{ headerTitle: "Delete Account" }} />
+                                    <Stack.Screen name="NotificationSettings" component={NotificationSettings}
+                                        options={{ headerTitle: "Settings" }} />
                                 </>
                             ) : (
                                 <>

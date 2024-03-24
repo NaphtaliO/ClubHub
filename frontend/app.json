@@ -18,7 +18,8 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your Camera.",
-        "NSMicrophoneUsageDescription": "$(PRODUCT_NAME) needs access to your Microphone."
+        "NSMicrophoneUsageDescription": "$(PRODUCT_NAME) needs access to your Microphone.",
+        "UIBackgroundModes": ["location", "fetch", "remote-notification"]
       },
       "bundleIdentifier": "com.naphtali2003.ClubHub",
       "googleServicesFile": "./credentials/GoogleService-Info.plist",
@@ -62,15 +63,21 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos to let you share them with your friends."
+          "photosPermission": "The app accesses your photos to let you share them in posts",
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera to share in posts"
         }
       ],
-      "@stream-io/video-react-native-sdk",
+      [
+        "@stream-io/video-react-native-sdk",
+        {
+          "enableNonRingingPushNotifications": true
+        }
+      ],
       [
         "@config-plugins/react-native-webrtc",
         {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone"
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera to stream events",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone to capture sounds"
         }
       ],
       [
@@ -78,7 +85,7 @@
         {
           "android": {
             "extraMavenRepos": [
-              "../../node_modules/@notifee/react-native/android/libs"
+              "./node_modules/@notifee/react-native/android/libs"
             ]
           },
           "ios": {

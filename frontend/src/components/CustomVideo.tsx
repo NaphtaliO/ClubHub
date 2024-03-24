@@ -1,7 +1,8 @@
-import React, { RefObject, useEffect, useRef, useState } from 'react';
+import React, { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { ResizeMode, Video } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import { unique } from '../Functions';
+import { useFocusEffect } from '@react-navigation/native';
 
 type Prop = {
     style: object,
@@ -23,12 +24,16 @@ const CustomVideo = ({ style, uri, status, setStatus, onVideoRef }: Prop) => {
         if (onVideoRef && typeof onVideoRef === 'function') {
             onVideoRef(video);
         }
-        return () => {
-            // if (video.current) {
-            //     video.current.unloadAsync;
-            // }
-        };
     }, [onVideoRef, video]);
+
+    useFocusEffect(
+        useCallback(() => {
+
+            return () => {
+                video.current?.pauseAsync();
+            };
+        }, [video])
+    );
 
     useEffect(() => {
         const cache = async () => {

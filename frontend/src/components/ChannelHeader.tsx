@@ -21,6 +21,7 @@ export const BackButton: React.FC<IconProps> = props => (
 );
 
 import { chatClient } from '../types/types';
+import { Entypo } from '@expo/vector-icons';
 
 export const CHANNEL_SCREEN_HEADER_HEIGHT = 80;
 

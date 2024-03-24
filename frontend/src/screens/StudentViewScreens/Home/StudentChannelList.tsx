@@ -75,14 +75,6 @@ const StudentChannelList = ({ navigation }: StudentChannelListScreenProp) => {
     );
 
     return (
-        // <ChannelList
-        //     // filters={filters}
-        //     // sort={sort}
-        //     onSelect={(channel) => {
-        //         setChannel(channel);
-        //         navigation.navigate('StudentChannel');
-        //     }}
-        // />
         <View style={StyleSheet.absoluteFill}>
             {(!!searchQuery || (messages && messages.length > 0)) && (
                 <MessageSearchList
@@ -110,16 +102,16 @@ const StudentChannelList = ({ navigation }: StudentChannelListScreenProp) => {
                         options={options}
                         Preview={ChannelPreviewMessenger}
                         sort={sort}
-                        // PreviewAvatar={({ channel }) => (
-                        //     <TouchableOpacity
-                        //         disallowInterruption={true}
-                        //         onPress={() => {
-                        //             /** Handler for press action */
-                        //         }}
-                        //     >
-                        //         <ChannelAvatar channel={channel} ImageComponent={<Image/>} />
-                        //     </TouchableOpacity>
-                        // )}
+                    // PreviewAvatar={({ channel }) => (
+                    //     <TouchableOpacity
+                    //         disallowInterruption={true}
+                    //         onPress={() => {
+                    //             /** Handler for press action */
+                    //         }}
+                    //     >
+                    //         <ChannelAvatar channel={channel} ImageComponent={<Image/>} />
+                    //     </TouchableOpacity>
+                    // )}
                     />
                 </View>
             </View>
