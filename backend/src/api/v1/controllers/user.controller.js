@@ -107,6 +107,22 @@ const refreshUser = async (req, res) => {
     }
 }
 
+const updateProfile = async (req, res) => {
+    let user = req.user;
+    let body = req.body;
+    try {
+        if (user.type === 'club') {
+            user = await Club.findOneAndUpdate({ _id: user._id }, { $set: { ...body } }, { new: true })
+        } else if (user.type === 'student') {
+            user = await Student.findOneAndUpdate({ _id: user._id }, { $set: { ...body } }, { new: true })
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+        console.log(error.message);
+    }
+}
+
 const searchClub = async (req, res) => {
     const user_id = req.user._id;
     const { text } = req.params;
@@ -290,5 +306,6 @@ module.exports = {
     setPushToken,
     acceptTerms,
     updateNotificationsSettings,
-    deleteUser
+    deleteUser,
+    updateProfile
 }
