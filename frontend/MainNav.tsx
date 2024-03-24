@@ -41,6 +41,9 @@ import StudentCommentsScreen from './src/screens/StudentViewScreens/Home/Student
 import LiveStream from './src/screens/ClubViewScreens/Calendar/LiveStream';
 import WatchLiveStream from './src/screens/StudentViewScreens/Calendar/WatchLiveStream';
 import EditStudentProfile from './src/screens/StudentViewScreens/Profile/EditStudentProfile';
+import StudentSettings from './src/screens/StudentViewScreens/Profile/Settings/StudentSettings';
+import DeleteAccount from './src/screens/StudentViewScreens/Profile/Settings/DeleteAccount';
+import NotificationSettings from './src/screens/StudentViewScreens/Profile/Settings/NotificationSettings';
 
 export const CHANNEL_LIST_SCREEN_HEADER_HEIGHT = 120;
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -211,7 +214,13 @@ const MainNav = () => {
                                     <Stack.Screen name="StudentCommentsScreen" component={StudentCommentsScreen}
                                         options={{ presentation: 'modal', headerLeft: () => null, headerTitle: 'Comments' }} />
                                     <Stack.Screen name="EditStudentProfile" component={EditStudentProfile}
-                                        options={{}} />
+                                            options={{}} />
+                                        <Stack.Screen name="StudentSettings" component={StudentSettings}
+                                            options={{ headerTitle: "Settings" }} />
+                                        <Stack.Screen name="DeleteAccount" component={DeleteAccount}
+                                            options={{ headerTitle: "Delete Account" }} />
+                                        <Stack.Screen name="NotificationSettings" component={NotificationSettings}
+                                            options={{ headerTitle: "Settings" }} />
                                 </>
                             ) : (
                                 <>
