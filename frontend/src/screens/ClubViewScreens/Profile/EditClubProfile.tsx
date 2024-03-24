@@ -161,7 +161,7 @@ const EditClubProfile = ({ navigation }: EditStudentProfileProp) => {
         avatar = image
       }
       if (website) {
-        if (!validator.isURL(website)) {
+        if (!validator.isURL(website) || !website.startsWith("https://")) {
           alert("Website is not a valid URL");
           setLoading(false);
           return;

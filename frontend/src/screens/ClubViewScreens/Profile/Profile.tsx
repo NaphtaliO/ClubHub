@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ClubProfileScreenProps, } from '../../../types/types';
 import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
 import { URL, VERSION } from '@env';
@@ -12,6 +12,7 @@ import { ProfileParameterCard } from '../../../components/profile-parameter-card
 import { ArrowHeadDownIcon, ArrowHeadUpIcon } from '../../../components/icons';
 import CustomImage from '../../../components/CustomImage';
 import { Feather } from '@expo/vector-icons';
+import * as WebBrowser from 'expo-web-browser';
 
 const Profile = ({ navigation }: ClubProfileScreenProps): React.ReactElement => {
   const user = useAppSelector((state) => state.user.value);
@@ -90,9 +91,9 @@ const Profile = ({ navigation }: ClubProfileScreenProps): React.ReactElement => 
           {user?.website ?
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Feather name="link" size={15} color="black" style={{ paddingRight: 5 }} />
-              {/* <TouchableOpacity onPress={() => WebBrowser.openBrowserAsync(user.website)} > */}
+              <TouchableOpacity onPress={() => WebBrowser.openBrowserAsync(user.website)} >
               <Text style={{ color: '#2155CD' }}>{user?.website}</Text>
-              {/* </TouchableOpacity> */}
+              </TouchableOpacity>
             </View>
             : null}
         </Layout>

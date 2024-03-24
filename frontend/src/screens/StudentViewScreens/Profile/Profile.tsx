@@ -1,16 +1,13 @@
-import { Image, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
-import { Button, Divider, Layout, Text } from '@ui-kitten/components'
-import CustomImage from '../../../components/CustomImage'
-import { useAppDispatch, useAppSelector } from '../../../hooks/hooks'
-import { ProfileSocial } from '../../../components/profile-social.component'
-import { ArrowHeadUpIcon } from '../../../components/icons'
-import { ProfileParameterCard } from '../../../components/profile-parameter-card.component'
-import { StudentProfileScreenProps } from '../../../types/types'
-import { useLogout } from '../../../hooks/useLogout'
-import { URL, VERSION } from '@env'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { logIn } from '../../../redux/userSlice'
+import { Image, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Button, Divider, Layout, Text } from '@ui-kitten/components';
+import CustomImage from '../../../components/CustomImage';
+import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
+import { StudentProfileScreenProps } from '../../../types/types';
+import { useLogout } from '../../../hooks/useLogout';
+import { URL, VERSION } from '@env';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logIn } from '../../../redux/userSlice';
 import { Feather } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 
@@ -87,9 +84,9 @@ const Profile = ({ navigation }: StudentProfileScreenProps) => {
           {user?.website ?
             <View style={{ flexDirection: 'row', alignItems: 'center'}}>
               <Feather name="link" size={15} color="black" style={{paddingRight: 5}} />
-              {/* <TouchableOpacity onPress={() => WebBrowser.openBrowserAsync(user.website)} > */}
+              <TouchableOpacity onPress={() => WebBrowser.openBrowserAsync(user.website)} >
                 <Text style={{ color: '#2155CD' }}>{user?.website}</Text>
-              {/* </TouchableOpacity> */}
+              </TouchableOpacity>
             </View>
             : null}
         </Layout>
