@@ -143,6 +143,7 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
   } = useInfiniteQuery({
     queryKey: ['feed'],
     queryFn: fetchProjects,
+    gcTime: 86400000, // 24hrs in miliseconds
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages, lastPageParam) => {
       if (lastPage.length === 0) {

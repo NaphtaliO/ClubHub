@@ -46,6 +46,7 @@ const Feed = ({ navigation }: ClubHomeScreenProps) => {
     queryKey: ['feed'],
     queryFn: fetchProjects,
     initialPageParam: 0,
+    gcTime: 86400000, // 24hrs in miliseconds
     getNextPageParam: (lastPage, allPages, lastPageParam) => {
       if (lastPage.length === 0) {
         return undefined
