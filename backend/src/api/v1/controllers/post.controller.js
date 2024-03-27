@@ -1,5 +1,6 @@
 const { sendNotification } = require("../../../../pushNotification");
 const Club = require("../models/club.model");
+const Comment = require("../models/comment.model");
 const Notification = require("../models/notification.model");
 const Post = require("../models/post.model");
 const Student = require("../models/student.model");
@@ -105,13 +106,12 @@ const deletePost = async (req, res) => {
 
         //Delete the post
         post = await Post.findOneAndDelete({ _id: id })
-        console.log(post);
 
         if (!post) {
             return res.status(400).json({ error: 'No such post' })
         }
         //Delete all comments associated with this post
-        // await Comment.deleteMany({ post_id: id })
+        await Comment.deleteMany({ post: id })
         // Remove post Id from Users favourites
         // await User.updateMany({ favourites: id },
         //     { $pull: { favourites: id }, }

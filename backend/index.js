@@ -39,11 +39,10 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   });
 
 io.on("connection", (socket) => {
-  console.log('Client connected ' + socket.id);
+  // console.log('Client connected ' + socket.id);
 
   socket.on('streaming', (data) => {
     const { eventId } = data;
-    console.log(eventId);
     io.to(eventId).emit(`streaming:${eventId}`, { message: 'Live stream started for this event' })
     // Notify student clients about live stream for this event
     socket.broadcast.emit(`streaming:${eventId}`, { message: 'Live stream started for this event' });

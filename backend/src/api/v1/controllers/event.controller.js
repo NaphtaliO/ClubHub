@@ -88,7 +88,6 @@ const rsvp = async (req, res) => {
                 rsvp.declined.push(user._id);
             }
         }
-        console.log(rsvp);
         event = await Event.findOneAndUpdate({ _id: id }, { rsvp: rsvp }, { new: true });
         res.status(200).json(event)
     } catch (error) {

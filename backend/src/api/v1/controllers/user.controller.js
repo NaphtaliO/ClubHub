@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const validator = require('validator');
 const { sendNotification } = require('../../../../pushNotification');
 
-const UCCStudents = ["120432016@umail.ucc.ie", ]
+const UCCStudents = ["120432016@umail.ucc.ie",]
 
 const createToken = (_id) => {
     // Keep user signed in for 30 days
@@ -91,7 +91,7 @@ const LogIn = async (req, res) => {
         res.status(200).json(userWithoutPassword)
     } catch (error) {
         res.status(400).json({ error: error.message })
-        console.log(error);
+        console.log(error.message);
     }
 }
 

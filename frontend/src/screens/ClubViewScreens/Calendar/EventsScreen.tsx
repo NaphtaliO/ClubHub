@@ -50,12 +50,12 @@ const Calendar = ({ navigation }: EventsScreenProps) => {
     };
 
     const onDateChanged = (date: string, source: string) => {
-        console.log('TimelineCalendarScreen onDateChanged: ', date, source);
+        // console.log('TimelineCalendarScreen onDateChanged: ', date, source);
         setCurrentDate(date);
     };
 
     const onMonthChange = (month: any, updateSource: any) => {
-        console.log('TimelineCalendarScreen onMonthChange: ', month, updateSource);
+        // console.log('TimelineCalendarScreen onMonthChange: ', month, updateSource);
     };
 
     const createNewEvent: TimelineProps['onBackgroundLongPress'] = (timeString, timeObject) => {

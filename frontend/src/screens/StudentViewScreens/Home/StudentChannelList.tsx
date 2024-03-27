@@ -66,7 +66,7 @@ const StudentChannelList = ({ navigation }: StudentChannelListScreenProp) => {
             if (!newChannel?.initialized) {
                 await newChannel?.watch();
             }
-            console.log(channel, innerMessageId, 'nebebeh');
+            // console.log(channel, innerMessageId, 'nebebeh');
             setChannel(newChannel);
             setMessageId(innerMessageId);
             // setState({ channel: newChannel, messageId: innerMessageId });

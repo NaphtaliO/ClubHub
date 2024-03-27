@@ -23,7 +23,8 @@
       },
       "bundleIdentifier": "com.naphtali2003.ClubHub",
       "googleServicesFile": "./credentials/GoogleService-Info.plist",
-      "bitcode": false
+      "bitcode": false,
+      "buildNumber": "2"
     },
     "android": {
       "icon": "./src/assets/adaptive-icon.png",
@@ -63,8 +64,9 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos to let you share them in posts",
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera to share in posts"
+          "photosPermission": "$(PRODUCT_NAME) accesses your photos to allow you to enhance your posts.",
+          "cameraPermission": "$(PRODUCT_NAME) accesses your camera to capture photos that you can use to enhance your posts",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone"
         }
       ],
       [
@@ -76,8 +78,8 @@
       [
         "@config-plugins/react-native-webrtc",
         {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera to stream events",
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone to capture sounds"
+          "cameraPermission": "$(PRODUCT_NAME) to access your camera to stream events",
+          "microphonePermission": "$(PRODUCT_NAME) accesses your microphone to capture sounds for streaming"
         }
       ],
       [

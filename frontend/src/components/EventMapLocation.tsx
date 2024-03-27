@@ -28,7 +28,7 @@ const EventMapLocation = ({ location }: Prop) => {
                 }
 
                 const geocode = await Location.geocodeAsync(location);
-                console.log(geocode)
+                // console.log(geocode)
 
                 if (geocode && geocode.length > 0) {
                     const { latitude, longitude } = geocode[0];
