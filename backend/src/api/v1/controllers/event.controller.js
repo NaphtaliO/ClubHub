@@ -109,12 +109,39 @@ const deleteEvent = async (req, res) => {
     }
 }
 
-
+const startLiveStream = async (req, res) => {
+    const user = req.user;
+    const { id } = req.params;
+    if (user.type !== "club") return;
+    try {
+        const event = await Event.findOne({ _id: id });
+        if (!event) return;
+        const club = await Club.findOne({ _id: user._id }).populate('members');
+        club.members.forEach(async (member) => {
+            const pushToken = member.pushToken;
+            const notification = {
+                token: pushToken,
+                title: `${club?.name}`,
+                body: `Started live stream for event`,
+                data: { type: 'liveStream', event: event },
+            }
+            if (member.settings.notifications.liveStream) {
+                sendNotification(notification);
+            }
+            await Notification.create({ title: notification.title, body: notification.body, data: notification.data, club: user._id, student: member._id })
+        });
+        res.status(200).json({message: "success"})
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+        console.log(error.message);
+    }
+}
 
 module.exports = {
     createEvent,
     getAllEventsByClub,
     getAllStudentsEvents,
     deleteEvent,
-    rsvp
+    rsvp,
+    startLiveStream
 }
