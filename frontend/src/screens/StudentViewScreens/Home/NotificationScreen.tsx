@@ -134,7 +134,7 @@ const NotificationItem = ({ item, index, addRef, onSwipeableWillOpen, navigation
     const onPress = () => {
         if (item.data.type === "notification") {
             navigation.navigate('NotificationDetails', { notification: item })
-        } else if (item.data.type === 'newEvent') {
+        } else if (item.data.type === 'newEvent' || item.data.type === 'liveStream') {
             navigation.navigate('CalendarEventDetails', { event: item.data.event })
         }
     }

@@ -16,7 +16,7 @@ export type RootStackParamList = {
   CreateAccount: undefined,
   StartScreen: undefined,
   LiveStream: { event: Event },
-  WatchLiveStream: { event: Event },
+  WatchLiveStream: { event?: Event },
   EventDetails: { event: Event },
   CalendarEventDetails: { event: Event },
   TermsAndConditions: undefined,
@@ -123,7 +123,7 @@ export type SearchScreenProps = CompositeScreenProps<
 export type CalendarScreenProps = CompositeScreenProps<
   BottomTabScreenProps<StudentViewTabParamList, 'Calendar'>,
   NativeStackScreenProps<RootStackParamList>
-  >;
+>;
 export type StudentProfileScreenProps = CompositeScreenProps<
   BottomTabScreenProps<StudentViewTabParamList, 'Profile'>,
   NativeStackScreenProps<RootStackParamList>

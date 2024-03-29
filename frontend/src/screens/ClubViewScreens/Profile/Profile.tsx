@@ -51,8 +51,6 @@ const Profile = ({ navigation }: ClubProfileScreenProps): React.ReactElement => 
     refreshUser();
     setRefreshing(false);
   }
-  //TODO Add website to profile
-  //TODO Fix logout button
   return (
     <ScrollView
       style={styles.container}
@@ -69,7 +67,6 @@ const Profile = ({ navigation }: ClubProfileScreenProps): React.ReactElement => 
             <View style={styles.profileDetailsContainer}>
               <Text category='h4'>{user?.name}</Text>
               <Text appearance='hint' category='s1'>{user?.location}</Text>
-              {/* TODO: fix this */}
               {/* <RateBar
               style={styles.rateBar}
               hint='Experience'
@@ -92,7 +89,7 @@ const Profile = ({ navigation }: ClubProfileScreenProps): React.ReactElement => 
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Feather name="link" size={15} color="black" style={{ paddingRight: 5 }} />
               <TouchableOpacity onPress={() => WebBrowser.openBrowserAsync(user.website)} >
-              <Text style={{ color: '#2155CD' }}>{user?.website}</Text>
+                <Text style={{ color: '#2155CD', }} numberOfLines={1}>{user?.website}</Text>
               </TouchableOpacity>
             </View>
             : null}

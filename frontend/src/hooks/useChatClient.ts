@@ -1,14 +1,27 @@
-// useChatClient.js
-
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StreamChat } from 'stream-chat';
 import { useAppSelector } from './hooks';
 import { LIVESTREAMAPIKEY } from '@env';
 import { DefaultStreamChatGenerics } from 'stream-chat-expo';
+import messaging from '@react-native-firebase/messaging'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { chatClient } from '../types/types';
+
+// Request Push Notification permission from device.
+const requestPermission = async () => {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    // if (enabled) {
+    //     console.log('Authorization status:', authStatus);
+    // }
+};
 
 export const useChatClient = () => {
     const user = useAppSelector((state) => state.user.value);
     const [clientIsReady, setClientIsReady] = useState(false);
+    const unsubscribeTokenRefreshListenerRef = useRef<() => void>();
 
     const chatUser = {
         id: `${user?._id}`,
@@ -17,40 +30,66 @@ export const useChatClient = () => {
     };
 
     const token = `${user?.token}`;
-    const chatClient = StreamChat.getInstance<DefaultStreamChatGenerics>(LIVESTREAMAPIKEY);
 
     useEffect(() => {
         if (!user) return;
-        const setupClient = async () => {
-            try {
-                await chatClient.connectUser(chatUser, token);
-                setClientIsReady(true);
-                
+        const registerPushToken = async () => {
+            // unsubscribe any previous listener
+            unsubscribeTokenRefreshListenerRef.current?.();
+            const token = await messaging().getToken();
+            const push_provider = 'firebase';
+            const push_provider_name = 'firebaseservicekey'; // name an alias for your push provider (optional)
+            chatClient.setLocalDevice({
+                id: token,
+                push_provider,
+                // push_provider_name is meant for optional multiple providers support, see: https://getstream.io/chat/docs/react/push_providers_and_multi_bundle
+                push_provider_name,
+            });
+            await AsyncStorage.setItem('@current_push_token', token);
 
-                // connectUser is an async function. So you can choose to await for it or not depending on your use case (e.g. to show custom loading indicator)
-                // But in case you need the chat to load from offline storage first then you should render chat components
-                // immediately after calling `connectUser()`.
-                // BUT ITS NECESSARY TO CALL connectUser FIRST IN ANY CASE.
-            } catch (error) {
-                if (error instanceof Error) {
-                    console.error(`An error occurred while connecting the user: ${error.message}`);
+            const removeOldToken = async () => {
+                const oldToken = await AsyncStorage.getItem('@current_push_token');
+                if (oldToken !== null) {
+                    await chatClient.removeDevice(oldToken);
                 }
+            };
+
+            unsubscribeTokenRefreshListenerRef.current = messaging().onTokenRefresh(async newToken => {
+                await Promise.all([
+                    removeOldToken(),
+                    chatClient.addDevice(newToken, push_provider, user?._id, push_provider_name),
+                    AsyncStorage.setItem('@current_push_token', newToken),
+                ]);
+            });
+        };
+
+        const init = async () => {
+            try {
+                // if the user has chat notifications turned on then it should work
+                if (user.type === "student" && !user.settings?.notifications.chat) return;
+                await requestPermission();
+                await registerPushToken();
+                // If the chat client has a value in the field `userID`, a user is already connected
+                // and we can skip trying to connect the user again.
+                if (!chatClient.userID) {
+                    await chatClient.connectUser(chatUser, token);
+                    setClientIsReady(true);
+                }
+            } catch (error) {
+                console.log((error as Error).message);
             }
         };
 
-        // If the chat client has a value in the field `userID`, a user is already connected
-        // and we can skip trying to connect the user again.
-        if (!chatClient.userID) {
-            setupClient();
-        }
-        // return () => {
-        //     if (chatClient) {
-        //         chatClient.disconnectUser();
-        //     }
-        // }
+        init();
+
+        return () => {
+            chatClient?.disconnectUser();
+            unsubscribeTokenRefreshListenerRef.current?.();
+        };
     }, [user]);
 
     return {
         clientIsReady,
+        chatClient
     };
 };

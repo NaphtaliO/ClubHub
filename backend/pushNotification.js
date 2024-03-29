@@ -1,7 +1,7 @@
 const { Expo } = require('expo-server-sdk');
 
 let expo = new Expo({
-    useFcmV1: false // this can be set to true in order to use the FCM v1 API
+    useFcmV1: true // this can be set to true in order to use the FCM v1 API
 });
 
 const sendNotification = async (notification) => {

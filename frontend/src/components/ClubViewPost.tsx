@@ -189,9 +189,6 @@ const ClubViewPost = ({ item, refetch, navigation, onVideoRef }: Prop) => {
                             color={item.likes.includes(`${user?._id}`) ? 'red' : ''}
                         />
                     </TouchableOpacity>
-                    {/* TODO: Introduce like animations
-                https://dev.to/vcapretz/instagram-like-button-in-react-native-and-reanimated-v2-3h3k
-                */}
                     <Text style={{ fontSize: 16, fontWeight: '600' }}>{item.likes.length}</Text>
                 </View>
 
@@ -214,9 +211,6 @@ const ClubViewPost = ({ item, refetch, navigation, onVideoRef }: Prop) => {
                             color={''}
                         />
                     </TouchableOpacity>
-                    {/* TODO: Introduce like animations
-                https://dev.to/vcapretz/instagram-like-button-in-react-native-and-reanimated-v2-3h3k
-                */}
                     <Text style={{ fontSize: 16, fontWeight: '600' }}>{item.comments.length}</Text>
                 </View>
             </View>

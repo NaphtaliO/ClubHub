@@ -12,6 +12,7 @@ import { myMessageTheme } from '../../../Constants';
 
 const CustomAvatar = () => {
     const { channel } = useAppContext();
+    
     const { message } = useMessageContext();
     if (!message?.user?.image) {
         return <ChannelAvatar channel={channel} />

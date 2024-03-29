@@ -38,6 +38,7 @@
     "expo-av": "~13.10.5",
     "expo-clipboard": "^5.0.1",
     "expo-constants": "~15.4.5",
+    "expo-dev-client": "~3.3.11",
     "expo-device": "~5.9.3",
     "expo-document-picker": "^11.10.1",
     "expo-file-system": "~16.0.8",
@@ -72,12 +73,10 @@
     "react-native-svg": "14.1.0",
     "react-native-ui-lib": "^7.1.0",
     "react-redux": "^9.1.0",
-    "socket.io-client": "^4.7.4",
     "stream-chat": "^8.24.0",
     "stream-chat-expo": "^5.26.0",
     "uuid": "^9.0.1",
-    "validator": "^13.11.0",
-    "expo-dev-client": "~3.3.11"
+    "validator": "^13.11.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -23,7 +23,6 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.1",
     "node-fetch": "^3.3.2",
-    "socket.io": "^4.7.4",
     "utf-8-validate": "^5.0.10",
     "validator": "^13.11.0"
   },

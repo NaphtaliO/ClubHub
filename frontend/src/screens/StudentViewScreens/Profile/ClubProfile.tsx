@@ -120,7 +120,7 @@ const ClubProfile = ({ route, navigation }: ClubProfileScreen) => {
         status,
         refetch,
     } = useInfiniteQuery({
-        queryKey: ['feed'],
+        queryKey: ['clubProfileFeed'],
         queryFn: fetchProjects,
         initialPageParam: 0,
         gcTime: 86400000, // 24hrs in miliseconds
@@ -258,17 +258,21 @@ const ClubProfile = ({ route, navigation }: ClubProfileScreen) => {
                     <Layout level='2' >
                         <Layout style={styles.header} level='1'>
                             <View style={styles.profileContainer}>
-                                <CustomImage style={styles.profileAvatar} uri={`${club?.avatar}`} />
+                                {club?.avatar ? <CustomImage style={styles.profileAvatar} uri={`${club?.avatar}`} />
+                                    :
+                                    <Image
+                                        style={styles.profileAvatar}
+                                        source={require('../../../assets/default_avatar.png')}
+                                    />}
                                 <View style={styles.profileDetailsContainer}>
                                     <Text category='h4'>{club?.name}</Text>
                                     <Text appearance='hint' category='s1'>{club?.location}</Text>
-                                    {/* TODO: fix this */}
                                     {/* <RateBar
-                      style={styles.rateBar}
-                      hint='Experience'
-                      value={rating}
-                      onValueChange={setRating}
-                    /> */}
+                                        style={styles.rateBar}
+                                        hint='Experience'
+                                        value={rating}
+                                        onValueChange={setRating}
+                                        /> */}
                                 </View>
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
@@ -447,9 +451,6 @@ const Post = ({ item, refetch, onVideoRef }:
                             color={item.likes.includes(`${user?._id}`) ? 'red' : ''}
                         />
                     </TouchableOpacity>
-                    {/* TODO: Introduce like animations
-                https://dev.to/vcapretz/instagram-like-button-in-react-native-and-reanimated-v2-3h3k
-                */}
                     <Text style={{ fontSize: 16, fontWeight: '600' }}>{item.likes.length}</Text>
                 </View>
 
@@ -468,9 +469,6 @@ const Post = ({ item, refetch, onVideoRef }:
                             color={''}
                         />
                     </TouchableOpacity>
-                    {/* TODO: Introduce like animations
-                https://dev.to/vcapretz/instagram-like-button-in-react-native-and-reanimated-v2-3h3k
-                */}
                     <Text style={{ fontSize: 16, fontWeight: '600' }}>{item.comments.length}</Text>
                 </View>
             </View>

@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { TextField, View, Text, Colors, LoaderScreen } from 'react-native-ui-lib'
+import { TextField, View, Text, Colors } from 'react-native-ui-lib'
 import { CreateEventScreenProps } from '../../../types/types';
 import { Button } from 'react-native-paper';
 import { URL, VERSION } from '@env';
@@ -81,12 +81,13 @@ const CreateEvent = ({ navigation }: CreateEventScreenProps) => {
             headerRight: () => (
                 <Button mode="contained"
                     onPress={handleCreate}
+                    loading={loading}
                 >
                     Post
                 </Button>
             ),
         });
-    }, [navigation, handleCreate]);
+    }, [navigation, handleCreate, loading]);
 
     return (
         <View style={styles.container} padding-20 flex>
@@ -103,7 +104,6 @@ const CreateEvent = ({ navigation }: CreateEventScreenProps) => {
                 style={styles.inputs}
                 fieldStyle={styles.withUnderline}
             />
-            {/* TODO: Add field for description */}
             <View row spread centerV style={{ marginTop: 20, marginBottom: 10 }}>
                 <Text text70 $textDefault>
                     Start Time
@@ -152,7 +152,6 @@ const CreateEvent = ({ navigation }: CreateEventScreenProps) => {
                 fieldStyle={styles.withUnderline}
             />
             {/* <EventMapLocation location={location} /> */}
-            {loading && <LoaderScreen color={Colors.blue30} message="" overlay />}
         </View>
     )
 }

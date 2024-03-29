@@ -5,7 +5,6 @@ import { URL, VERSION } from '@env';
 import { useAppSelector } from '../../../hooks/hooks';
 import { useLogout } from '../../../hooks/useLogout';
 import { Colors, LoaderScreen, Button as UIButton } from 'react-native-ui-lib';
-import { socket } from '../../../socket';
 
 type Prop = {
     setEvents: () => void
@@ -37,17 +36,6 @@ const CalendarEventDetails = ({ route, navigation }: CalendarEventDetailsProps) 
     const hasNotResponded = !event?.rsvp?.accepted.includes(`${user?._id}`) && !event?.rsvp?.declined.includes(`${user?._id}`);
     const isDeclined = event?.rsvp?.declined.includes(`${user?._id}`);
     const isAccepted = event?.rsvp?.accepted.includes(`${user?._id}`);
-
-    useEffect(() => {
-        socket.on(`streaming:${event._id}`, (data) => {
-            setStreaming(true);
-            console.log(data.message);
-        });
-        socket.on(`stopStreaming:${event._id}`, (data) => {
-            setStreaming(false);
-            console.log(data.message);
-        });
-    }, [socket])
 
     const rsvp = async (response: "accept" | "decline") => {
         try {
@@ -156,11 +144,9 @@ const CalendarEventDetails = ({ route, navigation }: CalendarEventDetailsProps) 
 
             </View>
             <View style={styles.buttonContainer}>
-                {streaming ? <Button title='Watch Live' color={''}
+                <Button title='Watch Live' color={''}
                     onPress={() => navigation.navigate('WatchLiveStream', { event: event })}
-                /> : <Button title='Not Live' color={''}
-                    onPress={() => navigation.navigate('WatchLiveStream', { event: event })}
-                />}
+                /> 
 
             </View>
             {loading && <LoaderScreen color={Colors.blue30} message="" overlay />}

@@ -17,11 +17,11 @@ import { useAppSelector } from "../../../hooks/hooks";
 import { LivestreamFlipControlButton } from "../../../components/LivestreamFlipControlButton";
 import { useFocusEffect } from "@react-navigation/native";
 import { Event, LiveStreamProps } from "../../../types/types";
-import { socket } from "../../../socket";
-import { LIVESTREAMAPIKEY } from "@env";
+import { LIVESTREAMAPIKEY, URL, VERSION } from "@env";
+import { useLogout } from "../../../hooks/useLogout";
 
 
-export default function LiveStream({ route }: LiveStreamProps) {
+export default function LiveStream({ route, navigation }: LiveStreamProps) {
     const { event } = route.params
     const authUser = useAppSelector((state) => state.user.value);
 
@@ -71,39 +71,64 @@ export default function LiveStream({ route }: LiveStreamProps) {
         <StreamVideo client={myClient} language="en">
             <StreamCall call={myCall}>
                 <SafeAreaView style={{ flex: 1 }}>
-                    <LiveStreamUI event={event} />
+                    <LiveStreamUI event={event} navigation={navigation} />
                 </SafeAreaView>
             </StreamCall>
         </StreamVideo>
     );
 }
 
-const LiveStreamUI = ({ event }: { event: Event }) => {
+const LiveStreamUI = ({ event, navigation }: { event: Event }) => {
     const { useCallIngress,
         useParticipantCount, useLocalParticipant, useIsCallLive } = useCallStateHooks();
-
+    const user = useAppSelector((state) => state.user.value);
     const ingress = useCallIngress();
     const rtmpURL = ingress?.rtmp.address;
     // const streamKey = token;
-    const isCallLive = useIsCallLive()
+    const isCallLive = useIsCallLive();
+    const { logout } = useLogout();
+
+    const sendNotification = async () => {
+        try {
+            const response = await fetch(`${URL}/api/${VERSION}/event/startLiveStream/${event._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user?.token}`
+                }
+            })
+            const json = await response.json();
+            if (!response.ok) {
+                if (json.error === "Request is not authorized") {
+                    logout()
+                }
+            }
+            if (response.ok) {
+            }
+        } catch (error) {
+            console.log((error as Error).message);
+        }
+    }
 
     useEffect(() => {
         if (isCallLive) {
-            socket.emit('streaming', { eventId: event._id });
-        } else {
-            socket.emit('stopStreaming', { eventId: event._id });
-        }
-        // console.log(isCallLive);
-
-    }, [isCallLive, socket])
+            sendNotification();
+        } 
+    }, [isCallLive])
 
     return (
-        <HostLivestream LivestreamMediaControls={() =>
-        (<View style={{ flexDirection: 'row' }}>
-            <LivestreamAudioControlButton />
-            <LivestreamVideoControlButton />
-            <LivestreamFlipControlButton />
-        </View>)
-        } />
+        <HostLivestream
+            LivestreamMediaControls={() =>
+            (<View style={{ flexDirection: 'row' }}>
+                <LivestreamAudioControlButton />
+                <LivestreamVideoControlButton />
+                <LivestreamFlipControlButton />
+            </View>)
+            }
+            onEndStreamHandler={() => {
+                navigation.goBack();
+                alert("Stream ended")
+            }}
+        />
     )
 }
