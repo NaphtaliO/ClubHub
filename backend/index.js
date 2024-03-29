@@ -1,8 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const { createServer } = require("http");
-const { Server } = require("socket.io");
 require('dotenv').config();
 const path = require('path');
 
@@ -11,8 +9,6 @@ const uri = process.env.URI;
 
 //express app
 const app = express();
-const httpServer = createServer(app);
-const io = new Server(httpServer, { /* options */ });
 
 //express middleware
 app.use(express.static(path.join(__dirname, 'public')));
@@ -26,34 +22,13 @@ app.get('/', (req, res) => res.render('pages/index'))
 //Connect to db
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
-    // app.listen((port), () => {
-    //   //listening for requests
-    //   console.log(`Connected to db and listening on port ${port}.`);
-    // });
-    httpServer.listen((port), () => {
+    app.listen((port), () => {
       //listening for requests
       console.log(`Connected to db and listening on port ${port}.`);
     });
   }).catch((e) => {
     console.log(e);
   });
-
-io.on("connection", (socket) => {
-  // console.log('Client connected ' + socket.id);
-
-  socket.on('streaming', (data) => {
-    const { eventId } = data;
-    io.to(eventId).emit(`streaming:${eventId}`, { message: 'Live stream started for this event' })
-    // Notify student clients about live stream for this event
-    socket.broadcast.emit(`streaming:${eventId}`, { message: 'Live stream started for this event' });
-  });
-
-  socket.on('stopStreaming', (data) => {
-    const { eventId } = data;
-    // Notify student clients about live stream for this event
-    io.emit(`stopStreaming:${eventId}`, { message: 'Stream Ended' });
-  });
-});
 
 // V1 routes
 app.use('/api/v1/auth', require('./src/api/v1/routes/auth.route'));

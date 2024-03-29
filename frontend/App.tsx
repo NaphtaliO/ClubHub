@@ -25,17 +25,13 @@ import {
 } from "@env";
 import { ToastContextProvider } from './src/components/CustomToast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { socket } from './src/socket';
 import { useEffect, useState } from 'react';
 import { AppProvider } from './src/context/AppContext';
 import { SearchContextProvider } from './src/context/SearchContext';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-
 const firebaseConfig = {
   apiKey: APIKEY,
   authDomain: AUTHDOMAIN,
@@ -59,31 +55,6 @@ const storage = getStorage(app);
 const queryClient = new QueryClient()
 
 export default function App() {
-  const [isConnected, setIsConnected] = useState(socket.connected);
-
-  useEffect(() => {
-    function onConnect() {
-      setIsConnected(true);
-    }
-
-    function onDisconnect() {
-      setIsConnected(false);
-    }
-
-    // function onFooEvent(value) {
-    //   setFooEvents(previous => [...previous, value]);
-    // }
-
-    socket.on('connect', onConnect);
-    socket.on('disconnect', onDisconnect);
-    // socket.on('foo', onFooEvent);
-
-    return () => {
-      socket.off('connect', onConnect);
-      socket.off('disconnect', onDisconnect);
-      // socket.off('foo', onFooEvent);
-    };
-  }, []);
 
   return (
     <SafeAreaProvider>

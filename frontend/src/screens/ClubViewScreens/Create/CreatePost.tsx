@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, Platform, Image as RNImage } from 'react-native';
+import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
@@ -13,7 +13,7 @@ import { useLogout } from '../../../hooks/useLogout';
 import { useAppSelector } from '../../../hooks/hooks';
 import CustomToast, { ToastContext } from '../../../components/CustomToast';
 import { ResizeMode, Video } from 'expo-av';
-// import { Video, ResizeMode } from 'expo-av';
+import CustomImage from '../../../components/CustomImage';
 
 type Media = {
     uri: string,
@@ -114,9 +114,11 @@ export default function Post({ navigation }: CreatePostScreenProps) {
     };
 
     const handleCreate = async () => {
+        setLoading(true);
         try {
             if (!media?.uri || !caption) {
-                displayToast?.displayToast("Select both an image and caption", "failure")
+                displayToast?.displayToast("Select both an image and caption", "failure");
+                setLoading(false);
                 return;
             }
             let uri = null;
@@ -131,7 +133,7 @@ export default function Post({ navigation }: CreatePostScreenProps) {
                 },
                 body: JSON.stringify(post)
             })
-            // return;
+            
             const json = await response.json()
 
             if (!response.ok) {
@@ -147,30 +149,21 @@ export default function Post({ navigation }: CreatePostScreenProps) {
         } catch (error) {
             console.log((error as Error).message);
         }
-    }
-
-    const create = () => {
-        if (loading) return;
-        setLoading(true);
-        handleCreate();
         setLoading(false);
     }
 
     useEffect(() => {
         navigation.setOptions({
             headerRight: () => (
-                // TODO: Fix this. 
-                // Implement a way to show loading when post button is clicked
-                // Do the same for Creating new event
                 <Button mode="contained"
-                    onPress={create}
+                    onPress={handleCreate}
                     loading={loading}
                 >
                     Post
                 </Button>
             ),
         });
-    }, [navigation, create, loading]);
+    }, [navigation, handleCreate, loading]);
 
     const handleImagePicked = async (content: Media) => {
         let avatar;
@@ -214,7 +207,6 @@ export default function Post({ navigation }: CreatePostScreenProps) {
     }
 
     const removeImage = () => {
-        // TODO: remove image
         setMedia(undefined);
         setSelected(false);
     }
@@ -225,8 +217,9 @@ export default function Post({ navigation }: CreatePostScreenProps) {
             keyboardVerticalOffset={84}>
             <View style={{ marginHorizontal: 17, marginTop: 17 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <RNImage style={styles.avatar}
-                        source={require('../../../assets/soccer.jpeg')} />
+                    {!user?.avatar ?
+                        <Image style={styles.avatar} source={require('../../../assets/default_avatar.png')} />
+                        : <CustomImage uri={`${user?.avatar}`} style={styles.avatar} />}
                     <Text style={{ fontSize: 16, fontWeight: '600' }}>{user?.name}</Text>
                 </View>
                 <TextInput
@@ -239,15 +232,7 @@ export default function Post({ navigation }: CreatePostScreenProps) {
                     maxLength={500}
                     editable />
                 {media && media.type === "image" ?
-                    // <Image
-                    //     customOverlayContent={
-                    //         <View style={{marginLeft: 'auto', padding: 5}}>
-                    //             <TouchableIcon name='delete' onPress={() => {}} />
-                    //         </View>
-                    //     }
-                    //     source={{ uri: image }}
-                    // style={styles.image} />
-                    <RNImage style={styles.image} source={{ uri: media.uri }} resizeMode='cover' />
+                    <Image style={styles.image} source={{ uri: media.uri }} resizeMode='cover' />
                     : media && media.type === "video" ?
                         <View>
                             <Video

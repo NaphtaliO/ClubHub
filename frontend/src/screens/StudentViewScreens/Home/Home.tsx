@@ -3,12 +3,17 @@ import React, { useEffect, useRef, useState } from 'react';
 import { StudentHomeScreenProps, chatClient } from '../../../types/types';
 import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
 import StudentViewPost from '../../../components/StudentViewPost';
-import { URL, VERSION } from '@env';
+import { LIVESTREAMAPIKEY, URL, VERSION } from '@env';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useLogout } from '../../../hooks/useLogout';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+import messaging from '@react-native-firebase/messaging';
+import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
+import { useAppContext } from '../../../context/AppContext';
+import { StreamVideoClient, StreamVideoRN } from '@stream-io/video-react-native-sdk';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { height, width } = Dimensions.get('window');
 
@@ -50,10 +55,12 @@ async function registerForPushNotificationsAsync() {
       // alert('Failed to get push token for push notification!');
       return;
     }
-    token = (await Notifications.getDevicePushTokenAsync());
-    // token = await Notifications.getExpoPushTokenAsync({
-    //   projectId: Constants.expoConfig?.extra?.eas.projectId
-    // })
+    // token = (await Notifications.getDevicePushTokenAsync());
+    token = await Notifications.getExpoPushTokenAsync({
+      projectId: Constants.expoConfig?.extra?.eas.projectId
+    })
+    // console.log(token);
+    
   } else {
     // alert('Must use physical device for Push Notifications');
     return;
@@ -61,6 +68,37 @@ async function registerForPushNotificationsAsync() {
 
   return token;
 }
+
+
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  // handle the message
+  const message = await chatClient.getMessage(remoteMessage.data.id);
+
+  // create the android channel to send the notification to
+  const channelId = await notifee.createChannel({
+    id: 'chat-messages',
+    name: 'Chat Messages',
+  });
+
+  // display the notification
+  const { stream, ...rest } = remoteMessage.data ?? {};
+  const data = {
+    ...rest,
+    ...((stream as unknown as Record<string, string> | undefined) ?? {}), // extract and merge stream object if present
+  };
+  await notifee.displayNotification({
+    title: 'New message from ' + message.message.user.name,
+    body: message.message.text,
+    data,
+    android: {
+      channelId,
+      // add a press action to open the app on press
+      pressAction: {
+        id: 'default',
+      },
+    },
+  });
+});
 
 const Home = ({ navigation }: StudentHomeScreenProps) => {
   const user = useAppSelector((state) => state.user.value);
@@ -71,8 +109,9 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
   const [notification, setNotification] = useState();
   const notificationListener = useRef();
   const responseListener = useRef();
+  const { setChannel } = useAppContext();
 
-  const setPushToken = async (token: Notifications.DevicePushToken | undefined) => {
+  const setPushToken = async (token: Notifications.ExpoPushToken | undefined) => {
     if (!token) return;
     try {
       const response = await fetch(`${URL}/api/${VERSION}/user/setPushToken`, {
@@ -107,7 +146,7 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
     });
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      // console.log(response);
+      console.log(response);
       alert("notification clicked")
     });
 
@@ -116,7 +155,58 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
       Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
-  
+
+  useEffect(() => {
+    // add listener to notifications received when on foreground
+    const unsubscribeOnMessage = messaging().onMessage(async remoteMessage => {
+      const message = await chatClient.getMessage(remoteMessage.data.id);
+
+      // create the android channel to send the notification to
+      const channelId = await notifee.createChannel({
+        id: 'chat-messages',
+        name: 'Chat Messages',
+      });
+
+      // display the notification
+      const { stream, ...rest } = remoteMessage.data ?? {};
+      const data = {
+        ...rest,
+        ...((stream as unknown as Record<string, string> | undefined) ?? {}), // extract and merge stream object if present
+      };
+      await notifee.displayNotification({
+        title: 'New message from ' + message.message.user.name,
+        body: message.message.text,
+        data,
+        android: {
+          channelId,
+          pressAction: {
+            id: 'default',
+          },
+        },
+      });
+    });
+
+    // add listener to user interactions on foreground notifications
+    const unsubscribeForegroundEvent = notifee.onForegroundEvent(async ({ detail, type }) => {
+      if (type === EventType.PRESS) {
+        // user has pressed notification
+        const channelId = detail.notification?.data?.channel_id;
+        // The navigation logic, to navigate to relevant channel screen.
+        if (channelId) {
+          const newChannel = chatClient.channel('messaging', `${channelId}`)
+          await newChannel.watch();
+          setChannel(newChannel);
+          navigation.navigate('StudentChannel');
+        }
+      }
+    });
+
+    return () => {
+      unsubscribeOnMessage();
+      unsubscribeForegroundEvent();
+    };
+  }, []);
+
   const fetchProjects = async ({ pageParam }: { pageParam: number }) => {
     const res = await fetch(`${URL}/api/${VERSION}/post/getStudentsFeed?page=${pageParam}&limit=10`, {
       method: 'GET',

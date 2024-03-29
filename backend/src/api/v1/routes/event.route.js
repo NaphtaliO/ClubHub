@@ -1,5 +1,5 @@
 const express = require("express");
-const { createEvent, getAllEventsByClub, getAllStudentsEvents, deleteEvent, rsvp } = require('../controllers/event.controller');
+const { createEvent, getAllEventsByClub, getAllStudentsEvents, deleteEvent, rsvp, startLiveStream } = require('../controllers/event.controller');
 const requireAuth = require("../middleware/requireAuth");
 
 const router = express.Router();
@@ -13,5 +13,6 @@ router.delete('/delete/:id', deleteEvent);
 router.get('/getAllByClub', getAllEventsByClub);
 router.get('/getAllStudentsEvents', getAllStudentsEvents);
 router.put('/rsvp/:id', rsvp);
+router.put('/startLiveStream/:id', startLiveStream);
 
 module.exports = router;

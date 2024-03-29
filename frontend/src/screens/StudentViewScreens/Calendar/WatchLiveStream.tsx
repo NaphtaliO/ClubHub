@@ -14,7 +14,6 @@ import { SafeAreaView, Platform, PermissionsAndroid, View, Text, ActivityIndicat
 import { useAppSelector } from "../../../hooks/hooks";
 import { useFocusEffect } from "@react-navigation/native";
 import { Event, WatchLiveStreamProps } from "../../../types/types";
-import { socket } from "../../../socket";
 import { LIVESTREAMAPIKEY } from "@env";
 
 
@@ -35,6 +34,7 @@ export default function WatchLiveStream({ route, navigation }: WatchLiveStreamPr
         type: 'authenticated'
     };
     const myClient = new StreamVideoClient({ apiKey, user, token });
+    myClient.queryCalls({watch: true})
     const myCall = myClient.call("livestream", callId);
     myCall.join({ create: true });
 
@@ -50,6 +50,11 @@ export default function WatchLiveStream({ route, navigation }: WatchLiveStreamPr
         run();
     }, []);
 
+        const unsubscribe = myClient.on('all', (event: StreamVideoEvent) => {
+            if (event.type === 'call.created') {
+                console.log(`This Call has ended:`);
+            }
+        });
     // const unsubscribe = myClient.on('all', (event: StreamVideoEvent) => {
     //     if (event.type === 'call.ended') {
     //         console.log(`Call ended: ${event.call_cid}`);
@@ -57,7 +62,7 @@ export default function WatchLiveStream({ route, navigation }: WatchLiveStreamPr
     // });
 
     // // Unsubscribe
-    // unsubscribe();
+    unsubscribe();
 
 
 
@@ -94,30 +99,19 @@ const WatchLiveStreamUI = ({ event, navigation }: { event: Event }) => {
     // const streamKey = token;
     const isCallLive = useIsCallLive();
 
-    // useEffect(() => {
-    //     const timerId = setTimeout(() => {
-    //         if (!isCallLive) {
-    //             navigation.goBack();
-    //             alert("This event is not live.")
-    //         }
-    //     }, 2000);
+    useEffect(() => {
+        const timerId = setTimeout(() => {
+            if (!isCallLive) {
+                navigation.goBack();
+                alert("This live has ended")
+            }
+        }, 2000);
 
-    //     // Clear the timer if the component unmounts before the delay completes
-    //     return () => clearTimeout(timerId);
-    // }, [isCallLive])
+        // Clear the timer if the component unmounts before the delay completes
+        return () => clearTimeout(timerId);
+    }, [isCallLive])
 
-    // if(!isCallLive){
-    //     <View style={{ flex: 1, justifyContent: 'center' }}>
-    //         <ActivityIndicator size={30} color={'black'} />
-    //     </View>
-    // }
-
-    // if (isCallLive) {
-    //     return (
-    //         <ViewerLivestream />
-    //     )
-    // }
     return (
-        <ViewerLivestream />
+        <ViewerLivestream onLeaveStreamHandler={() => navigation.goBack()}/>
     )
 }

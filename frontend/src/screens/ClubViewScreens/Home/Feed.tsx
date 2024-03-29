@@ -1,10 +1,13 @@
 import { ActivityIndicator, Dimensions, FlatList, RefreshControl, StyleSheet, View } from 'react-native';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ClubViewPost from '../../../components/ClubViewPost';
 import { useAppSelector } from '../../../hooks/hooks';
 import { URL, VERSION } from '@env';
-import { ClubHomeScreenProps, PostProp } from '../../../types/types';
+import { chatClient, ClubHomeScreenProps, PostProp } from '../../../types/types';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import messaging from '@react-native-firebase/messaging';
+import notifee, { EventType } from '@notifee/react-native';
+import { useAppContext } from '../../../context/AppContext';
 
 const { height, width } = Dimensions.get('window');
 
@@ -20,6 +23,116 @@ const Feed = ({ navigation }: ClubHomeScreenProps) => {
   const user = useAppSelector((state) => state.user.value);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const cellRefs = useRef<any>({});
+  const { setChannel } = useAppContext();
+
+  useEffect(() => {
+    // add listener to notifications received when on foreground
+    const unsubscribeOnMessage = messaging().onMessage(async remoteMessage => {
+      const message = await chatClient.getMessage(remoteMessage.data.id);
+
+      // create the android channel to send the notification to
+      const channelId = await notifee.createChannel({
+        id: 'chat-messages',
+        name: 'Chat Messages',
+      });
+
+      // display the notification
+      const { stream, ...rest } = remoteMessage.data ?? {};
+      const data = {
+        ...rest,
+        ...((stream as unknown as Record<string, string> | undefined) ?? {}), // extract and merge stream object if present
+      };
+      await notifee.displayNotification({
+        title: 'New message from ' + message.message.user.name,
+        body: message.message.text,
+        data,
+        android: {
+          channelId,
+          pressAction: {
+            id: 'default',
+          },
+        },
+      });
+    });
+
+    // add listener to user interactions on foreground notifications
+    const unsubscribeForegroundEvent = notifee.onForegroundEvent(async ({ detail, type }) => {
+      if (type === EventType.PRESS) {
+        // user has pressed notification
+        const channelId = detail.notification?.data?.channel_id;
+
+        // The navigation logic, to navigate to relevant channel screen.
+        if (channelId) {
+          const newChannel = chatClient.channel('messaging', `${channelId}`)
+          await newChannel.watch();
+          setChannel(newChannel);
+          navigation.navigate('ClubChannel');
+        }
+      }
+    });
+
+    notifee.onBackgroundEvent(async ({ detail, type }) => {
+      if (type === EventType.PRESS) {
+        // user press on notification detected while app was on background on Android
+        const channelId = detail.notification?.data?.channel_id;
+        if (channelId) {
+          const newChannel = chatClient.channel('messaging', `${channelId}`)
+          await newChannel.watch();
+          setChannel(newChannel);
+          navigation.navigate('ClubChannel');
+        }
+        await Promise.resolve();
+      }
+    });
+
+    return () => {
+      unsubscribeOnMessage();
+      unsubscribeForegroundEvent();
+    };
+  }, []);
+
+  useEffect(() => {
+    const unsubscribeOnNotificationOpen = messaging().onNotificationOpenedApp(async (remoteMessage) => {
+      // Notification caused app to open from background state on iOS
+      const channelId = remoteMessage.data?.channel_id;
+      // The navigation logic, to navigate to relevant channel screen.
+      if (channelId) {
+        const newChannel = chatClient.channel('messaging', `${channelId}`)
+        await newChannel.watch();
+        setChannel(newChannel);
+        navigation.navigate('ClubChannel');
+      }
+    });
+
+    notifee.getInitialNotification().then(async (initialNotification) => {
+      if (initialNotification) {
+        // Notification caused app to open from quit state on Android
+        const channelId = initialNotification.notification.data?.channel_id;
+        // Start the app with the relevant channel screen.
+        const newChannel = chatClient.channel('messaging', `${channelId}`)
+        await newChannel.watch();
+        setChannel(newChannel);
+      }
+    });
+
+    messaging()
+      .getInitialNotification()
+      .then(async (remoteMessage) => {
+        if (remoteMessage) {
+          // Notification caused app to open from quit state on iOS
+          const channelId = remoteMessage.data?.channel_id;
+          // Start the app with the relevant channel screen.
+          const newChannel = chatClient.channel('messaging', `${channelId}`)
+          await newChannel.watch();
+          setChannel(newChannel);
+        }
+      });
+
+    return () => {
+      unsubscribeOnNotificationOpen();
+    };
+  }, []);
+
 
   const fetchProjects = async ({ pageParam }: { pageParam: number }) => {
     const res = await fetch(`${URL}/api/${VERSION}/post/getPostsByClub?page=${pageParam}&limit=5`, {

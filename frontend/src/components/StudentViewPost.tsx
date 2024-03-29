@@ -82,12 +82,19 @@ const StudentViewPost = ({ item, refetch, navigation, onVideoRef }: Prop & Stude
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 15 }}>
                     {/* avatar */}
                     <View style={{ flexDirection: 'row' }}>
-                        {!item.club.avatar ?
-                            <Image style={styles.avatar} source={require('../assets/default_avatar.png')} />
-                            : <CustomImage uri={item.club.avatar} style={styles.avatar} />}
+                        <View
+                            accessible={true}
+                            accessibilityLabel="Post author's Image"
+                            accessibilityHint="This is the profile image of the author">
+                            {!item.club.avatar ?
+                                <Image style={styles.avatar} source={require('../assets/default_avatar.png')} />
+                                : <CustomImage uri={item.club.avatar} style={styles.avatar} />}
+                        </View>
                         <View style={{ alignSelf: 'center' }}>
-                            <Text style={styles.name}>{item.club.name}</Text>
-                            <Text style={styles.timestamp}>{`${formatDistanceToNowStrict(new Date(item.createdAt))} ago`}</Text>
+                            <Text style={styles.name} accessibilityLabel={`Club name. ${item?.club?.name} `}>{item.club.name}</Text>
+                            <Text style={styles.timestamp} accessibilityLabel={`Timestamp. Post was created. ${formatDistanceToNowStrict(new Date(item?.createdAt))} ago`}>
+                                {`${formatDistanceToNowStrict(new Date(item.createdAt))} ago`}
+                            </Text>
                         </View>
                     </View>
                     {/* Three Dots on the Right */}
@@ -96,9 +103,16 @@ const StudentViewPost = ({ item, refetch, navigation, onVideoRef }: Prop & Stude
                     </TouchableOpacity> */}
                 </View>
                 {/* caption */}
-                <CustomText style={styles.caption} caption={item.caption} />
+                <View
+                    accessible
+                    accessibilityLabel={`Post's caption. ${item?.caption}`}
+                >
+                    <CustomText style={styles.caption} caption={item.caption} />
+                </View>
             </View>
-            <View style={{ marginTop: 10 }}>
+            <View style={{ marginTop: 10 }}
+                accessible={true}
+                accessibilityHint="Post's media content. Image or Video">
                 {/* Media  */}
                 {!item?.uri ? null : item?.type === "image" ?
                     <CustomImage uri={item?.uri} style={styles.image} /> : item?.type === "video" ?
@@ -117,7 +131,11 @@ const StudentViewPost = ({ item, refetch, navigation, onVideoRef }: Prop & Stude
                     paddingLeft: 15,
                     flexDirection: 'row',
                     alignItems: 'center'
-                }}>
+                }}
+                    accessible={true}
+                    accessibilityLabel={`Like post button. This post has ${item.likes.length} like${item.likes.length === 1 ? '' : 's'}`}
+                    accessibilityHint="Click this button to like this post"
+                >
                     <TouchableOpacity onPress={like}>
                         <Icon
                             style={{ marginRight: 7 }}
@@ -127,9 +145,6 @@ const StudentViewPost = ({ item, refetch, navigation, onVideoRef }: Prop & Stude
                             color={item?.likes?.includes(`${user?._id}`) ? 'red' : ''}
                         />
                     </TouchableOpacity>
-                    {/* TODO: Introduce like animations
-                https://dev.to/vcapretz/instagram-like-button-in-react-native-and-reanimated-v2-3h3k
-                */}
                     <Text style={{ fontSize: 16, fontWeight: '600' }}>{item.likes.length}</Text>
                 </View>
 
@@ -138,7 +153,11 @@ const StudentViewPost = ({ item, refetch, navigation, onVideoRef }: Prop & Stude
                     paddingLeft: 15,
                     flexDirection: 'row',
                     alignItems: 'center',
-                }}>
+                }}
+                    accessible={true}
+                    accessibilityLabel={`Comment post button. This post has ${item.comments.length} comment${item.comments.length === 1 ? '' : 's'}`}
+                    accessibilityHint="Click this button to Comment on this post"
+                >
                     <TouchableOpacity onPress={() => navigation.navigate('StudentCommentsScreen', { post_id: item._id, refetch: refetch, })}>
                         <Icon
                             style={{ marginRight: 7 }}
@@ -148,9 +167,6 @@ const StudentViewPost = ({ item, refetch, navigation, onVideoRef }: Prop & Stude
                             color={''}
                         />
                     </TouchableOpacity>
-                    {/* TODO: Introduce like animations
-                https://dev.to/vcapretz/instagram-like-button-in-react-native-and-reanimated-v2-3h3k
-                */}
                     <Text style={{ fontSize: 16, fontWeight: '600' }}>{item.comments.length}</Text>
                 </View>
             </View>
