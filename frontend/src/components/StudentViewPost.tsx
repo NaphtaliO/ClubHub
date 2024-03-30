@@ -158,7 +158,7 @@ const StudentViewPost = ({ item, refetch, navigation, onVideoRef }: Prop & Stude
                     accessibilityLabel={`Comment post button. This post has ${item.comments.length} comment${item.comments.length === 1 ? '' : 's'}`}
                     accessibilityHint="Click this button to Comment on this post"
                 >
-                    <TouchableOpacity onPress={() => navigation.navigate('StudentCommentsScreen', { post_id: item._id, refetch: refetch, })}>
+                    <TouchableOpacity onPress={() => navigation.navigate('StudentCommentsScreen', { post_id: item._id, refetch: refetch })}>
                         <Icon
                             style={{ marginRight: 7 }}
                             size={23}

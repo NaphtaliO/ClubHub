@@ -11,7 +11,7 @@ import { Assets, Card, Colors, TabController, TabControllerImperativeMethods, Ta
 import { logIn } from '../../../redux/userSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomImage from '../../../components/CustomImage';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import CustomText from '../../../components/CustomText';
 import CustomVideo from '../../../components/CustomVideo';
 import { Icon } from '@rneui/themed';
@@ -22,6 +22,8 @@ import { useAppContext } from '../../../context/AppContext';
 import type {
     Channel as StreamChatChannel,
 } from 'stream-chat';
+import ListEmpty from '../../../components/ListEmpty';
+import * as WebBrowser from 'expo-web-browser';
 
 const { height, width } = Dimensions.get('window');
 
@@ -193,10 +195,10 @@ const ClubProfile = ({ route, navigation }: ClubProfileScreen) => {
             if (cell) {
                 if (item.isViewable) {
                     // console.log(item.index);
-                    cell.current.playAsync()
+                    cell?.current?.playAsync()
                     // console.log("play");
                 } else if (!item.isViewable) {
-                    cell.current.pauseAsync();
+                    cell?.current?.pauseAsync();
                     // console.log("pause");
                 }
             }
@@ -306,6 +308,14 @@ const ClubProfile = ({ route, navigation }: ClubProfileScreen) => {
                                 appearance='hint'>
                                 {club?.bio}
                             </Text>
+                            {club?.website ?
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Feather name="link" size={15} color="black" style={{ paddingRight: 5 }} />
+                                    <TouchableOpacity onPress={() => WebBrowser.openBrowserAsync(club.website)} >
+                                        <Text style={{ color: '#2155CD' }} numberOfLines={1}>{club.website}</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                : null}
                             <View style={styles.profileParametersContainer}>
                                 <View style={styles.profileSocialsSection}>
                                     <ProfileSocial
@@ -339,7 +349,7 @@ const ClubProfile = ({ route, navigation }: ClubProfileScreen) => {
                 <Post item={item} refetch={refetch} onVideoRef={(videoRef) => {
                     cellRefs.current[item._id] = videoRef.current;
                     // console.log(videoRef);
-                }} />
+                }} navigation={navigation} />
             )}
             keyExtractor={(item, index) => index.toString()}
             onEndReached={onEndReached}
@@ -356,13 +366,15 @@ const ClubProfile = ({ route, navigation }: ClubProfileScreen) => {
             })}
             viewabilityConfig={viewabilityConfig}
             removeClippedSubviews={true}
+            ListEmptyComponent={<ListEmpty title='Posts appear here'
+                message='This club/society has no posts' />}
         />
     )
 }
 
 export default ClubProfile;
 
-const Post = ({ item, refetch, onVideoRef }:
+const Post = ({ item, refetch, onVideoRef, navigation }:
     {
         item: PostProp,
         refetch: () => void,
@@ -460,7 +472,7 @@ const Post = ({ item, refetch, onVideoRef }:
                     flexDirection: 'row',
                     alignItems: 'center',
                 }}>
-                    <TouchableOpacity onPress={() => { }}>
+                    <TouchableOpacity onPress={() => navigation.navigate('StudentCommentsScreen', { post_id: item._id, refetch: refetch })}>
                         <Icon
                             style={{ marginRight: 7 }}
                             size={23}

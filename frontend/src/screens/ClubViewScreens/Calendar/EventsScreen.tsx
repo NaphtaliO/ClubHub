@@ -121,11 +121,10 @@ const Calendar = ({ navigation }: EventsScreenProps) => {
         unavailableHours: [{ start: 0, end: 6 }, { start: 22, end: 24 }],
         overlapEventsSpacing: 8,
         rightEdgeSpacing: 24,
-        // onEventPress: () => navigation.navigate('LiveStream'),
         onEventPress: (e) => {
             navigation.navigate('EventDetails', { event: e });
-        }
-        // renderEvent: () => ()
+        },
+        // renderEvent
     };
 
     const getAllEvents = async () => {

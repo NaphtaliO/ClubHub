@@ -8,6 +8,7 @@ import { formatDistanceToNowStrict } from 'date-fns';
 import { useAppSelector } from '../../../hooks/hooks';
 import { useLogout } from '../../../hooks/useLogout';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import ListEmpty from '../../../components/ListEmpty';
 
 const NotificationScreen = ({ navigation }: NotificationScreenProp) => {
     const refArray = useRef<any>([]);
@@ -107,6 +108,8 @@ const NotificationScreen = ({ navigation }: NotificationScreenProp) => {
             onEndReached={onEndReached}
             onEndReachedThreshold={0.5}
             ListFooterComponent={renderFooter}
+            ListEmptyComponent={<ListEmpty title=''
+                message='Notifications received show up here' />}
         />
     )
 }

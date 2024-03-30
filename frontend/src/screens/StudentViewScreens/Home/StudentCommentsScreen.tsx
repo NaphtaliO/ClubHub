@@ -5,6 +5,7 @@ import { URL, VERSION } from '@env';
 import { useLogout } from '../../../hooks/useLogout';
 import { CommentProp, StudentCommentsScreenProps } from '../../../types/types';
 import CommentItem from '../../../components/CommentItem';
+import ListEmpty from '../../../components/ListEmpty';
 
 LogBox.ignoreLogs([
     'Non-serializable values were found in the navigation state',
@@ -131,7 +132,7 @@ const StudentCommentsScreen = ({ navigation, route }: StudentCommentsScreenProps
                 showsVerticalScrollIndicator={true}
                 renderItem={({ item }) => <CommentItem item={item} deleteComment={deleteComment} />}
                 keyExtractor={item => item._id}
-            //   ListEmptyComponent={<ListEmpty title={"No Comments yet"} message={`Comments on this post will appear here`} />}
+                ListEmptyComponent={<ListEmpty title={"No Comments yet"} message={`Comments on this post will appear here`} />}
             />
 
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}

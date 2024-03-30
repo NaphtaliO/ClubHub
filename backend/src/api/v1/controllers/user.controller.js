@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const validator = require('validator');
 const { sendNotification } = require('../../../../pushNotification');
 
-const UCCStudents = ["120432016@umail.ucc.ie",]
+const UCCStudents = ["120432016@umail.ucc.ie", ]
 
 const createToken = (_id) => {
     // Keep user signed in for 30 days
@@ -47,8 +47,8 @@ const createStudent = async (req, res) => {
         // validation
         if (!name || !email || !password) throw Error('All fields must be filled');
         if (!validator.isEmail(email)) throw Error('Email is not valid');
-        if (!isValidEmail(email)) throw Error('Must be a UCC email');
         if (!UCCStudents.includes(email)) throw Error(`Your email does not exist. Use a valid UCC email`);
+        if (!isValidEmail(email)) throw Error('Must be a UCC email');
         if (!validator.isStrongPassword(password, [{ minLength: 8, minUppercase: 1, minNumbers: 1, minSymbols: 1 }])) {
             throw Error('Password must be 8 characters, 1 uppercase, number and symbol')
         }

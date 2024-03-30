@@ -8,6 +8,7 @@ const eventSchema = new Schema({
     end: { type: String, required: true },
     summary: { type: String },
     location: { type: String },
+    color: { type: String },
     club: { type: Schema.Types.ObjectId, ref: "Club", required: true }, // club id of the owner
     rsvp: {
         accepted: [{ type: Schema.Types.ObjectId, ref: "Student" }],

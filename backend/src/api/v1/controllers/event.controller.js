@@ -6,9 +6,9 @@ const Student = require("../models/student.model");
 
 const createEvent = async (req, res) => {
     const user_id = req.user._id;
-    const { end, start, summary, title, location } = req.body;
+    const { end, start, summary, title, location, color } = req.body;
     try {
-        const event = await Event.create({ end, start, summary, title, location, club: user_id })
+        const event = await Event.create({ end, start, summary, title, location, color, club: user_id })
         const club = await Club.findOne({ _id: user_id }).populate('members');
         club.members.forEach(async (member) => {
             const pushToken = member.pushToken;

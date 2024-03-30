@@ -167,7 +167,7 @@ const EditClubProfile = ({ navigation }: EditStudentProfileProp) => {
           return;
         }
       }
-      let body = { name, avatar, website, bio };
+      let body = { name, avatar, website, bio, location };
       const response = await fetch(`${URL}/api/${VERSION}/user/updateProfile`, {
         method: 'PUT',
         headers: {

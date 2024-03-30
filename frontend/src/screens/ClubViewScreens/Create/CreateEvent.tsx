@@ -8,14 +8,21 @@ import { useLogout } from '../../../hooks/useLogout';
 import * as Haptics from 'expo-haptics';
 import { useAppSelector } from '../../../hooks/hooks';
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import { color } from '@rneui/base';
 // import EventMapLocation from '../../../components/EventMapLocation';
+
+function getRandomColor() {
+    const colors: string[] = ['#e6add8', 'pink', 'lightblue', 'orange']
+    const randomIndex = Math.floor(Math.random() * colors.length);
+    return colors[randomIndex];
+}
 
 const CreateEvent = ({ navigation }: CreateEventScreenProps) => {
     const user = useAppSelector((state) => state.user.value);
     const [title, setTitle] = useState("");
     const [summary, setSummary] = useState("");
     const [start, setStart] = useState<Date>(new Date());
-    const [end, setEnd] = useState<Date>(new Date());
+    const [end, setEnd] = useState<Date>(new Date(new Date().getTime() + (1 * 60 * 60 * 1000)));
     const [loading, setLoading] = useState(false);
     const [location, setLocation] = useState('');
     const { logout } = useLogout();
@@ -47,7 +54,8 @@ const CreateEvent = ({ navigation }: CreateEventScreenProps) => {
                 start: formatDate(start),
                 end: formatDate(end),
                 summary,
-                location
+                location,
+                color: getRandomColor()
             }
 
             const response = await fetch(`${URL}/api/${VERSION}/event/create`, {

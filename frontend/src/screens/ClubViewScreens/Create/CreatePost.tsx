@@ -144,6 +144,8 @@ export default function Post({ navigation }: CreatePostScreenProps) {
             if (response.ok) {
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                 displayToast?.displayToast("Post successfully created", "success")
+                removeImage();
+                setCaption("");
             }
             navigation.navigate('ClubViewTabNav', { screen: 'Home' });
         } catch (error) {

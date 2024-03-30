@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ClubProfileScreenProps, } from '../../../types/types';
 import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
 import { URL, VERSION } from '@env';
@@ -63,7 +63,11 @@ const Profile = ({ navigation }: ClubProfileScreenProps): React.ReactElement => 
       <Layout style={styles.container} level='2' >
         <Layout style={styles.header} level='1'>
           <View style={styles.profileContainer}>
-            <CustomImage style={styles.profileAvatar} uri={`${user?.avatar}`} />
+            {!user?.avatar ? <Image
+              style={styles.profileAvatar}
+              source={require('../../../assets/default_avatar.png')}
+            /> :
+              <CustomImage style={styles.profileAvatar} uri={`${user?.avatar}`} />}
             <View style={styles.profileDetailsContainer}>
               <Text category='h4'>{user?.name}</Text>
               <Text appearance='hint' category='s1'>{user?.location}</Text>

@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { useAppSelector } from '../hooks/hooks'
 import { useActionSheet } from '@expo/react-native-action-sheet';
@@ -30,9 +30,20 @@ const CommentItem = ({ item, deleteComment }: CommentItemProp) => {
                     break;
                 case 1:
                     if (user_id === authUser?._id || authUser?.type === 'club') {
-                        deleteComment(id);
+                        Alert.alert('Delete Comment?', '', [
+                            {
+                                text: 'Cancel',
+                                onPress: () => { },
+                                style: 'cancel',
+                            },
+                            { text: 'Delete', onPress: () => deleteComment(id), style: 'destructive' },
+                        ]);
                     } else {
                         // reportComment(id);
+                        Haptics.notificationAsync(
+                            Haptics.NotificationFeedbackType.Success
+                        )
+                        alert("Comment reported");
                     }
                     break;
             }

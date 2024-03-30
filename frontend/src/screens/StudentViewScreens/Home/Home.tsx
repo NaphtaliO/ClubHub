@@ -14,6 +14,7 @@ import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
 import { useAppContext } from '../../../context/AppContext';
 import { StreamVideoClient, StreamVideoRN } from '@stream-io/video-react-native-sdk';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ListEmpty from '../../../components/ListEmpty';
 
 const { height, width } = Dimensions.get('window');
 
@@ -317,6 +318,9 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
         })}
         viewabilityConfig={viewabilityConfig}
         removeClippedSubviews={true}
+        ListEmptyComponent={
+          <ListEmpty title='Welcome to ClubHub'
+            message='Join clubs/societies to populate your feed' />}
       />
     </View>
   )
