@@ -23,8 +23,7 @@
       },
       "bundleIdentifier": "com.naphtali2003.ClubHub",
       "googleServicesFile": "./credentials/GoogleService-Info.plist",
-      "bitcode": false,
-      "buildNumber": "2"
+      "bitcode": false
     },
     "android": {
       "icon": "./src/assets/adaptive-icon.png",

@@ -75,7 +75,8 @@
     "stream-chat": "^8.24.0",
     "stream-chat-expo": "^5.26.0",
     "uuid": "^9.0.1",
-    "validator": "^13.11.0"
+    "validator": "^13.11.0",
+    "expo-dev-client": "~3.3.11"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

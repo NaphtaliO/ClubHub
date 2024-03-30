@@ -8,18 +8,19 @@ export const useLogout = () => {
 
     const logout = async () => {
         try {
-            // remove user from react native storage
-            // remove user from redux state
-            await AsyncStorage.removeItem('user');
-            dispatch(logOut());
             // Remove device for push notification
             const token = await AsyncStorage.getItem('@current_push_token');
-            if (token !== null) {
+            if (token) {
                 await chatClient.removeDevice(token);
             }
             await chatClient.disconnectUser();
         } catch (error) {
             console.log((error as Error).message);
+        } finally {
+            // remove user from react native storage
+            // remove user from redux state
+            await AsyncStorage.removeItem('user');
+            dispatch(logOut());
         }
     }
 
