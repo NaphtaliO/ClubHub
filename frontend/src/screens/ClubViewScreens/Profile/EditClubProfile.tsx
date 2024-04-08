@@ -4,7 +4,7 @@ import { Button, Icon, useStyleSheet } from '@ui-kitten/components';
 import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
 import { ProfileSetting } from '../../../components/ProfileSetting';
 import { ProfileAvatar } from '../../../components/ProfileAvatar';
-import { EditStudentProfileProp } from '../../../types/types';
+import { EditClubProfileProp } from '../../../types/types';
 import { useLogout } from '../../../hooks/useLogout';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
@@ -18,7 +18,7 @@ import { URL, VERSION } from '@env';
 import validator from 'validator';
 import { Colors, LoaderScreen } from 'react-native-ui-lib';
 
-const EditClubProfile = ({ navigation }: EditStudentProfileProp) => {
+const EditClubProfile = ({ navigation }: EditClubProfileProp) => {
   const user = useAppSelector((state) => state.user.value);
   const dispatch = useAppDispatch();
   const styles = useStyleSheet(themedStyles);

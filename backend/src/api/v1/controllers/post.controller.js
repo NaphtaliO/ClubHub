@@ -163,11 +163,44 @@ const likePost = async (req, res) => {
     }
 };
 
+const fetchRecommendations = async (req, res) => {
+    const user = req.user;
+    if (user.type !== "student") return;
+    try {
+        // Fetch current student's details
+        const student = await Student.findById(user._id);
+        if (!student) {
+            res.status(400).json({ message: "Student not found" });
+            return;
+        }
+        // Find similar students
+        const similarStudents = await Student.find({
+            memberships: { $in: student.memberships },
+            _id: { $ne: student._id } // Exclude current student
+        });
+
+        // Retrieve posts from clubs of similar students
+        const clubIds = similarStudents.map(student => student.memberships).flat();
+        const { page, limit } = req.query;
+        const skip = (page) * limit
+        const recommendedPosts = await Post.find({ club: { $in: clubIds }, type: { $ne: "video" } })
+            .skip(skip) // for pagination
+            .limit(parseInt(limit)) // Limit the number of posts for pagination
+            .sort({ createdAt: -1 }); // Sort by most recent
+
+        res.status(200).json(recommendedPosts)
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+        console.log(error.message);
+    }
+}
+
 module.exports = {
     createPost,
     getAllPostsByClub,
     deletePost,
     getStudentsFeed,
     likePost,
-    fetchClubProfilePostsById
+    fetchClubProfilePostsById,
+    fetchRecommendations
 }

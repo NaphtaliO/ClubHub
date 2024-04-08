@@ -1,11 +1,12 @@
-import { StyleSheet, View, Text, FlatList, ActivityIndicator } from 'react-native';
+import { StyleSheet, ActivityIndicator, FlatList, Text, View, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { SearchBar } from '@rneui/themed';
 import { useLogout } from '../../../hooks/useLogout';
 import { URL, VERSION } from '@env';
 import { useAppSelector } from '../../../hooks/hooks';
-import { SearchScreenProps } from '../../../types/types';
 import SearchItem from '../../../components/SearchItem';
+import { Ionicons } from '@expo/vector-icons';
+import { SearchScreenProp } from '../../../types/types';
 
 type ClubProp = {
   _id: string,
@@ -14,7 +15,7 @@ type ClubProp = {
   name: string
 }
 
-const Search = ({ navigation }: SearchScreenProps) => {
+const Search = ({ navigation }: SearchScreenProp) => {
   const { logout } = useLogout();
   const user = useAppSelector((state) => state.user.value);
   const [users, setUsers] = useState<ClubProp[]>([]);
@@ -54,18 +55,27 @@ const Search = ({ navigation }: SearchScreenProps) => {
   }, [text])
 
   return (
-
     <View style={styles.container}>
-      <SearchBar
-        platform='ios'
-        placeholder="Type Here..."
-        onChangeText={setText}
-        value={text}
-        autoCorrect={false}
-        clearTextOnFocus={false}
-        onClear={() => { setText(''); setUsers([]) }}
-        onCancel={() => { setText(''); setUsers([]) }}
-      />
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 10, width: '90%' }}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons
+            name="chevron-back"
+            size={26}
+            color="black"
+            style={{}}
+          />
+        </TouchableOpacity>
+        <SearchBar
+          platform='ios'
+          placeholder="Type Here..."
+          onChangeText={setText}
+          value={text}
+          autoCorrect={false}
+          clearTextOnFocus={false}
+          onClear={() => { setText(''); setUsers([]) }}
+          onCancel={() => { setText(''); setUsers([]) }}
+        />
+      </View>
       {loading ? <ActivityIndicator color={'black'} /> :
         users.length !== 0 && text !== '' ?
           <FlatList
@@ -79,8 +89,8 @@ const Search = ({ navigation }: SearchScreenProps) => {
             renderItem={({ item }) =>
               <>
                 <SearchItem navigation={navigation} item={item} />
-            </>
-              
+              </>
+
             }
             keyExtractor={item => item?._id} />
           :
@@ -98,7 +108,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    paddingVertical: 50
+    paddingVertical: 50,
   },
   searchBar: {
     marginHorizontal: 20,

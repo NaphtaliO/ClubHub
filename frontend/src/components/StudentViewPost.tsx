@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import React, { RefObject, useEffect, useRef, useState } from 'react';
 import { Card } from 'react-native-ui-lib';
 import CustomImage from './CustomImage';
@@ -81,22 +81,24 @@ const StudentViewPost = ({ item, refetch, navigation, onVideoRef }: Prop & Stude
             <View style={{ marginHorizontal: 20 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 15 }}>
                     {/* avatar */}
-                    <View style={{ flexDirection: 'row' }}>
-                        <View
-                            accessible={true}
-                            accessibilityLabel="Post author's Image"
-                            accessibilityHint="This is the profile image of the author">
-                            {!item.club.avatar ?
-                                <Image style={styles.avatar} source={require('../assets/default_avatar.png')} />
-                                : <CustomImage uri={item.club.avatar} style={styles.avatar} />}
+                    <TouchableWithoutFeedback onPress={() => navigation.push('ClubProfile', { name: item.club.name, id: item.club._id })}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <View
+                                accessible={true}
+                                accessibilityLabel="Post author's Image"
+                                accessibilityHint="This is the profile image of the author">
+                                {!item.club.avatar ?
+                                    <Image style={styles.avatar} source={require('../assets/default_avatar.png')} />
+                                    : <CustomImage uri={item.club.avatar} style={styles.avatar} />}
+                            </View>
+                            <View style={{ alignSelf: 'center' }}>
+                                <Text style={styles.name} accessibilityLabel={`Club name. ${item?.club?.name} `}>{item.club.name}</Text>
+                                <Text style={styles.timestamp} accessibilityLabel={`Timestamp. Post was created. ${formatDistanceToNowStrict(new Date(item?.createdAt))} ago`}>
+                                    {`${formatDistanceToNowStrict(new Date(item.createdAt))} ago`}
+                                </Text>
+                            </View>
                         </View>
-                        <View style={{ alignSelf: 'center' }}>
-                            <Text style={styles.name} accessibilityLabel={`Club name. ${item?.club?.name} `}>{item.club.name}</Text>
-                            <Text style={styles.timestamp} accessibilityLabel={`Timestamp. Post was created. ${formatDistanceToNowStrict(new Date(item?.createdAt))} ago`}>
-                                {`${formatDistanceToNowStrict(new Date(item.createdAt))} ago`}
-                            </Text>
-                        </View>
-                    </View>
+                    </TouchableWithoutFeedback>
                     {/* Three Dots on the Right */}
                     {/* <TouchableOpacity style={{ marginLeft: 'auto' }} onPress={bottomSheet}>
                         <MaterialCommunityIcons name="dots-horizontal" size={24} color="black" />

@@ -44,6 +44,8 @@ import EditStudentProfile from './src/screens/StudentViewScreens/Profile/EditStu
 import StudentSettings from './src/screens/StudentViewScreens/Profile/Settings/StudentSettings';
 import DeleteAccount from './src/screens/StudentViewScreens/Profile/Settings/DeleteAccount';
 import NotificationSettings from './src/screens/StudentViewScreens/Profile/Settings/NotificationSettings';
+import Search from './src/screens/StudentViewScreens/Discover/Search';
+import PostScreen from './src/screens/StudentViewScreens/Discover/PostScreen';
 
 export const CHANNEL_LIST_SCREEN_HEADER_HEIGHT = 120;
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -54,6 +56,7 @@ const MainNav = () => {
     const dispatch = useAppDispatch();
     const insets = useSafeAreaInsets();
     const { clientIsReady } = useChatClient();
+    
     const { channel } = useAppContext();
 
     useEffect(() => {
@@ -220,7 +223,12 @@ const MainNav = () => {
                                     <Stack.Screen name="DeleteAccount" component={DeleteAccount}
                                         options={{ headerTitle: "Delete Account" }} />
                                     <Stack.Screen name="NotificationSettings" component={NotificationSettings}
-                                        options={{ headerTitle: "Settings" }} />
+                                            options={{ headerTitle: "Settings" }} />
+                                        <Stack.Screen name="Search" component={Search}
+                                            options={{ headerShown: false }} />
+                                        <Stack.Screen name="PostScreen" component={PostScreen}
+                                            options={{ headerTitle: 'Post' }}
+                                        />
                                 </>
                             ) : (
                                 <>

@@ -2,11 +2,11 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StudentViewTabParamList } from "../types/types";
 import { useLogout } from "../hooks/useLogout";
 import { Feather, FontAwesome, Foundation, Ionicons, MaterialCommunityIcons, Octicons } from "@expo/vector-icons";
-import Search from "../screens/StudentViewScreens/Search/Search";
 import { TouchableOpacity, View } from "react-native";
 import Profile from "../screens/StudentViewScreens/Profile/Profile";
 import Calendar from "../screens/StudentViewScreens/Calendar/Calendar";
 import Home from "../screens/StudentViewScreens/Home/Home";
+import Discover from "../screens/StudentViewScreens/Discover/Discover";
 
 const Tab = createBottomTabNavigator<StudentViewTabParamList>();
 
@@ -20,7 +20,7 @@ const StudentViewTabNav = ({ }) => {
                     if (route.name === "Home") {
                         return <Foundation name="home" size={size} color={color} />;
                     }
-                    if (route.name === "Search") {
+                    if (route.name === "Discover") {
                         return <FontAwesome name="search" size={size} color={color} />;
                     }
                     if (route.name === "Calendar") {
@@ -57,11 +57,18 @@ const StudentViewTabNav = ({ }) => {
                 })}
             />
             <Tab.Screen
-                name="Search"
-                component={Search}
-                options={{
-                    headerShown: false,
-                }}
+                name="Discover"
+                component={Discover}
+                options={({ navigation }) => ({
+                    headerRight: () => (
+                        <View style={{ flexDirection: 'row' }}>
+                            <TouchableOpacity onPress={() => navigation.navigate("Search")}>
+                                <Ionicons name="search" size={26} color="black" style={{ marginRight: 23 }} />
+                            </TouchableOpacity>
+                        </View>
+                    ),
+                    headerTitle: "Discover",
+                })}
             />
             <Tab.Screen
                 name="Calendar"

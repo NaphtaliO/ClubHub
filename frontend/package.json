@@ -21,6 +21,7 @@
     "@react-native-firebase/app": "^19.0.1",
     "@react-native-firebase/messaging": "^19.0.1",
     "@react-native-picker/picker": "^2.6.1",
+    "@react-native-seoul/masonry-list": "^1.4.2",
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",
@@ -38,6 +39,7 @@
     "expo-av": "~13.10.5",
     "expo-clipboard": "^5.0.1",
     "expo-constants": "~15.4.5",
+    "expo-dev-client": "~3.3.11",
     "expo-device": "~5.9.3",
     "expo-document-picker": "^11.10.1",
     "expo-file-system": "~16.0.8",
@@ -75,8 +77,7 @@
     "stream-chat": "^8.24.0",
     "stream-chat-expo": "^5.26.0",
     "uuid": "^9.0.1",
-    "validator": "^13.11.0",
-    "expo-dev-client": "~3.3.11"
+    "validator": "^13.11.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

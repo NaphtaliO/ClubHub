@@ -35,6 +35,8 @@ export type RootStackParamList = {
   StudentSettings: undefined,
   DeleteAccount: undefined,
   NotificationSettings: undefined,
+  Search: undefined,
+  PostScreen: { post: PostProp }
 };
 
 export interface Event {
@@ -71,7 +73,7 @@ export interface Notification {
 
 export type StudentViewTabParamList = {
   Home: undefined,
-  Search: undefined,
+  Discover: undefined,
   Calendar: undefined,
   Profile: undefined
 };
@@ -91,6 +93,7 @@ export type StartScreenProps = NativeStackScreenProps<RootStackParamList, 'Start
 // ClubViewScreens
 export type CreatePostScreenProps = NativeStackScreenProps<RootStackParamList, 'CreatePost'>;
 export type CreateEventScreenProps = NativeStackScreenProps<RootStackParamList, 'CreateEvent'>;
+export type EditClubProfileProp = NativeStackScreenProps<RootStackParamList, 'EditClubProfile'>;
 export type SendNotificationScreenProps = NativeStackScreenProps<RootStackParamList, 'SendNotification'>;
 export type ClubCommentsScreenProps = NativeStackScreenProps<RootStackParamList, 'ClubCommentsScreen'>;
 export type LiveStreamProps = NativeStackScreenProps<RootStackParamList, 'LiveStream'>;
@@ -116,8 +119,8 @@ export type StudentHomeScreenProps = CompositeScreenProps<
   BottomTabScreenProps<StudentViewTabParamList, 'Home'>,
   NativeStackScreenProps<RootStackParamList>
 >;
-export type SearchScreenProps = CompositeScreenProps<
-  BottomTabScreenProps<StudentViewTabParamList, 'Search'>,
+export type DiscoverScreenProps = CompositeScreenProps<
+  BottomTabScreenProps<StudentViewTabParamList, 'Discover'>,
   NativeStackScreenProps<RootStackParamList>
 >;
 export type CalendarScreenProps = CompositeScreenProps<
@@ -144,6 +147,8 @@ export type EditStudentProfileProp = NativeStackScreenProps<RootStackParamList, 
 export type StudentSettingsScreenProp = NativeStackScreenProps<RootStackParamList, 'StudentSettings'>;
 export type DeleteAccountScreenProp = NativeStackScreenProps<RootStackParamList, 'DeleteAccount'>;
 export type NotificationSettingsScreenProp = NativeStackScreenProps<RootStackParamList, 'NotificationSettings'>;
+export type SearchScreenProp = NativeStackScreenProps<RootStackParamList, 'Search'>;
+export type PostScreenProp = NativeStackScreenProps<RootStackParamList, 'PostScreen'>;
 
 
 
