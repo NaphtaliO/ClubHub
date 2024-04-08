@@ -65,18 +65,20 @@ export const useChatClient = () => {
 
         const init = async () => {
             try {
-                // if the user has chat notifications turned on then it should work
-                if (user.type === "student" && !user.settings?.notifications.chat) return;
-                await requestPermission();
-                await registerPushToken();
+                // Chat notification will only work if the student has it turned on
+                if (user.type === "student" && user.settings?.notifications.chat) {
+                    await requestPermission();
+                    await registerPushToken();
+                }
+            } catch (error) {
+                console.log((error as Error).message);
+            } finally {
                 // If the chat client has a value in the field `userID`, a user is already connected
                 // and we can skip trying to connect the user again.
                 if (!chatClient.userID) {
                     await chatClient.connectUser(chatUser, token);
                     setClientIsReady(true);
                 }
-            } catch (error) {
-                console.log((error as Error).message);
             }
         };
 
