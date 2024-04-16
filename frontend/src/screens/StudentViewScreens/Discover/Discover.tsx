@@ -6,8 +6,9 @@ import MasonryList from '@react-native-seoul/masonry-list';
 import { useLogout } from '../../../hooks/useLogout';
 import { useAppSelector } from '../../../hooks/hooks';
 import { Image as ExpoImage } from 'expo-image';
-import { Image, View, Card, Spacings, Constants } from 'react-native-ui-lib';
+import { Image, View, Card, Spacings, Constants, Colors, LoaderScreen } from 'react-native-ui-lib';
 import { DiscoverScreenProps, PostProp } from '../../../types/types';
+import ListEmpty from '../../../components/ListEmpty';
 
 Spacings.loadSpacings({
     page: 10
@@ -24,7 +25,7 @@ const Discover = ({ navigation }: DiscoverScreenProps) => {
     const [refreshing, setRefreshing] = useState<boolean>(false);
 
     const fetchRecommendations = async ({ pageParam }: { pageParam: number }) => {
-        const res = await fetch(`${URL}/api/${VERSION}/post/recommendations?page=${pageParam}&limit=10`, {
+        const res = await fetch(`${URL}/api/${VERSION}/post/recommendations?page=${pageParam}&limit=16`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -43,6 +44,7 @@ const Discover = ({ navigation }: DiscoverScreenProps) => {
         isFetching,
         isFetchingNextPage,
         status,
+        isLoading,
         refetch,
     } = useInfiniteQuery({
         queryKey: ['recommendations'],
@@ -74,7 +76,10 @@ const Discover = ({ navigation }: DiscoverScreenProps) => {
                 renderItem={({ item }) => <ImageItem item={item} navigation={navigation} />}
                 showsVerticalScrollIndicator={false}
                 numColumns={2}
-                keyExtractor={item => item?.uri} />}
+                keyExtractor={item => item?.uri}
+                ListEmptyComponent={<ListEmpty title='Recommendations'
+                    message='Recommended posts show up here ' />}/>}
+            {isLoading && <LoaderScreen color={Colors.black} message="" overlay />}
         </View>
     )
 }

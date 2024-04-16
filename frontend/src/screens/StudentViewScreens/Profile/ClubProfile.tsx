@@ -427,9 +427,9 @@ const Post = ({ item, refetch, onVideoRef, navigation }:
                         </View>
                     </View>
                     {/* Three Dots on the Right */}
-                    <TouchableOpacity style={{ marginLeft: 'auto' }} onPress={() => { }}>
+                    {/* <TouchableOpacity style={{ marginLeft: 'auto' }} onPress={() => { }}>
                         <MaterialCommunityIcons name="dots-horizontal" size={24} color="black" />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
                 {/* caption */}
                 <CustomText style={styles.caption} caption={item?.caption} />

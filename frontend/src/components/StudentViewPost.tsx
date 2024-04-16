@@ -77,6 +77,7 @@ const StudentViewPost = ({ item, refetch, navigation, onVideoRef }: Prop & Stude
     }
 
     return (
+        item && 
         <Card style={{ margin: 6 }}>
             <View style={{ marginHorizontal: 20 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 15 }}>
@@ -87,9 +88,9 @@ const StudentViewPost = ({ item, refetch, navigation, onVideoRef }: Prop & Stude
                                 accessible={true}
                                 accessibilityLabel="Post author's Image"
                                 accessibilityHint="This is the profile image of the author">
-                                {!item.club.avatar ?
+                                {!item?.club?.avatar ?
                                     <Image style={styles.avatar} source={require('../assets/default_avatar.png')} />
-                                    : <CustomImage uri={item.club.avatar} style={styles.avatar} />}
+                                    : <CustomImage uri={item?.club?.avatar} style={styles.avatar} />}
                             </View>
                             <View style={{ alignSelf: 'center' }}>
                                 <Text style={styles.name} accessibilityLabel={`Club name. ${item?.club?.name} `}>{item.club.name}</Text>
