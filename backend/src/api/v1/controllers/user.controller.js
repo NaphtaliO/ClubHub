@@ -1,6 +1,8 @@
 const Club = require('../models/club.model');
 const Student = require('../models/student.model');
 const Post = require("../models/post.model");
+const Comment = require("../models/comment.model");
+const Notification = require("../models/notification.model");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const validator = require('validator');
@@ -47,7 +49,7 @@ const createStudent = async (req, res) => {
         // validation
         if (!name || !email || !password) throw Error('All fields must be filled');
         if (!validator.isEmail(email)) throw Error('Email is not valid');
-        if (!UCCStudents.includes(email)) throw Error(`Your email does not exist. Use a valid UCC email`);
+        // if (!UCCStudents.includes(email)) throw Error(`Your email does not exist. Use a valid UCC email`);
         if (!isValidEmail(email)) throw Error('Must be a UCC email');
         if (!validator.isStrongPassword(password, [{ minLength: 8, minUppercase: 1, minNumbers: 1, minSymbols: 1 }])) {
             throw Error('Password must be 8 characters, 1 uppercase, number and symbol')
@@ -255,10 +257,10 @@ const updateNotificationsSettings = async (req, res) => {
 }
 
 const deleteUser = async (req, res) => {
-    const user = req.user;
+    let user = req.user;
     if (user.type !== "student") return;
     try {
-        const user = await Student.findOne({ _id: user._id });
+        user = await Student.findOne({ _id: user._id });
         if (!user) return;
         const userComments = await Comment.find({ student: user._id });
 
@@ -290,8 +292,10 @@ const deleteUser = async (req, res) => {
 
         // Delete User posts, comments and then the User
         await Comment.deleteMany({ student: user._id })
+        await Notification.deleteMany({ student: user._id })
         await Student.findOneAndDelete({ _id: user.id })
         res.status(200).json({ message: 'Success' })
+        console.log("Account Deleted Successfully");
     } catch (error) {
         res.status(400).json({ error: error.message })
         console.log(error.message);
