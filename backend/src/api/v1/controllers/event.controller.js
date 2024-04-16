@@ -18,7 +18,7 @@ const createEvent = async (req, res) => {
                 body: `${event.summary}`,
                 data: { type: 'newEvent', event: event },
             }
-            if (member.settings.notifications.newEvent) {
+            if (member.settings.notifications.newEvents) {
                 sendNotification(notification);
             }
             await Notification.create({ title: notification.title, body: notification.body, data: notification.data, club: user_id, student: member._id })

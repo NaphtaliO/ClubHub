@@ -127,34 +127,23 @@ const deletePost = async (req, res) => {
 
 const likePost = async (req, res) => {
     const user_id = req.user._id;
-    const { id } = req.params;
+    const { id } = req.params; // passed as parameter
     try {
-
+        // Fetch post by ID
         const post = await Post.findById(id);
-
-        // const postAuthor = await User.findOne({ _id: post.user_id }).select("username pushToken")
-        // const authUser = await User.findOne({ _id: user_id }).select("username")
-
         const isLiked = post.likes.includes(user_id);
-
+        // if post is liked meaning the user_id is in post.likes array
+        // unlike the post by removing the id
         if (isLiked) {
             let index = post.likes.indexOf(user_id);
             if (index > -1) {
                 post.likes.splice(index, 1);
             }
         } else {
+            // else if the post is not liked like it by pushing the user_id into the array
             post.likes.push(user_id);
-            // if (post.user_id !== user_id.toHexString()) {
-            //     const notificationInfo = {
-            //         token: postAuthor.pushToken,
-            //         title: `${postAuthor.username}`,
-            //         body: `@${authUser.username} liked your post`,
-            //         data: { type: "liked", post_id: post._id }
-            //     };
-            //     await sendNotification(notificationInfo.token, notificationInfo.body, notificationInfo.title, notificationInfo.data);
-            // }
         }
-
+        // respond with the updated post
         const updatedPost = await Post.findByIdAndUpdate(id, { likes: post.likes }, { new: true });
         res.status(200).json(updatedPost);
     } catch (error) {
@@ -183,11 +172,20 @@ const fetchRecommendations = async (req, res) => {
         const clubIds = similarStudents.map(student => student.memberships).flat();
         const { page, limit } = req.query;
         const skip = (page) * limit
-        const recommendedPosts = await Post.find({ club: { $in: clubIds }, type: { $ne: "video" } })
+        let recommendedPosts = await Post.find({ club: { $in: clubIds }, type: { $ne: "video" } }) // exclude videos, UI too complicated for now
             .skip(skip) // for pagination
             .limit(parseInt(limit)) // Limit the number of posts for pagination
             .sort({ createdAt: -1 }); // Sort by most recent
 
+        // If no recommended posts found,
+        // Student just joined for example
+        // fetch any image posts and sort by most recent
+        if (recommendedPosts.length === 0) {
+            recommendedPosts = await Post.find({ type: { $ne: "video" } })
+                .skip(skip)
+                .limit(parseInt(limit))
+                .sort({ createdAt: -1 });
+        }
         res.status(200).json(recommendedPosts)
     } catch (error) {
         res.status(400).json({ error: error.message })
