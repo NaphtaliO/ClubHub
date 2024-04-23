@@ -107,9 +107,11 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
   const dispatch = useAppDispatch();
   const { logout } = useLogout();
   const cellRefs = useRef<any>({});
-  const [notification, setNotification] = useState();
-  const notificationListener = useRef();
-  const responseListener = useRef();
+  const [notification, setNotification] = useState<
+    Notifications.Notification | undefined
+  >(undefined);
+  const notificationListener = useRef<Notifications.Subscription>();
+  const responseListener = useRef<Notifications.Subscription>();
   const { setChannel } = useAppContext();
 
   const setPushToken = async (token: Notifications.ExpoPushToken | undefined) => {
@@ -146,9 +148,14 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
       setNotification(notification);
     });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
-      alert("notification clicked")
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {     
+      let data = response.notification.request.content;
+
+      if (data.data.type === "notification") {
+        navigation.navigate('NotificationDetails', { notification: data })
+      } else if (data.data.type === 'newEvent' || data.data.type === 'liveStream') {
+        navigation.navigate('CalendarEventDetails', { event: data.data.event })
+      }
     });
 
     return () => {
@@ -217,6 +224,11 @@ const Home = ({ navigation }: StudentHomeScreenProps) => {
       },
     })
     const json = await res.json()
+    if (!res.ok) {
+      if (json.error === "Request is not authorized") {
+        logout()
+      }
+    }
     return json
   }
 

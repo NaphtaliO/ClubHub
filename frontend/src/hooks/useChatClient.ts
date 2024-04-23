@@ -69,6 +69,9 @@ export const useChatClient = () => {
                 if (user.type === "student" && user.settings?.notifications.chat) {
                     await requestPermission();
                     await registerPushToken();
+                } else if (user.type === "club") {
+                    await requestPermission();
+                    await registerPushToken();
                 }
             } catch (error) {
                 console.log((error as Error).message);

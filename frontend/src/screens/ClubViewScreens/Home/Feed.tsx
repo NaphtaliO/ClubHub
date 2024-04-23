@@ -8,6 +8,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import messaging from '@react-native-firebase/messaging';
 import notifee, { EventType } from '@notifee/react-native';
 import { useAppContext } from '../../../context/AppContext';
+import { useLogout } from '../../../hooks/useLogout';
 
 const { height, width } = Dimensions.get('window');
 
@@ -24,6 +25,7 @@ const Feed = ({ navigation }: ClubHomeScreenProps) => {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const cellRefs = useRef<any>({});
   const { setChannel } = useAppContext();
+  const { logout } = useLogout();
 
   useEffect(() => {
     // add listener to notifications received when on foreground
@@ -143,6 +145,11 @@ const Feed = ({ navigation }: ClubHomeScreenProps) => {
       },
     })
     const json = await res.json()
+    if (!res.ok) {
+      if (json.error === "Request is not authorized") {
+        logout();
+      }
+    }
     return json
   }
 

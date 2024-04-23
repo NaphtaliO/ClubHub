@@ -8,7 +8,7 @@ const bcrypt = require('bcrypt');
 const validator = require('validator');
 const { sendNotification } = require('../../../../pushNotification');
 
-const UCCStudents = ["120432016@umail.ucc.ie", ]
+const UCCStudents = ["120432016@umail.ucc.ie",]
 
 const createToken = (_id) => {
     // Keep user signed in for 30 days
@@ -264,7 +264,7 @@ const deleteUser = async (req, res) => {
         if (!user) return;
         const userComments = await Comment.find({ student: user._id });
 
-        // Update users who have this user in their favourites, followers, following, blockedUsers
+        // Update clubs who have this student in their members array
         await Club.updateMany(
             {
                 $or: [

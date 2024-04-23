@@ -93,9 +93,9 @@ const StudentViewPost = ({ item, refetch, navigation, onVideoRef }: Prop & Stude
                                     : <CustomImage uri={item?.club?.avatar} style={styles.avatar} />}
                             </View>
                             <View style={{ alignSelf: 'center' }}>
-                                <Text style={styles.name} accessibilityLabel={`Club name. ${item?.club?.name} `}>{item.club.name}</Text>
+                                <Text style={styles.name} accessibilityLabel={`Club name. ${item?.club?.name} `}>{item?.club?.name}</Text>
                                 <Text style={styles.timestamp} accessibilityLabel={`Timestamp. Post was created. ${formatDistanceToNowStrict(new Date(item?.createdAt))} ago`}>
-                                    {`${formatDistanceToNowStrict(new Date(item.createdAt))} ago`}
+                                    {`${formatDistanceToNowStrict(new Date(item?.createdAt))} ago`}
                                 </Text>
                             </View>
                         </View>
