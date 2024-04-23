@@ -37,7 +37,7 @@ const CustomVideo = ({ style, uri, status, setStatus, onVideoRef }: Prop) => {
 
     useEffect(() => {
         const cache = async () => {
-            try {z
+            try {
                 const name: string = unique(uri);
                 const path = `${FileSystem.documentDirectory}${name}.mp4`;
                 
